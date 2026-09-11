@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Emprendimientos - E.E.S.T. N°1</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Cargar librería de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+
+  <!-- ENCABEZADO Y PROPUESTA PEDAGÓGICA -->
+  <header class="bg-slate-900 text-white pt-10 pb-16 px-4 shadow-lg border-b border-orange-600">
+    <div class="max-w-6xl mx-auto">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+        <div>
+          <span class="bg-orange-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
+            Educación Técnica Profesional
+          </span>
+          <h1 class="text-3xl md:text-4xl font-extrabold mt-3">Emprendedorismo y Desarrollo Local</h1>
+          <p class="text-slate-300 text-base max-w-2xl mt-2">
+            Plataforma interactiva de exhibición y validación de Planes de Negocios desarrollados por alumnos de 7° Año. Proyectos con rigor técnico, orientación comercial y sustentable.
+          </p>
+        </div>
+        <div>
+          <a href="index.html" class="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-medium px-5 py-3 rounded-xl transition shadow-md">
+            <span>+ Cargar Proyecto</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Tarjetas de Impacto Pedagógico -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-800 text-sm">
+        <div class="bg-slate-800/60 p-4 rounded-lg border border-slate-700">
+          <strong class="text-orange-400 block mb-1">Formación Técnica</strong>
+          Aplica procesos de diseño, cálculo de materiales, fabricación y control de calidad en taller.
+        </div>
+        <div class="bg-slate-800/60 p-4 rounded-lg border border-slate-700">
+          <strong class="text-orange-400 block mb-1">Validación Financiera</strong>
+          Análisis de costos reales, presupuesto transparente y fórmulas de margen de contribución.
+        </div>
+        <div class="bg-slate-800/60 p-4 rounded-lg border border-slate-700">
+          <strong class="text-orange-400 block mb-1">Vinculación Comunidad</strong>
+          Respuestas concretas a demandas locales mediante innovación y atención personalizada.
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL / GALERÍA DE PROYECTOS -->
+  <main class="max-w-6xl mx-auto px-4 -mt-6 flex-1 w-full pb-16">
+    
+    <!-- Barra de Búsqueda y Filtros -->
+    <div class="bg-white p-4 rounded-xl shadow-md mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
+      <div class="w-full md:w-96">
+        <input type="text" id="searchInput" placeholder="Buscar proyecto, alumnos o palabras clave..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
+      </div>
+      <div class="text-xs text-slate-500 font-medium">
+        Mostrando <span id="projectCount" class="font-bold text-slate-800">0</span> proyectos cargados
+      </div>
+    </div>
+
+    <!-- Grilla de Tarjetas -->
+    <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Las tarjetas se generan dinámicamente mediante JS -->
+    </div>
+
+  </main>
+
+  <footer class="bg-slate-900 text-slate-400 text-xs text-center py-6 border-t border-slate-800">
+    E.E.S.T. N°1 Bragado — Tecnicatura en Energías Renovables & Orientaciones Técnicas
+  </footer>
+
+  <!-- Script de lógica e integración con Supabase -->
+  <script>
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
+
+    const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    let todosLosProyectos = []; // Array global para almacenar los proyectos y filtrar localmente
+
+    async function cargarProyectos() {
+      const contenedor = document.getElementById('projectsGrid');
+      if (!contenedor) return;
+
+      contenedor.innerHTML = '<p class="text-slate-500 col-span-3">Cargando proyectos...</p>';
+
+      const { data: proyectos, error } = await _supabase
+        .from('proyectos')
+        .select('*')
+        .order('id', { ascending: false });
+
+      if (error) {
+        console.error('Error al cargar proyectos:', error);
+        contenedor.innerHTML = '<p class="text-red-500 col-span-3">Error al cargar los proyectos desde Supabase.</p>';
+        return;
+      }
+
+      todosLosProyectos = proyectos || [];
+      renderizarProyectos(todosLosProyectos);
+    }
+
+    function renderizarProyectos(lista) {
+      const contenedor = document.getElementById('projectsGrid');
+      const projectCount = document.getElementById('projectCount');
+      
+      if (projectCount) projectCount.innerText = lista.length;
+
+      if (!lista || lista.length === 0) {
+        contenedor.innerHTML = '<p class="text-slate-500 col-span-3">No se encontraron proyectos registrados.</p>';
+        return;
+      }
+
+      contenedor.innerHTML = lista.map(p => `
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+          <div>
+            <div class="flex items-center gap-3 mb-3">
+              ${p.logoUrlDirecto || p.logoUrl ? `<img src="${p.logoUrlDirecto || p.logoUrl}" class="w-12 h-12 object-cover rounded-lg border border-slate-100" />` : ''}
+              <div>
+                <h3 class="font-bold text-lg text-slate-800">${p.nombreProyecto || 'Sin nombre'}</h3>
+                <p class="text-xs text-slate-400">${p.slogan || 'Sin slogan'}</p>
+              </div>
+            </div>
+            <p class="text-sm text-slate-600 mb-2"><strong>Integrantes:</strong> ${p.integrantes || '-'}</p>
+            <p class="text-sm text-slate-600 mb-4"><strong>Ubicación:</strong> ${p.ubicacion || '-'}</p>
+          </div>
+
+          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+            <button onclick="eliminarProyecto(${p.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+              🗑️ Eliminar
+            </button>
+            <a href="index.html?id=${p.id}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
+              ✏️ Editar / Abrir
+            </a>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // Función para borrar un proyecto por su ID
+    async function eliminarProyecto(id) {
+      const confirmar = confirm("¿Estás seguro de que deseas eliminar este proyecto?");
+      if (!confirmar) return;
+
+      const { error } = await _supabase
+        .from('proyectos')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        alert("Error al eliminar el proyecto: " + error.message);
+      } else {
+        cargarProyectos(); // Recarga la lista de proyectos desde Supabase
+      }
+    }
+
+    // Evento de búsqueda en tiempo real
+    document.addEventListener('DOMContentLoaded', () => {
+      cargarProyectos();
+
+      const searchInput = document.getElementById('searchInput');
+      if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+          const termino = e.target.value.toLowerCase().trim();
+          const filtrados = todosLosProyectos.filter(p => {
+            const nombre = (p.nombreProyecto || '').toLowerCase();
+            const integrantes = (p.integrantes || '').toLowerCase();
+            const ubicacion = (p.ubicacion || '').toLowerCase();
+            const slogan = (p.slogan || '').toLowerCase();
+            
+            return nombre.includes(termino) || 
+                   integrantes.includes(termino) || 
+                   ubicacion.includes(termino) || 
+                   slogan.includes(termino);
+          });
+          renderizarProyectos(filtrados);
+        });
+      }
+    });
+  </script>

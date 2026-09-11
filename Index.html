@@ -1,0 +1,411 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Carga de Proyecto - Plan de Negocios</title>
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- SDK Oficial de Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
+
+  <!-- ENCABEZADO CON BOTÓN VOLVER -->
+  <header class="bg-slate-900 text-white py-6 shadow-md mb-8">
+    <div class="max-w-4xl mx-auto px-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-2xl font-bold">Plataforma de Emprendimientos Escolares</h1>
+        <p class="text-slate-400 text-sm">Formulario de Carga de Plan de Negocios</p>
+      </div>
+      <a href="portal.html" class="inline-flex items-center gap-1 bg-slate-800 hover:bg-slate-700 text-slate-300 text-sm font-medium px-4 py-2 rounded-lg transition border border-slate-700">
+        ← Volver al Portal
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-4">
+    
+    <!-- Navegación por Pestañas (Tabs) -->
+    <div class="flex border-b border-slate-300 bg-white rounded-t-xl overflow-hidden shadow-sm">
+      <button type="button" onclick="switchTab('tab-1')" id="btn-tab-1" class="tab-btn flex-1 py-4 px-2 text-center font-semibold text-sm border-b-2 border-orange-600 text-orange-600 bg-orange-50/50 transition">
+        1. Identidad y Marca
+      </button>
+      <button type="button" onclick="switchTab('tab-2')" id="btn-tab-2" class="tab-btn flex-1 py-4 px-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition">
+        2. Propuesta y Técnico
+      </button>
+      <button type="button" onclick="switchTab('tab-3')" id="btn-tab-3" class="tab-btn flex-1 py-4 px-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition">
+        3. Mercado y Validación
+      </button>
+      <button type="button" onclick="switchTab('tab-4')" id="btn-tab-4" class="tab-btn flex-1 py-4 px-2 text-center font-semibold text-sm border-b-2 border-transparent text-slate-500 hover:text-slate-700 transition">
+        4. Finanzas y Proyección
+      </button>
+    </div>
+
+    <!-- Formulario Principal (se agrega novalidate para evitar bloqueos del navegador) -->
+    <form id="businessPlanForm" novalidate class="bg-white p-6 md:p-8 rounded-b-xl shadow-md space-y-6">
+
+      <!-- PESTAÑA 1: IDENTIDAD Y MARCA (OBLIGATORIA) -->
+      <div id="tab-1" class="tab-content space-y-6">
+        <h2 class="text-xl font-bold text-slate-900 border-b pb-2">1. Identidad y Marca <span class="text-xs text-orange-600 font-normal">(Ficha Obligatoria)</span></h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Nombre del Proyecto / Marca *</label>
+            <input type="text" name="nombreProyecto" placeholder="Ej: Parrillas Rodríguez" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Slogan *</label>
+            <input type="text" name="slogan" placeholder="Ej: Tu parrilla, tu estilo" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Integrantes y Curso *</label>
+            <input type="text" name="integrantes" placeholder="Ej: Juan Pérez - 7° Año Renovables" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Ubicación / Localidad *</label>
+            <input type="text" name="ubicacion" placeholder="Ej: Bragado, Buenos Aires" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Link del Logo (Google Drive) *</label>
+          <input type="url" id="logoUrl" name="logoUrl" placeholder="https://drive.google.com/file/d/..." oninput="previewDriveImage(this.value, 'logoPreview')" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none" required>
+          <p class="text-xs text-slate-500 mt-1">Asegúrate de que el archivo esté configurado como "Cualquier persona con el enlace".</p>
+          <div class="mt-3">
+            <img id="logoPreview" src="" alt="Vista previa del logo" class="hidden h-24 object-contain border rounded-lg p-2 bg-slate-50">
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 2: PROPUESTA Y TÉCNICO (OPCIONAL/PROGRESIVO) -->
+      <div id="tab-2" class="tab-content space-y-6 hidden">
+        <h2 class="text-xl font-bold text-slate-900 border-b pb-2">2. Propuesta y Aspectos Técnicos</h2>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Propuesta de Valor</label>
+          <textarea name="propuestaValor" rows="3" placeholder="¿Qué hace único a tu producto? Ej: Parrillas totalmente personalizadas en medidas y estructuras..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Ficha Técnica y Materiales</label>
+          <textarea name="fichaTecnica" rows="3" placeholder="Detalla materiales empleados (ej. Hierro ángulo 1/8, planchuelas, pintura alta temperatura)..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Proceso de Fabricación (Pasos clave)</label>
+          <textarea name="procesoFabricacion" rows="3" placeholder="1. Relevamiento, 2. Corte, 3. Armado/Soldadura, 4. Terminación..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Link Foto Prototipo/Producto (Drive)</label>
+            <input type="url" name="fotoProductoUrl" placeholder="https://drive.google.com/file/d/..." oninput="previewDriveImage(this.value, 'productPreview')" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+            <div class="mt-2">
+              <img id="productPreview" src="" alt="Vista previa del producto" class="hidden h-24 object-contain border rounded-lg p-2 bg-slate-50">
+            </div>
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Link Video Pitch / Fabricación (Drive/YouTube)</label>
+            <input type="url" name="videoUrl" placeholder="https://drive.google.com/file/d/... o YouTube" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 3: MERCADO Y VALIDACIÓN (OPCIONAL/PROGRESIVO) -->
+      <div id="tab-3" class="tab-content space-y-6 hidden">
+        <h2 class="text-xl font-bold text-slate-900 border-b pb-2">3. Mercado y Validación</h2>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Público Objetivo (Segmento de Cliente)</label>
+          <textarea name="publicoObjetivo" rows="2" placeholder="Ej: Hogares con patio/quincho, amantes del asado, gastronomía local..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none"></textarea>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Competidores Clave</label>
+          <textarea name="competidores" rows="2" placeholder="Menciona competidores directos/indirectos y sus precios de referencia..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none"></textarea>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Canales de Venta y Promoción</label>
+            <input type="text" name="canalesVenta" placeholder="Ej: Instagram, WhatsApp, Boca a boca" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Link a Encuesta o Informe de Resultados</label>
+            <input type="url" name="encuestaUrl" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+        </div>
+      </div>
+
+      <!-- PESTAÑA 4: FINANZAS Y PROYECCIÓN (OPCIONAL/PROGRESIVO) -->
+      <div id="tab-4" class="tab-content space-y-6 hidden">
+        <h2 class="text-xl font-bold text-slate-900 border-b pb-2">4. Finanzas y Cotización</h2>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm font-medium mb-1">Inversión Inicial Estimada ($)</label>
+            <input type="number" name="inversionInicial" placeholder="705000" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+          <div>
+            <label class="block text-sm font-medium mb-1">Utilidad Mensual Objetivo ($)</label>
+            <input type="number" name="utilidadObjetivo" placeholder="500000" class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none">
+          </div>
+        </div>
+
+        <!-- Calculadora dinámica de cotización -->
+        <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
+          <h3 class="font-semibold text-slate-800 text-sm uppercase tracking-wider">Simulador de Cotización por Unidad</h3>
+          
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Materiales ($)</label>
+              <input type="number" id="costoMateriales" name="costoMateriales" value="180000" oninput="calcularPrecio()" class="w-full border rounded p-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Consumibles ($)</label>
+              <input type="number" id="costoConsumibles" name="costoConsumibles" value="20000" oninput="calcularPrecio()" class="w-full border rounded p-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Mano de Obra ($)</label>
+              <input type="number" id="costoManoObra" name="costoManoObra" value="45000" oninput="calcularPrecio()" class="w-full border rounded p-2 text-sm">
+            </div>
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Gastos/Logística ($)</label>
+              <input type="number" id="costoGastos" name="costoGastos" value="15000" oninput="calcularPrecio()" class="w-full border rounded p-2 text-sm">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-200">
+            <div>
+              <label class="block text-xs font-medium text-slate-600 mb-1">Margen de Ganancia Deseado ($)</label>
+              <input type="number" id="margenGanancia" name="margenGanancia" value="100000" oninput="calcularPrecio()" class="w-full border rounded p-2 text-sm font-semibold text-green-700">
+            </div>
+            <div class="flex flex-col justify-end">
+              <span class="text-xs text-slate-500">Precio Sugerido de Venta:</span>
+              <span id="precioSugerido" class="text-xl font-bold text-slate-900">$360.000</span>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium mb-1">Punto de Equilibrio Estimado / Criterio de Cobertura</label>
+          <textarea name="puntoEquilibrio" rows="2" placeholder="Ej: Se requieren vender al menos 5 unidades mensuales con un margen de $100.000 para alcanzar la utilidad objetivo..." class="w-full border border-slate-300 rounded-lg p-2.5 focus:ring-2 focus:ring-orange-500 focus:outline-none"></textarea>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN Y CANCELAR -->
+      <div class="flex justify-between items-center pt-4 border-t border-slate-200">
+        <div class="flex items-center gap-3">
+          <a href="portal.html" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition">
+            Cancelar / Volver
+          </a>
+          <button type="button" id="prevBtn" onclick="navigateTab(-1)" class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 hidden">
+            Anterior
+          </button>
+        </div>
+
+        <button type="button" id="nextBtn" onclick="navigateTab(1)" class="px-5 py-2.5 text-sm font-medium text-white bg-orange-600 rounded-lg hover:bg-orange-700 ml-auto">
+          Siguiente
+        </button>
+        <button type="submit" id="submitBtn" class="px-6 py-2.5 text-sm font-semibold text-white bg-emerald-600 rounded-lg hover:bg-emerald-700 ml-auto hidden">
+          Guardar Proyecto
+        </button>
+      </div>
+
+    </form>
+  </main><script>
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
+
+    const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentTabIndex = 1;
+    const totalTabs = 4;
+
+    // Detectar si venimos a editar un proyecto existente
+    const urlParams = new URLSearchParams(window.location.search);
+    const projectId = urlParams.get('id');
+
+    // Cargar datos al abrir la página si hay un ID en la URL
+    document.addEventListener('DOMContentLoaded', async () => {
+      if (projectId) {
+        document.querySelector('h1').innerText = "Editar Plan de Negocios";
+        document.getElementById('submitBtn').innerText = "Actualizar Proyecto";
+        await cargarDatosProyecto(projectId);
+      }
+    });
+
+    async function cargarDatosProyecto(id) {
+      const { data, error } = await supabaseClient
+        .from('proyectos')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) {
+        alert("Error al cargar los datos del proyecto: " + error.message);
+        return;
+      }
+
+      if (data) {
+        const form = document.getElementById('businessPlanForm');
+        
+        // Rellenar dinámicamente cada campo del formulario con el valor guardado
+        Object.keys(data).forEach(key => {
+          const input = form.querySelector(`[name="${key}"]`);
+          if (input) {
+            input.value = data[key] || '';
+          }
+        });
+
+        // Actualizar previsualizaciones de imágenes si existen
+        if (data.logoUrl) previewDriveImage(data.logoUrl, 'logoPreview');
+        if (data.fotoProductoUrl) previewDriveImage(data.fotoProductoUrl, 'productPreview');
+        
+        // Recalcular cotización
+        calcularPrecio();
+      }
+    }
+
+    function validarTab1() {
+      const tab1 = document.getElementById('tab-1');
+      const requiredInputs = tab1.querySelectorAll('input[required]');
+      for (let input of requiredInputs) {
+        if (!input.value.trim()) {
+          switchTab('tab-1');
+          input.reportValidity();
+          return false;
+        }
+      }
+      return true;
+    }
+
+    function switchTab(tabId) {
+      const targetIndex = parseInt(tabId.replace('tab-', ''));
+      if (currentTabIndex === 1 && targetIndex > 1) {
+        if (!validarTab1()) return;
+      }
+      currentTabIndex = targetIndex;
+      updateUI();
+    }
+
+    function navigateTab(direction) {
+      if (currentTabIndex === 1 && direction === 1) {
+        if (!validarTab1()) return;
+      }
+      currentTabIndex += direction;
+      if (currentTabIndex < 1) currentTabIndex = 1;
+      if (currentTabIndex > totalTabs) currentTabIndex = totalTabs;
+      updateUI();
+    }
+
+    function updateUI() {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.classList.remove('border-orange-600', 'text-orange-600', 'bg-orange-50/50');
+        btn.classList.add('border-transparent', 'text-slate-500');
+      });
+
+      document.getElementById(`tab-${currentTabIndex}`).classList.remove('hidden');
+      
+      const activeBtn = document.getElementById(`btn-tab-${currentTabIndex}`);
+      activeBtn.classList.remove('border-transparent', 'text-slate-500');
+      activeBtn.classList.add('border-orange-600', 'text-orange-600', 'bg-orange-50/50');
+
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      const submitBtn = document.getElementById('submitBtn');
+
+      if (currentTabIndex === 1) prevBtn.classList.add('hidden');
+      else prevBtn.classList.remove('hidden');
+
+      if (currentTabIndex === totalTabs) {
+        nextBtn.classList.add('hidden');
+        submitBtn.classList.remove('hidden');
+      } else {
+        nextBtn.classList.remove('hidden');
+        submitBtn.classList.add('hidden');
+      }
+    }
+
+    function convertDriveUrl(url) {
+      if (!url) return '';
+      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      if (match && match[1]) {
+        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+      }
+      return url;
+    }
+
+    function previewDriveImage(url, imgElementId) {
+      const imgEl = document.getElementById(imgElementId);
+      const directUrl = convertDriveUrl(url);
+      
+      if (directUrl) {
+        imgEl.src = directUrl;
+        imgEl.classList.remove('hidden');
+      } else {
+        imgEl.src = '';
+        imgEl.classList.add('hidden');
+      }
+    }
+
+    function calcularPrecio() {
+      const mat = parseFloat(document.getElementById('costoMateriales').value) || 0;
+      const con = parseFloat(document.getElementById('costoConsumibles').value) || 0;
+      const mo = parseFloat(document.getElementById('costoManoObra').value) || 0;
+      const gas = parseFloat(document.getElementById('costoGastos').value) || 0;
+      const mar = parseFloat(document.getElementById('margenGanancia').value) || 0;
+
+      const total = mat + con + mo + gas + mar;
+      document.getElementById('precioSugerido').innerText = `$${total.toLocaleString('es-AR')}`;
+    }
+
+    // GUARDAR O ACTUALIZAR EN SUPABASE
+    document.getElementById('businessPlanForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+
+      if (!validarTab1()) return;
+
+      const submitBtn = document.getElementById('submitBtn');
+      submitBtn.innerText = "Guardando...";
+      submitBtn.disabled = true;
+
+      const formData = new FormData(this);
+      const data = Object.fromEntries(formData.entries());
+
+      data.logoUrlDirecto = data.logoUrl ? convertDriveUrl(data.logoUrl) : '';
+      data.fotoProductoUrlDirecto = data.fotoProductoUrl ? convertDriveUrl(data.fotoProductoUrl) : '';
+
+      let response;
+
+      if (projectId) {
+        // SI EXISTE ID EN LA URL -> ACTUALIZA EL REGISTRO EXISTENTE (UPDATE)
+        response = await supabaseClient
+          .from('proyectos')
+          .update(data)
+          .eq('id', projectId);
+      } else {
+        // SI NO EXISTE ID -> CREA UN NUEVO REGISTRO (INSERT)
+        response = await supabaseClient
+          .from('proyectos')
+          .insert([data]);
+      }
+
+      if (response.error) {
+        console.error("Error en Supabase:", response.error);
+        alert("Error al guardar cambios: " + response.error.message);
+        submitBtn.innerText = projectId ? "Actualizar Proyecto" : "Guardar Proyecto";
+        submitBtn.disabled = false;
+      } else {
+        alert(projectId ? '¡Proyecto actualizado correctamente!' : '¡Proyecto guardado exitosamente!');
+        window.location.href = 'portal.html';
+      }
+    });
+  </script>
+</body>
+</html>
