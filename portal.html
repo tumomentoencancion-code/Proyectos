@@ -73,13 +73,16 @@
     E.E.S.T. N°1 Bragado — Tecnicatura en Energías Renovables & Orientaciones Técnicas
   </footer>
 
-  <!-- Script de lógica e integración con Supabase -->
+<!-- Script de lógica e integración con Supabase -->
   <script>
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
 
+    // CONTRASEÑA DE ADMINISTRADOR PARA ELIMINAR PROYECTOS
+    const ADMIN_PASSWORD = "tecnica1admin"; // Puedes cambiar esta contraseña por la que prefieras
+
     const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let todosLosProyectos = []; // Array global para almacenar los proyectos y filtrar localmente
+    let todosLosProyectos = [];
 
     async function cargarProyectos() {
       const contenedor = document.getElementById('projectsGrid');
@@ -139,11 +142,24 @@
       `).join('');
     }
 
-    // Función para borrar un proyecto por su ID
+    // Función protegida para borrar un proyecto por su ID
     async function eliminarProyecto(id) {
-      const confirmar = confirm("¿Estás seguro de que deseas eliminar este proyecto?");
+      // 1. Solicita la clave de administrador
+      const claveIngresada = prompt("Acceso restringido: Ingrese la contraseña de administrador para eliminar:");
+      
+      if (claveIngresada === null) return; // El usuario canceló la ventana
+
+      // 2. Valida la clave
+      if (claveIngresada !== ADMIN_PASSWORD) {
+        alert("🔒 Contraseña incorrecta. No tiene permisos para eliminar este proyecto.");
+        return;
+      }
+
+      // 3. Confirmación final antes de borrar
+      const confirmar = confirm("Contraseña correcta. ¿Estás seguro de que deseas eliminar permanentemente este proyecto?");
       if (!confirmar) return;
 
+      // 4. Proceso de eliminación en Supabase
       const { error } = await _supabase
         .from('proyectos')
         .delete()
@@ -152,7 +168,8 @@
       if (error) {
         alert("Error al eliminar el proyecto: " + error.message);
       } else {
-        cargarProyectos(); // Recarga la lista de proyectos desde Supabase
+        alert("✅ Proyecto eliminado con éxito.");
+        cargarProyectos(); // Recarga la lista actualizada
       }
     }
 
