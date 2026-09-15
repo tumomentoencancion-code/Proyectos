@@ -134,9 +134,9 @@
             <button onclick="eliminarProyecto(${p.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
               🗑️ Eliminar
             </button>
-            <a href="formulario.html?id=${p.id}" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1">
-              ✏️ Editar / Abrir
-            </a>
+            <button onclick="editarProyecto(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors">
+  ✏️ Editar / Abrir
+</button>
           </div>
         </div>
       `).join('');
@@ -173,6 +173,14 @@
       }
     }
 
+    function editarProyecto(id) {
+  const clave = prompt("Ingresá la contraseña de administrador para editar:");
+  if (clave === ADMIN_PASSWORD) {
+    window.location.href = `formulario.html?id=${id}`;
+  } else if (clave !== null) {
+    alert("Contraseña incorrecta. No tenés permisos para editar este proyecto.");
+  }
+}
     // Evento de búsqueda en tiempo real
     document.addEventListener('DOMContentLoaded', () => {
       cargarProyectos();
