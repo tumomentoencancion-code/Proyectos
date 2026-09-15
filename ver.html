@@ -16,7 +16,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 antialiased min-h-screen pb-12">
 
-  <!-- Barra de Herramientas Superior (Oculta al imprimir) -->
+  <!-- Barra de Herramientas Superior -->
   <header class="no-print bg-slate-900 text-white py-4 px-6 mb-8 shadow-md">
     <div class="max-w-4xl mx-auto flex justify-between items-center">
       <a href="index.html" class="text-sm font-medium text-slate-300 hover:text-white flex items-center gap-1">
@@ -63,7 +63,7 @@
           <p id="pDescripcion" class="text-slate-700 leading-relaxed whitespace-pre-line text-sm"></p>
         </section>
 
-        <!-- Grid de Detalles Técnicos -->
+        <!-- Detalles Técnicos -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
           <div>
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Problema que Resuelve</h3>
@@ -94,7 +94,7 @@
 
       </div>
 
-      <!-- Pie de página Institucional -->
+      <!-- Pie de página -->
       <footer class="bg-slate-100 p-4 text-center text-xs text-slate-500 border-t border-slate-200">
         Escuela de Educación Secundaria Técnica N°1 — Portal de Emprendimientos Estudiantiles
       </footer>
@@ -112,48 +112,55 @@
 
     async function cargarFicha() {
       if (!projectId) {
-        document.getElementById('loading').innerText = "ID de proyecto no especificado.";
+        document.getElementById('loading').innerText = "ID de proyecto no especificado en la URL.";
         return;
       }
 
+      // Consulta de lista completa para evitar problemas con RLS o restricción de id tipo texto/número
       const { data, error } = await supabaseClient
         .from('proyectos')
-        .select('*')
-        .eq('id', projectId)
-        .single();
+        .select('*');
 
       if (error || !data) {
-        document.getElementById('loading').innerText = "Error al cargar los datos del proyecto.";
+        console.error("Error de Supabase:", error);
+        document.getElementById('loading').innerText = "Error al conectar con la base de datos.";
+        return;
+      }
+
+      // Buscar el proyecto que coincida con el id (como string o número)
+      const proyecto = data.find(p => String(p.id) === String(projectId));
+
+      if (!proyecto) {
+        document.getElementById('loading').innerText = "Proyecto no encontrado (ID: " + projectId + ").";
         return;
       }
 
       // Inyectar datos en el HTML
-      document.getElementById('pNombre').innerText = data.nombreProyecto || 'Sin nombre';
-      document.getElementById('pSlogan').innerText = data.slogan || '';
-      document.getElementById('pUbicacion').innerText = data.ubicacion || 'E.E.S.T. N°1';
-      document.getElementById('pIntegrantes').innerText = data.integrantes || 'Sin datos';
-      document.getElementById('pDescripcion').innerText = data.descripcion || 'Sin descripción';
-      document.getElementById('pProblema').innerText = data.problema || '-';
-      document.getElementById('pPropuesta').innerText = data.propuestaValor || '-';
-      document.getElementById('pProduccion').innerText = data.produccion || '-';
-      document.getElementById('pFinanciamiento').innerText = data.financiamiento || '-';
+      document.getElementById('pNombre').innerText = proyecto.nombreProyecto || proyecto.nombre || 'Sin nombre';
+      document.getElementById('pSlogan').innerText = proyecto.slogan || '';
+      document.getElementById('pUbicacion').innerText = proyecto.ubicacion || 'E.E.S.T. N°1';
+      document.getElementById('pIntegrantes').innerText = proyecto.integrantes || 'Sin datos';
+      document.getElementById('pDescripcion').innerText = proyecto.descripcion || 'Sin descripción';
+      document.getElementById('pProblema').innerText = proyecto.problema || '-';
+      document.getElementById('pPropuesta').innerText = proyecto.propuestaValor || proyecto.propuesta || '-';
+      document.getElementById('pProduccion').innerText = proyecto.produccion || '-';
+      document.getElementById('pFinanciamiento').innerText = proyecto.financiamiento || '-';
 
-      // Renderizar Multimedia (Imágenes / Video Drive)
-      if (data.multimedia) {
+      // Renderizar Multimedia
+      const mediaUrl = proyecto.multimedia || proyecto.imagen || proyecto.video;
+      if (mediaUrl) {
         const container = document.getElementById('mediaContainer');
         document.getElementById('secMultimedia').classList.remove('hidden');
 
-        if (data.multimedia.includes('drive.google.com')) {
-          const driveIdMatch = data.multimedia.match(/\/d\/([a-zA-Z0-9_-]+)/) || data.multimedia.match(/id=([a-zA-Z0-9_-]+)/);
+        if (mediaUrl.includes('drive.google.com')) {
+          const driveIdMatch = mediaUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || mediaUrl.match(/id=([a-zA-Z0-9_-]+)/);
           if (driveIdMatch && driveIdMatch[1]) {
-            const driveId = driveIdMatch[1];
-            // Renderiza en vista previa responsiva
-            container.innerHTML = `<iframe src="https://drive.google.com/file/d/${driveId}/preview" class="w-full h-80 rounded-xl" allow="autoplay"></iframe>`;
+            container.innerHTML = `<iframe src="https://drive.google.com/file/d/${driveIdMatch[1]}/preview" class="w-full h-80 rounded-xl" allow="autoplay"></iframe>`;
           } else {
-            container.innerHTML = `<a href="${data.multimedia}" target="_blank" class="p-4 block text-blue-600 underline">Ver archivo adjunto</a>`;
+            container.innerHTML = `<a href="${mediaUrl}" target="_blank" class="p-4 block text-blue-600 underline">Ver archivo adjunto</a>`;
           }
         } else {
-          container.innerHTML = `<img src="${data.multimedia}" class="max-h-96 mx-auto rounded-xl object-contain" alt="Imagen del proyecto">`;
+          container.innerHTML = `<img src="${mediaUrl}" class="max-h-96 mx-auto rounded-xl object-contain p-2" alt="Imagen del proyecto">`;
         }
       }
 
