@@ -73,16 +73,29 @@
     E.E.S.T. N°1 Bragado — Tecnicatura en Energías Renovables & Orientaciones Técnicas
   </footer>
 
-<!-- Script de lógica e integración con Supabase -->
+  <!-- Script de lógica e integración con Supabase -->
   <script>
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
 
-    // CONTRASEÑA DE ADMINISTRADOR PARA ELIMINAR PROYECTOS
-    const ADMIN_PASSWORD = "tecnica1admin"; // Puedes cambiar esta contraseña por la que prefieras
+    // CONTRASEÑA DE ADMINISTRADOR PARA ELIMINAR Y EDITAR PROYECTOS
+    const ADMIN_PASSWORD = "tecnica1admin";
 
     const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
     let todosLosProyectos = [];
+
+    // Función auxiliar para formatear imágenes de Google Drive
+    function convertirLinkDrive(url) {
+      if (!url) return '';
+      url = url.trim();
+      const regexDrive = /(?:https?:\/\/)?(?:drive|docs)\.google\.com\/(?:(?:file\/d\/|uc\?(?:.*&)?id=)|(?:.*\/d\/))([a-zA-Z0-9_-]+)/;
+      const match = url.match(regexDrive);
+
+      if (match && match[1]) {
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+      }
+      return url;
+    }
 
     async function cargarProyectos() {
       const contenedor = document.getElementById('projectsGrid');
@@ -116,55 +129,57 @@
         return;
       }
 
-      contenedor.innerHTML = lista.map(p => `
-        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-          <div>
-            <div class="flex items-center gap-3 mb-3">
-              ${p.logoUrlDirecto || p.logoUrl ? `<img src="${p.logoUrlDirecto || p.logoUrl}" class="w-12 h-12 object-cover rounded-lg border border-slate-100" />` : ''}
-              <div>
-                <h3 class="font-bold text-lg text-slate-800">${p.nombreProyecto || 'Sin nombre'}</h3>
-                <p class="text-xs text-slate-400">${p.slogan || 'Sin slogan'}</p>
+      contenedor.innerHTML = lista.map(p => {
+        // Seleccionar URL directa o formatear URL común de Drive
+        const rawLogo = p.logoUrlDirecto || p.logoUrl || p.imagen || p.fotoProductoUrl;
+        const logoUrl = convertirLinkDrive(rawLogo);
+
+        return `
+          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
+            <div>
+              <div class="flex items-center gap-3 mb-3">
+                ${logoUrl ? `<img src="${logoUrl}" referrerpolicy="no-referrer" class="w-12 h-12 object-contain rounded-lg border border-slate-100 bg-slate-50 p-1" alt="Logo de ${p.nombreProyecto || 'Proyecto'}" />` : ''}
+                <div>
+                  <h3 class="font-bold text-lg text-slate-800">${p.nombreProyecto || 'Sin nombre'}</h3>
+                  <p class="text-xs text-slate-400">${p.slogan || 'Sin slogan'}</p>
+                </div>
+              </div>
+              <p class="text-sm text-slate-600 mb-2"><strong>Integrantes:</strong> ${p.integrantes || '-'}</p>
+              <p class="text-sm text-slate-600 mb-4"><strong>Ubicación:</strong> ${p.ubicacion || '-'}</p>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+              <a href="ver.html?id=${p.id}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-1">
+                👁️ Ver Ficha
+              </a>
+              <div class="flex gap-1.5">
+                <button onclick="editarProyecto(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors">
+                  ✏️ Editar
+                </button>
+                <button onclick="eliminarProyecto(${p.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-2 rounded-lg font-medium transition-colors">
+                  🗑️
+                </button>
               </div>
             </div>
-            <p class="text-sm text-slate-600 mb-2"><strong>Integrantes:</strong> ${p.integrantes || '-'}</p>
-            <p class="text-sm text-slate-600 mb-4"><strong>Ubicación:</strong> ${p.ubicacion || '-'}</p>
           </div>
-
-          <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-  <a href="ver.html?id=${p.id}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-1">
-    👁️ Ver Ficha
-  </a>
-  <div class="flex gap-1.5">
-    <button onclick="editarProyecto(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors">
-      ✏️ Editar
-    </button>
-    <button onclick="eliminarProyecto(${p.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-2 rounded-lg font-medium transition-colors">
-      🗑️
-    </button>
-  </div>
-</div>
-        </div>
-      `).join('');
+        `;
+      }).join('');
     }
 
     // Función protegida para borrar un proyecto por su ID
     async function eliminarProyecto(id) {
-      // 1. Solicita la clave de administrador
       const claveIngresada = prompt("Acceso restringido: Ingrese la contraseña de administrador para eliminar:");
       
-      if (claveIngresada === null) return; // El usuario canceló la ventana
+      if (claveIngresada === null) return;
 
-      // 2. Valida la clave
       if (claveIngresada !== ADMIN_PASSWORD) {
         alert("🔒 Contraseña incorrecta. No tiene permisos para eliminar este proyecto.");
         return;
       }
 
-      // 3. Confirmación final antes de borrar
       const confirmar = confirm("Contraseña correcta. ¿Estás seguro de que deseas eliminar permanentemente este proyecto?");
       if (!confirmar) return;
 
-      // 4. Proceso de eliminación en Supabase
       const { error } = await _supabase
         .from('proyectos')
         .delete()
@@ -174,18 +189,19 @@
         alert("Error al eliminar el proyecto: " + error.message);
       } else {
         alert("✅ Proyecto eliminado con éxito.");
-        cargarProyectos(); // Recarga la lista actualizada
+        cargarProyectos();
       }
     }
 
     function editarProyecto(id) {
-  const clave = prompt("Ingresá la contraseña de administrador para editar:");
-  if (clave === ADMIN_PASSWORD) {
-    window.location.href = `formulario.html?id=${id}`;
-  } else if (clave !== null) {
-    alert("Contraseña incorrecta. No tenés permisos para editar este proyecto.");
-  }
-}
+      const clave = prompt("Ingresá la contraseña de administrador para editar:");
+      if (clave === ADMIN_PASSWORD) {
+        window.location.href = `formulario.html?id=${id}`;
+      } else if (clave !== null) {
+        alert("Contraseña incorrecta. No tenés permisos para editar este proyecto.");
+      }
+    }
+
     // Evento de búsqueda en tiempo real
     document.addEventListener('DOMContentLoaded', () => {
       cargarProyectos();
@@ -195,7 +211,7 @@
         searchInput.addEventListener('input', (e) => {
           const termino = e.target.value.toLowerCase().trim();
           const filtrados = todosLosProyectos.filter(p => {
-            const nombre = (p.nombreProyecto || '').toLowerCase();
+            const nombre = (p.nombreProyecto || p.nombre || '').toLowerCase();
             const integrantes = (p.integrantes || '').toLowerCase();
             const ubicacion = (p.ubicacion || '').toLowerCase();
             const slogan = (p.slogan || '').toLowerCase();
@@ -210,3 +226,5 @@
       }
     });
   </script>
+</body>
+</html>
