@@ -42,7 +42,7 @@
       </button>
     </div>
 
-    <!-- Formulario Principal (se agrega novalidate para evitar bloqueos del navegador) -->
+    <!-- Formulario Principal -->
     <form id="businessPlanForm" novalidate class="bg-white p-6 md:p-8 rounded-b-xl shadow-md space-y-6">
 
       <!-- PESTAÑA 1: IDENTIDAD Y MARCA (OBLIGATORIA) -->
@@ -81,7 +81,7 @@
         </div>
       </div>
 
-      <!-- PESTAÑA 2: PROPUESTA Y TÉCNICO (OPCIONAL/PROGRESIVO) -->
+      <!-- PESTAÑA 2: PROPUESTA Y TÉCNICO -->
       <div id="tab-2" class="tab-content space-y-6 hidden">
         <h2 class="text-xl font-bold text-slate-900 border-b pb-2">2. Propuesta y Aspectos Técnicos</h2>
 
@@ -115,7 +115,7 @@
         </div>
       </div>
 
-      <!-- PESTAÑA 3: MERCADO Y VALIDACIÓN (OPCIONAL/PROGRESIVO) -->
+      <!-- PESTAÑA 3: MERCADO Y VALIDACIÓN -->
       <div id="tab-3" class="tab-content space-y-6 hidden">
         <h2 class="text-xl font-bold text-slate-900 border-b pb-2">3. Mercado y Validación</h2>
 
@@ -141,7 +141,7 @@
         </div>
       </div>
 
-      <!-- PESTAÑA 4: FINANZAS Y PROYECCIÓN (OPCIONAL/PROGRESIVO) -->
+      <!-- PESTAÑA 4: FINANZAS Y PROYECCIÓN -->
       <div id="tab-4" class="tab-content space-y-6 hidden">
         <h2 class="text-xl font-bold text-slate-900 border-b pb-2">4. Finanzas y Cotización</h2>
 
@@ -156,7 +156,7 @@
           </div>
         </div>
 
-        <!-- Calculadora dinámica de cotización -->
+        <!-- Calculadora de cotización -->
         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 space-y-4">
           <h3 class="font-semibold text-slate-800 text-sm uppercase tracking-wider">Simulador de Cotización por Unidad</h3>
           
@@ -197,10 +197,10 @@
         </div>
       </div>
 
-      <!-- BOTONES DE ACCIÓN Y CANCELAR -->
+      <!-- BOTONES DE ACCIÓN -->
       <div class="flex justify-between items-center pt-4 border-t border-slate-200">
         <div class="flex items-center gap-3">
-          <a href="portal.html" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition">
+          <a href="index.html" class="px-4 py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 bg-slate-100 rounded-lg hover:bg-slate-200 transition">
             Cancelar / Volver
           </a>
           <button type="button" id="prevBtn" onclick="navigateTab(-1)" class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-slate-100 rounded-lg hover:bg-slate-200 hidden">
@@ -217,7 +217,9 @@
       </div>
 
     </form>
-  </main><script>
+  </main>
+
+  <script>
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
 
@@ -226,11 +228,9 @@
     let currentTabIndex = 1;
     const totalTabs = 4;
 
-    // Detectar si venimos a editar un proyecto existente
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
 
-    // Cargar datos al abrir la página si hay un ID en la URL
     document.addEventListener('DOMContentLoaded', async () => {
       if (projectId) {
         document.querySelector('h1').innerText = "Editar Plan de Negocios";
@@ -254,7 +254,6 @@
       if (data) {
         const form = document.getElementById('businessPlanForm');
         
-        // Rellenar dinámicamente cada campo del formulario con el valor guardado
         Object.keys(data).forEach(key => {
           const input = form.querySelector(`[name="${key}"]`);
           if (input) {
@@ -262,11 +261,9 @@
           }
         });
 
-        // Actualizar previsualizaciones de imágenes si existen
         if (data.logoUrl) previewDriveImage(data.logoUrl, 'logoPreview');
         if (data.fotoProductoUrl) previewDriveImage(data.fotoProductoUrl, 'productPreview');
         
-        // Recalcular cotización
         calcularPrecio();
       }
     }
@@ -332,18 +329,21 @@
       }
     }
 
-    function convertDriveUrl(url) {
+    function convertirLinkDrive(url) {
       if (!url) return '';
-      const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+      url = url.trim();
+      const regexDrive = /(?:https?:\/\/)?(?:drive|docs)\.google\.com\/(?:(?:file\/d\/|uc\?(?:.*&)?id=)|(?:.*\/d\/))([a-zA-Z0-9_-]+)/;
+      const match = url.match(regexDrive);
+
       if (match && match[1]) {
-        return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
       }
       return url;
     }
 
     function previewDriveImage(url, imgElementId) {
       const imgEl = document.getElementById(imgElementId);
-      const directUrl = convertDriveUrl(url);
+      const directUrl = convertirLinkDrive(url);
       
       if (directUrl) {
         imgEl.src = directUrl;
@@ -364,28 +364,7 @@
       const total = mat + con + mo + gas + mar;
       document.getElementById('precioSugerido').innerText = `$${total.toLocaleString('es-AR')}`;
     }
-// Función para transformar URLs de Google Drive a enlaces de imagen directa
-function convertirLinkDrive(url) {
-    if (!url) return '';
-    
-    // Limpiar espacios en blanco al inicio y al final
-    url = url.trim();
 
-    // Expresión regular para extraer la ID de diferentes formatos de URL de Google Drive
-    // Soporta: /file/d/ID/view, /uc?id=ID, /d/ID, id=ID, etc.
-    const regexDrive = /(?:https?:\/\/)?(?:drive|docs)\.google\.com\/(?:(?:file\/d\/|uc\?(?:.*&)?id=)|(?:.*\/d\/))([a-zA-Z0-9_-]+)/;
-    const match = url.match(regexDrive);
-
-    if (match && match[1]) {
-        const fileId = match[1];
-        // Retornamos el formato de thumbnail con alta resolución (w1000 = ancho 1000px)
-        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
-    }
-
-    // Si no es un link de Google Drive, devuelve la URL original intacta
-    return url;
-}
-    // GUARDAR O ACTUALIZAR EN SUPABASE
     document.getElementById('businessPlanForm').addEventListener('submit', async function(e) {
       e.preventDefault();
 
@@ -398,19 +377,17 @@ function convertirLinkDrive(url) {
       const formData = new FormData(this);
       const data = Object.fromEntries(formData.entries());
 
-      data.logoUrlDirecto = data.logoUrl ? convertDriveUrl(data.logoUrl) : '';
-      data.fotoProductoUrlDirecto = data.fotoProductoUrl ? convertDriveUrl(data.fotoProductoUrl) : '';
+      data.logoUrlDirecto = data.logoUrl ? convertirLinkDrive(data.logoUrl) : '';
+      data.fotoProductoUrlDirecto = data.fotoProductoUrl ? convertirLinkDrive(data.fotoProductoUrl) : '';
 
       let response;
 
       if (projectId) {
-        // SI EXISTE ID EN LA URL -> ACTUALIZA EL REGISTRO EXISTENTE (UPDATE)
         response = await supabaseClient
           .from('proyectos')
           .update(data)
           .eq('id', projectId);
       } else {
-        // SI NO EXISTE ID -> CREA UN NUEVO REGISTRO (INSERT)
         response = await supabaseClient
           .from('proyectos')
           .insert([data]);
