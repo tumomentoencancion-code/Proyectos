@@ -37,10 +37,15 @@
       <!-- Encabezado Institucional -->
       <div class="bg-slate-900 text-white p-6 sm:p-8 border-b-4 border-orange-500">
         <div class="flex flex-col sm:flex-row justify-between sm:items-start gap-4">
-          <div>
-            <span class="text-xs uppercase tracking-widest text-orange-400 font-semibold">E.E.S.T. N°1 — Ficha Técnica</span>
-            <h1 id="pNombre" class="text-3xl font-bold mt-1 text-white"></h1>
-            <p id="pSlogan" class="text-slate-300 italic text-sm mt-1"></p>
+          <div class="flex items-center gap-4">
+            <div id="logoContainer" class="hidden">
+              <img id="pLogo" src="" alt="Logo del Proyecto" referrerpolicy="no-referrer" class="w-16 h-16 object-contain rounded-lg bg-white p-1">
+            </div>
+            <div>
+              <span class="text-xs uppercase tracking-widest text-orange-400 font-semibold">E.E.S.T. N°1 — Ficha Técnica</span>
+              <h1 id="pNombre" class="text-3xl font-bold mt-1 text-white"></h1>
+              <p id="pSlogan" class="text-slate-300 italic text-sm mt-1"></p>
+            </div>
           </div>
           <div class="text-right text-xs text-slate-400 border-l border-slate-700 pl-4">
             <p><strong>Ubicación:</strong> <span id="pUbicacion" class="text-slate-200"></span></p>
@@ -57,39 +62,39 @@
           <p id="pIntegrantes" class="text-base font-semibold text-slate-800"></p>
         </section>
 
-        <!-- Descripción -->
+        <!-- Descripción / Propuesta de Valor -->
         <section>
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">Descripción del Proyecto</h2>
-          <p id="pDescripcion" class="text-slate-700 leading-relaxed whitespace-pre-line text-sm"></p>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-2">Propuesta de Valor</h2>
+          <p id="pPropuesta" class="text-slate-700 leading-relaxed whitespace-pre-line text-sm"></p>
         </section>
 
         <!-- Detalles Técnicos -->
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Problema que Resuelve</h3>
-            <p id="pProblema" class="text-sm text-slate-700"></p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Ficha Técnica y Materiales</h3>
+            <p id="pFichaTecnica" class="text-sm text-slate-700 whitespace-pre-line"></p>
           </div>
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Propuesta de Valor</h3>
-            <p id="pPropuesta" class="text-sm text-slate-700"></p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Proceso de Fabricación</h3>
+            <p id="pProceso" class="text-sm text-slate-700 whitespace-pre-line"></p>
           </div>
         </div>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4 border-t border-slate-100">
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Modelo de Producción</h3>
-            <p id="pProduccion" class="text-sm text-slate-700"></p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Mercado y Público Objetivo</h3>
+            <p id="pPublico" class="text-sm text-slate-700"></p>
           </div>
           <div>
-            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Financiamiento / Presupuesto</h3>
-            <p id="pFinanciamiento" class="text-sm text-slate-700"></p>
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500 mb-1">Canales de Venta</h3>
+            <p id="pCanales" class="text-sm text-slate-700"></p>
           </div>
         </div>
 
         <!-- Contenido Multimedia -->
         <section id="secMultimedia" class="pt-6 border-t border-slate-100 hidden">
-          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Material Audiovisual</h2>
-          <div id="mediaContainer" class="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 text-center"></div>
+          <h2 class="text-sm font-bold uppercase tracking-wider text-slate-500 mb-4">Material Audiovisual y Producto</h2>
+          <div id="mediaContainer" class="rounded-xl overflow-hidden bg-slate-100 border border-slate-200 text-center p-2"></div>
         </section>
 
       </div>
@@ -110,13 +115,24 @@
     const urlParams = new URLSearchParams(window.location.search);
     const projectId = urlParams.get('id');
 
+    function convertirLinkDrive(url) {
+      if (!url) return '';
+      url = url.trim();
+      const regexDrive = /(?:https?:\/\/)?(?:drive|docs)\.google\.com\/(?:(?:file\/d\/|uc\?(?:.*&)?id=)|(?:.*\/d\/))([a-zA-Z0-9_-]+)/;
+      const match = url.match(regexDrive);
+
+      if (match && match[1]) {
+        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+      }
+      return url;
+    }
+
     async function cargarFicha() {
       if (!projectId) {
         document.getElementById('loading').innerText = "ID de proyecto no especificado en la URL.";
         return;
       }
 
-      // Consulta de lista completa para evitar problemas con RLS o restricción de id tipo texto/número
       const { data, error } = await supabaseClient
         .from('proyectos')
         .select('*');
@@ -127,7 +143,6 @@
         return;
       }
 
-      // Buscar el proyecto que coincida con el id (como string o número)
       const proyecto = data.find(p => String(p.id) === String(projectId));
 
       if (!proyecto) {
@@ -135,32 +150,41 @@
         return;
       }
 
-      // Inyectar datos en el HTML
+      // Inyectar textos
       document.getElementById('pNombre').innerText = proyecto.nombreProyecto || proyecto.nombre || 'Sin nombre';
       document.getElementById('pSlogan').innerText = proyecto.slogan || '';
       document.getElementById('pUbicacion').innerText = proyecto.ubicacion || 'E.E.S.T. N°1';
       document.getElementById('pIntegrantes').innerText = proyecto.integrantes || 'Sin datos';
-      document.getElementById('pDescripcion').innerText = proyecto.descripcion || 'Sin descripción';
-      document.getElementById('pProblema').innerText = proyecto.problema || '-';
-      document.getElementById('pPropuesta').innerText = proyecto.propuestaValor || proyecto.propuesta || '-';
-      document.getElementById('pProduccion').innerText = proyecto.produccion || '-';
-      document.getElementById('pFinanciamiento').innerText = proyecto.financiamiento || '-';
+      document.getElementById('pPropuesta').innerText = proyecto.propuestaValor || proyecto.propuesta || 'Sin descripción';
+      document.getElementById('pFichaTecnica').innerText = proyecto.fichaTecnica || '-';
+      document.getElementById('pProceso').innerText = proyecto.procesoFabricacion || '-';
+      document.getElementById('pPublico').innerText = proyecto.publicoObjetivo || '-';
+      document.getElementById('pCanales').innerText = proyecto.canalesVenta || '-';
 
-      // Renderizar Multimedia
-      const mediaUrl = proyecto.multimedia || proyecto.imagen || proyecto.video;
+      // Renderizar Logo con referrerpolicy
+      const logoUrl = proyecto.logoUrlDirecto || convertirLinkDrive(proyecto.logoUrl);
+      if (logoUrl) {
+        const pLogo = document.getElementById('pLogo');
+        pLogo.src = logoUrl;
+        document.getElementById('logoContainer').classList.remove('hidden');
+      }
+
+      // Renderizar Multimedia / Foto del Producto con referrerpolicy="no-referrer"
+      const mediaUrl = proyecto.fotoProductoUrlDirecto || convertirLinkDrive(proyecto.fotoProductoUrl || proyecto.multimedia || proyecto.imagen);
+      
       if (mediaUrl) {
         const container = document.getElementById('mediaContainer');
         document.getElementById('secMultimedia').classList.remove('hidden');
 
-        if (mediaUrl.includes('drive.google.com')) {
-          const driveIdMatch = mediaUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || mediaUrl.match(/id=([a-zA-Z0-9_-]+)/);
+        if (mediaUrl.includes('drive.google.com') && mediaUrl.includes('/file/d/')) {
+          const driveIdMatch = mediaUrl.match(/\/d\/([a-zA-Z0-9_-]+)/);
           if (driveIdMatch && driveIdMatch[1]) {
             container.innerHTML = `<iframe src="https://drive.google.com/file/d/${driveIdMatch[1]}/preview" class="w-full h-80 rounded-xl" allow="autoplay"></iframe>`;
           } else {
             container.innerHTML = `<a href="${mediaUrl}" target="_blank" class="p-4 block text-blue-600 underline">Ver archivo adjunto</a>`;
           }
         } else {
-          container.innerHTML = `<img src="${mediaUrl}" class="max-h-96 mx-auto rounded-xl object-contain p-2" alt="Imagen del proyecto">`;
+          container.innerHTML = `<img src="${mediaUrl}" referrerpolicy="no-referrer" class="max-h-96 mx-auto rounded-xl object-contain p-2" alt="Foto del proyecto">`;
         }
       }
 
