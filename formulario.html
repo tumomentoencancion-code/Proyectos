@@ -364,7 +364,27 @@
       const total = mat + con + mo + gas + mar;
       document.getElementById('precioSugerido').innerText = `$${total.toLocaleString('es-AR')}`;
     }
+// Función para transformar URLs de Google Drive a enlaces de imagen directa
+function convertirLinkDrive(url) {
+    if (!url) return '';
+    
+    // Limpiar espacios en blanco al inicio y al final
+    url = url.trim();
 
+    // Expresión regular para extraer la ID de diferentes formatos de URL de Google Drive
+    // Soporta: /file/d/ID/view, /uc?id=ID, /d/ID, id=ID, etc.
+    const regexDrive = /(?:https?:\/\/)?(?:drive|docs)\.google\.com\/(?:(?:file\/d\/|uc\?(?:.*&)?id=)|(?:.*\/d\/))([a-zA-Z0-9_-]+)/;
+    const match = url.match(regexDrive);
+
+    if (match && match[1]) {
+        const fileId = match[1];
+        // Retornamos el formato de thumbnail con alta resolución (w1000 = ancho 1000px)
+        return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    }
+
+    // Si no es un link de Google Drive, devuelve la URL original intacta
+    return url;
+}
     // GUARDAR O ACTUALIZAR EN SUPABASE
     document.getElementById('businessPlanForm').addEventListener('submit', async function(e) {
       e.preventDefault();
