@@ -3,306 +3,283 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Evaluaciones - Alumno</title>
-  <!-- Bootstrap 5 CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Supabase JS CDN -->
+  <title>Carga de Proyecto - E.E.S.T. N°1 Bragado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    body {
-      background-color: #f8f9fa;
-    }
-    .header-banner {
-      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
-      color: white;
-      padding: 2.5rem 0;
-      margin-bottom: 2rem;
-      border-radius: 0 0 15px 15px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-    }
-    .card {
-      border: none;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      border-radius: 12px;
-      margin-bottom: 1.5rem;
-    }
-    .rubrica-select {
-      font-size: 0.95rem;
-    }
-    .badge-nivel {
-      font-size: 0.85rem;
-      padding: 0.4em 0.6em;
-    }
-  </style>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
-  <!-- Encabezado -->
-  <header class="header-banner">
-    <div class="container text-center">
-      <h1 class="display-5 fw-bold" id="txt-nombre-emprendimiento">Cargando emprendimiento...</h1>
-      <p class="lead mb-0" id="txt-integrantes">Cargando integrantes...</p>
-      <div class="mt-2" id="txt-curso-container">
-        <span class="badge bg-light text-primary fs-6" id="txt-curso">---</span>
+  <!-- ENCABEZADO -->
+  <header class="bg-blue-900 text-white shadow-lg">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Portal Alumnos</h1>
+        <p class="text-blue-200 text-xs">Formulario de Formulación e Inserción de Proyectos • 7° Año (2026)</p>
       </div>
+      <a href="docente.html" class="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded transition">
+        <i class="fa-solid fa-lock"></i> Panel Docente
+      </a>
     </div>
   </header>
 
-  <div class="container pb-5">
-    
-    <!-- Mensajes de Estado / Alertas -->
-    <div id="alert-container"></div>
+  <main class="max-w-5xl mx-auto px-6 py-8">
 
-    <form id="form-alumno" onsubmit="guardarEvaluacionAlumno(event)">
+    <!-- SELECCIÓN O CREACIÓN DE PROYECTO -->
+    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
+      <h2 class="text-lg font-bold text-slate-800 mb-2">1. Gestión de Proyecto</h2>
+      <p class="text-xs text-slate-500 mb-4">Selecciona tu proyecto existente para continuar editando o crea uno nuevo para tu equipo.</p>
       
-      <!-- Sección de Entrega de Archivo -->
-      <div class="card p-4">
-        <h4 class="card-title text-primary mb-3">📁 Entrega del Proyecto / Presentación</h4>
-        <div class="row g-3 align-items-center">
-          <div class="col-md-8">
-            <label for="input-archivo" class="form-label">Subir o actualizar archivo de presentación (PDF / Documento):</label>
-            <input type="file" class="form-control" id="input-archivo" accept=".pdf,.doc,.docx,.ppt,.pptx">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-600 mb-1">Cargar Proyecto Existente:</label>
+          <select id="select-proyectos" onchange="seleccionarProyecto(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+            <option value="">-- Seleccionar de la lista --</option>
+          </select>
+        </div>
+        <div class="flex items-end">
+          <button onclick="nuevoProyecto()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-plus"></i> Registrar Nuevo Proyecto
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMULARIO DE LAS 10 ETAPAS -->
+    <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 space-y-6">
+      
+      <div class="border-b pb-4 flex justify-between items-center">
+        <div>
+          <h2 class="text-xl font-bold text-slate-800">2. Formulación por Etapas</h2>
+          <p class="text-xs text-slate-500">Completa la información técnica de tu emprendimiento para la evaluación cualitativa.</p>
+        </div>
+        <span id="badge-id" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-mono">Modo: Nuevo</span>
+      </div>
+
+      <!-- DATOS GENERALES Y ETAPA 1 -->
+      <div class="space-y-4">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 1: Diagnóstico e Idea de Negocio</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Proyecto / Emprendimiento *</label>
+            <input type="text" id="nombreProyecto" required placeholder="Ej: Ecobrick Bragado" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
           </div>
-          <div class="col-md-4 text-end" id="container-descarga">
-            <!-- Botón de descarga si ya existe un archivo cargado -->
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Slogan o Frase Identificatoria</label>
+            <input type="text" id="slogan" placeholder="Ej: Construyendo un futuro sustentable" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
       </div>
 
-      <!-- Sección Rúbrica de 5 Niveles -->
-      <div class="card p-4">
-        <h4 class="card-title text-primary mb-3">📝 Rúbrica de Autoevaluación (5 Niveles)</h4>
-        <p class="text-muted">Selecciona el nivel que consideras alcanzado para cada criterio de evaluación.</p>
-
-        <div class="table-responsive">
-          <table class="table table-hover align-middle">
-            <thead class="table-dark">
-              <tr>
-                <th style="width: 30%;">Criterio</th>
-                <th style="width: 70%;">Nivel de Desempeño Seleccionado</th>
-              </tr>
-            </thead>
-            <tbody id="tabla-rubrica-body">
-              <!-- Criterios generados dinámicamente -->
-            </tbody>
-          </table>
+      <!-- ETAPA 2: EQUIPO -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 2: Equipo y Estructura Humana</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Integrantes y Roles *</label>
+          <textarea id="integrantes" rows="2" required placeholder="Ej: Juan Pérez (Diseño), María Gómez (Finanzas)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
         </div>
       </div>
 
-      <!-- Observaciones / Comentarios Adicionales -->
-      <div class="card p-4">
-        <h4 class="card-title text-primary mb-3">💬 Comentarios u Observaciones del Equipo</h4>
-        <div class="mb-3">
-          <textarea class="form-control" id="txt-observaciones" rows="4" placeholder="Escribe aquí aclaraciones sobre la entrega, autocrítica o reflexiones del equipo..."></textarea>
+      <!-- ETAPA 3: ESTUDIO DE MERCADO Y ENCUESTA -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 3: Estudio de Mercado y Encuesta</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de la Encuesta de Mercado (Google Forms, etc.) *</label>
+          <input type="url" id="encuestaUrl" required placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
         </div>
       </div>
 
-      <!-- Botón Guardar -->
-      <div class="text-end mb-4">
-        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm" id="btn-guardar">
-          💾 Guardar Entrega y Autoevaluación
+      <!-- ETAPA 4: PRODUCTO / PÚBLICO TARGET -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 4: Producto, Servicio y Público Target</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Público Objetante / Segmentación de Clientes *</label>
+          <textarea id="publicoObjetivo" rows="3" required placeholder="Describe la edad, necesidades y perfil de tus clientes objetivo..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- ETAPA 5: MARKETING Y ESTRATEGIA COMERCIAL -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 5: Marketing y Estrategia Comercial (4 Ps)</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Canales de Venta y Estrategia de Difusión *</label>
+          <textarea id="canalesVenta" rows="3" required placeholder="Redes sociales, venta directa, precios estimados, promociones..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- ETAPA 6: OPERATIVA Y COMPETENCIA -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 6: Operativa, Proceso y Competencia</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores Directos e Indirectos *</label>
+          <textarea id="competidores" rows="3" required placeholder="Identifica a tus competidores locales o regionales y tus ventajas sobre ellos..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- ETAPA 7: FINANCIERA Y COSTOS -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 7: Estructura Financiera y Costos</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS) *</label>
+          <input type="number" id="inversionInicial" step="0.01" required placeholder="Ej: 150000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+        </div>
+      </div>
+
+      <!-- ETAPA 8: IMPLEMENTACIÓN -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 8: Plan de Implementación</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Cronograma de Trabajo y Tiempos</label>
+          <textarea id="plan_implementacion" rows="3" placeholder="Fases principales, plazos y tareas para poner en marcha el emprendimiento..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- ETAPA 9: CRECIMIENTO Y RISGOS -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 9: Crecimiento y Escalabilidad</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento y Análisis de Riesgos</label>
+          <textarea id="estrategias_crecimiento" rows="3" placeholder="¿Cómo planean escalar la producción o las ventas? Contingencias..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- ETAPA 10: CONCLUSIONES Y VIABILIDAD -->
+      <div class="space-y-4 pt-4 border-t">
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 10: Conclusiones y Viabilidad Integral</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Síntesis de Viabilidad *</label>
+          <textarea id="conclusiones" rows="3" required placeholder="Justificación de por qué el proyecto es viable técnica y económicamente..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="pt-6 border-t flex justify-end gap-3">
+        <button type="button" onclick="nuevoProyecto()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-5 rounded-lg text-xs transition">
+          Cancelar / Limpiar
+        </button>
+        <button type="submit" id="btn-guardar" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow transition flex items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto en Supabase
         </button>
       </div>
 
     </form>
-  </div>
+  </main>
 
-  <!-- Script Principal JS -->
   <script>
-    // 1. CONFIGURACIÓN DE SUPABASE (Reemplazar con tus credenciales si corresponden)
-    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
-    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
-    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 2. CRITERIOS Y DEFINICIÓN DE LOS 5 NIVELES
-    const criteriosEvaluacion = [
-      { id: "criterio1", nombre: "1. Definición de la Propuesta de Valor" },
-      { id: "criterio2", nombre: "2. Modelo de Negocio y Viabilidad" },
-      { id: "criterio3", nombre: "3. Calidad de la Presentación y Pitch" },
-      { id: "criterio4", nombre: "4. Trabajo en Equipo y Colaboración" },
-      { id: "criterio5", nombre: "5. Innovación e Impacto del Proyecto" }
-    ];
+    let listaProyectos = [];
+    let proyectoIdSeleccionado = null;
 
-    const opcionesNivel = [
-      { valor: 1, texto: "Nivel 1: Inicial / Insuficiente" },
-      { valor: 2, texto: "Nivel 2: En Proceso / Basico" },
-      { valor: 3, texto: "Nivel 3: Aceptable / Satisfactorio" },
-      { valor: 4, texto: "Nivel 4: Avanzado / Destacado" },
-      { valor: 5, texto: "Nivel 5: Excelente / Sobresaliente" }
-    ];
-
-    let emprendimientoId = null;
-
-    // 3. INICIALIZACIÓN
-    document.addEventListener("DOMContentLoaded", async () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      emprendimientoId = urlParams.get("id");
-
-      renderizarTablaRubrica();
-
-      if (emprendimientoId) {
-        await cargarDatosEmprendimiento(emprendimientoId);
-      } else {
-        mostrarAlerta("No se especificó un ID de emprendimiento en la URL. Ej: ?id=1", "warning");
+    async function cargarListaProyectos() {
+      const { data, error } = await _supabase.from('proyectos').select('*');
+      if (error) {
+        console.error("Error al cargar lista de proyectos:", error);
+        return;
       }
-    });
 
-    // Renderizar las filas de la rúbrica dinámicamente
-    function renderizarTablaRubrica() {
-      const tbody = document.getElementById("tabla-rubrica-body");
-      tbody.innerHTML = "";
+      listaProyectos = data || [];
+      const select = document.getElementById('select-proyectos');
+      select.innerHTML = '<option value="">-- Seleccionar de la lista --</option>';
 
-      criteriosEvaluacion.forEach(criterio => {
-        const tr = document.createElement("tr");
-        
-        let selectOptionsHtml = `<option value="">-- Seleccionar Nivel --</option>`;
-        opcionesNivel.forEach(op => {
-          selectOptionsHtml += `<option value="${op.valor}">${op.texto}</option>`;
-        });
-
-        tr.innerHTML = `
-          <td class="fw-bold text-secondary">${criterio.nombre}</td>
-          <td>
-            <select class="form-select rubrica-select" id="select-${criterio.id}" required>
-              ${selectOptionsHtml}
-            </select>
-          </td>
-        `;
-        tbody.appendChild(tr);
+      listaProyectos.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
+        select.appendChild(option);
       });
     }
 
-    // Cargar datos existentes desde Supabase
-    async function cargarDatosEmprendimiento(id) {
-      try {
-        const { data, error } = await supabaseClient
-          .from("emprendimientos")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (error) throw error;
-
-        if (data) {
-          document.getElementById("txt-nombre-emprendimiento").innerText = data.nombre || "Sin Nombre";
-          document.getElementById("txt-integrantes").innerText = "Integrantes: " + (data.integrantes || "No especificados");
-          document.getElementById("txt-curso").innerText = "Curso / División: " + (data.curso || "N/A");
-
-          // Cargar archivo si existe
-          if (data.url_archivo) {
-            const containerDescarga = document.getElementById("container-descarga");
-            containerDescarga.innerHTML = `
-              <a href="${data.url_archivo}" target="_blank" class="btn btn-outline-success btn-sm me-2">
-                📄 Ver Archivo Actual
-              </a>
-            `;
-          }
-
-          // Cargar rúbrica guardada
-          if (data.evaluacion_alumno) {
-            const ev = data.evaluacion_alumno;
-            criteriosEvaluacion.forEach(c => {
-              if (ev[c.id]) {
-                const select = document.getElementById(`select-${c.id}`);
-                if (select) select.value = ev[c.id];
-              }
-            });
-            if (ev.observaciones) {
-              document.getElementById("txt-observaciones").value = ev.observaciones;
-            }
-          }
-        }
-      } catch (err) {
-        console.error("Error al cargar datos:", err.message);
-        mostrarAlerta("Error al cargar la información del emprendimiento.", "danger");
+    function seleccionarProyecto(id) {
+      if (!id) {
+        nuevoProyecto();
+        return;
       }
+
+      proyectoIdSeleccionado = parseInt(id, 10);
+      const p = listaProyectos.find(item => item.id === proyectoIdSeleccionado);
+      if (!p) return;
+
+      document.getElementById('badge-id').innerText = `Modo: Editando ID ${p.id}`;
+      document.getElementById('nombreProyecto').value = p.nombreProyecto || p.nombre || '';
+      document.getElementById('slogan').value = p.slogan || '';
+      document.getElementById('integrantes').value = p.integrantes || '';
+      document.getElementById('encuestaUrl').value = p.encuestaUrl || '';
+      document.getElementById('publicoObjetivo').value = p.publicoObjetivo || '';
+      document.getElementById('canalesVenta').value = p.canalesVenta || '';
+      document.getElementById('competidores').value = p.competidores || '';
+      document.getElementById('inversionInicial').value = p.inversionInicial || '';
+      document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
+      document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || '';
+      document.getElementById('conclusiones').value = p.conclusiones || '';
     }
 
-    // 4. GUARDAR DATOS Y SUBIR ARCHIVO
-    async function guardarEvaluacionAlumno(e) {
-      e.preventDefault();
-      const btn = document.getElementById("btn-guardar");
+    function nuevoProyecto() {
+      proyectoIdSeleccionado = null;
+      document.getElementById('form-proyecto').reset();
+      document.getElementById('select-proyectos').value = "";
+      document.getElementById('badge-id').innerText = "Modo: Nuevo";
+    }
+
+    async function guardarProyecto(event) {
+      event.preventDefault();
+      const btn = document.getElementById('btn-guardar');
       btn.disabled = true;
-      btn.innerText = "Guardando...";
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+      const datos = {
+        nombreProyecto: document.getElementById('nombreProyecto').value,
+        slogan: document.getElementById('slogan').value,
+        integrantes: document.getElementById('integrantes').value,
+        encuestaUrl: document.getElementById('encuestaUrl').value,
+        publicoObjetivo: document.getElementById('publicoObjetivo').value,
+        canalesVenta: document.getElementById('canalesVenta').value,
+        competidores: document.getElementById('competidores').value,
+        inversionInicial: parseFloat(document.getElementById('inversionInicial').value) || 0,
+        plan_implementacion: document.getElementById('plan_implementacion').value,
+        estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value,
+        conclusiones: document.getElementById('conclusiones').value
+      };
 
       try {
-        let urlArchivoSubido = null;
+        let error;
 
-        // A. Subida de archivo (si se seleccionó uno nuevo)
-        const fileInput = document.getElementById("input-archivo");
-        if (fileInput.files.length > 0) {
-          const file = fileInput.files[0];
-          const fileName = `entrega_${emprendimientoId}_${Date.now()}.${file.name.split('.').pop()}`;
-
-          const { data: storageData, error: storageError } = await supabaseClient
-            .storage
-            .from("entregas")
-            .upload(fileName, file);
-
-          if (storageError) throw storageError;
-
-          // Obtener URL pública
-          const { data: publicUrlData } = supabaseClient
-            .storage
-            .from("entregas")
-            .getPublicUrl(fileName);
-
-          urlArchivoSubido = publicUrlData.publicUrl;
+        if (proyectoIdSeleccionado) {
+          // ACTUALIZAR PROYECTO EXISTENTE
+          const res = await _supabase
+            .from('proyectos')
+            .update(datos)
+            .eq('id', proyectoIdSeleccionado);
+          error = res.error;
+        } else {
+          // INSERTAR NUEVO PROYECTO
+          const res = await _supabase
+            .from('proyectos')
+            .insert([datos]);
+          error = res.error;
         }
 
-        // B. Recopilar datos de la rúbrica
-        const evaluacion = {};
-        criteriosEvaluacion.forEach(c => {
-          const val = document.getElementById(`select-${c.id}`).value;
-          evaluacion[c.id] = val ? parseInt(val) : null;
-        });
-        evaluacion.observaciones = document.getElementById("txt-observaciones").value;
-
-        // C. Objeto para actualizar en BD
-        const updatePayload = {
-          evaluacion_alumno: evaluacion,
-          fecha_actualizacion: new Date().toISOString()
-        };
-
-        if (urlArchivoSubido) {
-          updatePayload.url_archivo = urlArchivoSubido;
+        if (error) {
+          console.error("Error de Supabase:", error.message);
+          alert("Error al guardar en la base de datos: " + error.message);
+        } else {
+          alert(proyectoIdSeleccionado ? "¡Proyecto actualizado exitosamente!" : "¡Proyecto creado exitosamente!");
+          await cargarListaProyectos();
+          nuevoProyecto();
         }
-
-        // D. Guardar en Supabase
-        const { error: updateError } = await supabaseClient
-          .from("emprendimientos")
-          .update(updatePayload)
-          .eq("id", emprendimientoId);
-
-        if (updateError) throw updateError;
-
-        mostrarAlerta("¡Entrega y autoevaluación guardadas con éxito!", "success");
-        
-        // Recargar datos para refrescar la vista
-        await cargarDatosEmprendimiento(emprendimientoId);
-
       } catch (err) {
-        console.error("Error al guardar:", err.message);
-        mostrarAlerta("Ocurrió un error al guardar la información: " + err.message, "danger");
+        console.error("Error inesperado:", err);
+        alert("Ocurrió un error inesperado.");
       } finally {
         btn.disabled = false;
-        btn.innerText = "💾 Guardar Entrega y Autoevaluación";
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto en Supabase';
       }
     }
 
-    // Helper para alertas
-    function mostrarAlerta(mensaje, tipo) {
-      const alertContainer = document.getElementById("alert-container");
-      alertContainer.innerHTML = `
-        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
-          ${mensaje}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      `;
-    }
+    window.onload = cargarListaProyectos;
   </script>
-
-  <!-- Bootstrap 5 JS Bundle -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
