@@ -368,9 +368,16 @@
     }
 
     window.onload = () => {
-      cargarListaProyectos();
-      suscribirRealtime();
-    };
+  cargarListaProyectos();
+  suscribirRealtime();
+
+  // Detecta el ID enviado desde el portal y lo abre automáticamente
+  const urlParams = new URLSearchParams(window.location.search);
+  const idProyecto = urlParams.get('id');
+  if (idProyecto) {
+    seleccionarProyecto(idProyecto); // o la función que use tu archivo para cargar el proyecto en pantalla
+  }
+};
   </script>
 </body>
 </html>
