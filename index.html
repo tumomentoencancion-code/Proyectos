@@ -194,13 +194,13 @@
     }
 
     function editarProyecto(id) {
-      const clave = prompt("Ingresá la contraseña de administrador para editar:");
-      if (clave === ADMIN_PASSWORD) {
-        window.location.href = `formulario.html?id=${id}`;
-      } else if (clave !== null) {
-        alert("Contraseña incorrecta. No tenés permisos para editar este proyecto.");
-      }
-    }
+  const clave = prompt("Ingresá la contraseña para editar:");
+  if (clave === "2026") {
+    window.location.href = `alumno.html?id=${id}`;
+  } else if (clave !== null) {
+    alert("Contraseña incorrecta. No tenés permisos para editar este proyecto.");
+  }
+}
 
     // Evento de búsqueda en tiempo real
     document.addEventListener('DOMContentLoaded', () => {
