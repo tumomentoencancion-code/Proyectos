@@ -17,16 +17,21 @@
         <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Portal Alumnos</h1>
         <p class="text-blue-200 text-xs">Formulario de Formulación e Inserción de Proyectos • 7° Año (2026)</p>
       </div>
-      <a href="docente.html" class="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded transition">
-        <i class="fa-solid fa-lock"></i> Panel Docente
-      </a>
+      <div class="flex items-center gap-3">
+        <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando Realtime...
+        </span>
+        <a href="docente.html" class="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded transition">
+          <i class="fa-solid fa-lock"></i> Panel Docente
+        </a>
+      </div>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-6 py-8">
+  <main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
     <!-- SELECCIÓN O CREACIÓN DE PROYECTO -->
-    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8">
+    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
       <h2 class="text-lg font-bold text-slate-800 mb-2">1. Gestión de Proyecto</h2>
       <p class="text-xs text-slate-500 mb-4">Selecciona tu proyecto existente para continuar editando o crea uno nuevo para tu equipo.</p>
       
@@ -45,6 +50,39 @@
       </div>
     </section>
 
+    <!-- PANEL DE ESTADO Y EVALUACIÓN DOCENTE (TIEMPO REAL) -->
+    <section id="panel-evaluacion-docente" class="hidden bg-white p-6 rounded-xl shadow-sm border border-blue-200 bg-blue-50/30">
+      <div class="flex justify-between items-start mb-3">
+        <div>
+          <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
+            <i class="fa-solid fa-graduation-cap"></i> Estado de Evaluación Docente
+          </h3>
+          <p class="text-xs text-slate-500">Devolución y calificación en tiempo real por el profesor.</p>
+        </div>
+        <span id="eval-badge-estado" class="text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider bg-slate-200 text-slate-700">Sin Evaluar</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-blue-100 pt-3 text-xs">
+        <div>
+          <span class="text-slate-500 block">Puntaje Etapas 1 a 5:</span>
+          <strong id="eval-nota1" class="text-slate-800 text-sm">- / 10</strong>
+        </div>
+        <div>
+          <span class="text-slate-500 block">Puntaje Etapas 6 a 10:</span>
+          <strong id="eval-nota2" class="text-slate-800 text-sm">- / 10</strong>
+        </div>
+        <div>
+          <span class="text-slate-500 block">Nota Final Promedio:</span>
+          <strong id="eval-nota-final" class="text-blue-900 text-base font-bold">- / 10</strong>
+        </div>
+      </div>
+
+      <div class="mt-3 pt-3 border-t border-blue-100 text-xs">
+        <strong class="text-slate-700 block mb-1">Devolución / Observaciones del Docente:</strong>
+        <p id="eval-devolucion" class="text-slate-600 bg-white p-3 rounded-lg border border-slate-200 italic whitespace-pre-line">No hay observaciones registradas aún.</p>
+      </div>
+    </section>
+
     <!-- FORMULARIO DE LAS 10 ETAPAS -->
     <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 space-y-6">
       
@@ -56,7 +94,7 @@
         <span id="badge-id" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-mono">Modo: Nuevo</span>
       </div>
 
-      <!-- DATOS GENERALES Y ETAPA 1 -->
+      <!-- ETAPA 1 -->
       <div class="space-y-4">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 1: Diagnóstico e Idea de Negocio</h3>
         
@@ -72,7 +110,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 2: EQUIPO -->
+      <!-- ETAPA 2 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 2: Equipo y Estructura Humana</h3>
         <div>
@@ -81,7 +119,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 3: ESTUDIO DE MERCADO Y ENCUESTA -->
+      <!-- ETAPA 3 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 3: Estudio de Mercado y Encuesta</h3>
         <div>
@@ -90,7 +128,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 4: PRODUCTO / PÚBLICO TARGET -->
+      <!-- ETAPA 4 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 4: Producto, Servicio y Público Target</h3>
         <div>
@@ -99,7 +137,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 5: MARKETING Y ESTRATEGIA COMERCIAL -->
+      <!-- ETAPA 5 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 5: Marketing y Estrategia Comercial (4 Ps)</h3>
         <div>
@@ -108,7 +146,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 6: OPERATIVA Y COMPETENCIA -->
+      <!-- ETAPA 6 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 6: Operativa, Proceso y Competencia</h3>
         <div>
@@ -117,7 +155,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 7: FINANCIERA Y COSTOS -->
+      <!-- ETAPA 7 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 7: Estructura Financiera y Costos</h3>
         <div>
@@ -126,7 +164,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 8: IMPLEMENTACIÓN -->
+      <!-- ETAPA 8 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 8: Plan de Implementación</h3>
         <div>
@@ -135,7 +173,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 9: CRECIMIENTO Y RISGOS -->
+      <!-- ETAPA 9 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 9: Crecimiento y Escalabilidad</h3>
         <div>
@@ -144,7 +182,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 10: CONCLUSIONES Y VIABILIDAD -->
+      <!-- ETAPA 10 -->
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 10: Conclusiones y Viabilidad Integral</h3>
         <div>
@@ -175,7 +213,7 @@
     let proyectoIdSeleccionado = null;
 
     async function cargarListaProyectos() {
-      const { data, error } = await _supabase.from('proyectos').select('*');
+      const { data, error } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
       if (error) {
         console.error("Error al cargar lista de proyectos:", error);
         return;
@@ -183,6 +221,7 @@
 
       listaProyectos = data || [];
       const select = document.getElementById('select-proyectos');
+      const valPrevia = select.value;
       select.innerHTML = '<option value="">-- Seleccionar de la lista --</option>';
 
       listaProyectos.forEach(p => {
@@ -191,6 +230,46 @@
         option.textContent = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
         select.appendChild(option);
       });
+
+      if (proyectoIdSeleccionado) {
+        select.value = proyectoIdSeleccionado;
+        cargarEvaluacionDocente(proyectoIdSeleccionado);
+      }
+    }
+
+    async function cargarEvaluacionDocente(id) {
+      const panel = document.getElementById('panel-evaluacion-docente');
+      if (!id) {
+        panel.classList.add('hidden');
+        return;
+      }
+
+      const { data, error } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
+      
+      panel.classList.remove('hidden');
+
+      if (error || !data) {
+        document.getElementById('eval-badge-estado').innerText = "Sin Evaluar";
+        document.getElementById('eval-badge-estado').className = "text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider bg-slate-200 text-slate-700";
+        document.getElementById('eval-nota1').innerText = "- / 10";
+        document.getElementById('eval-nota2').innerText = "- / 10";
+        document.getElementById('eval-nota-final').innerText = "- / 10";
+        document.getElementById('eval-devolucion').innerText = "El docente aún no ha calificado este proyecto.";
+        return;
+      }
+
+      const estado = data.estado_revision || 'En Revisión';
+      let badgeColor = 'bg-slate-200 text-slate-700';
+      if (estado === 'Aprobado') badgeColor = 'bg-emerald-100 text-emerald-800';
+      if (estado === 'Rehacer') badgeColor = 'bg-rose-100 text-rose-800';
+      if (estado === 'En Revisión') badgeColor = 'bg-amber-100 text-amber-800';
+
+      document.getElementById('eval-badge-estado').innerText = estado;
+      document.getElementById('eval-badge-estado').className = `text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider ${badgeColor}`;
+      document.getElementById('eval-nota1').innerText = `${data.nota_etapa1_5 || 0} / 10`;
+      document.getElementById('eval-nota2').innerText = `${data.nota_etapa6_10 || 0} / 10`;
+      document.getElementById('eval-nota-final').innerText = `${data.nota_final || 0} / 10`;
+      document.getElementById('eval-devolucion').innerText = data.devolucion_docente || "Sin observaciones escritas.";
     }
 
     function seleccionarProyecto(id) {
@@ -215,6 +294,8 @@
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
       document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
+
+      cargarEvaluacionDocente(proyectoIdSeleccionado);
     }
 
     function nuevoProyecto() {
@@ -222,6 +303,7 @@
       document.getElementById('form-proyecto').reset();
       document.getElementById('select-proyectos').value = "";
       document.getElementById('badge-id').innerText = "Modo: Nuevo";
+      document.getElementById('panel-evaluacion-docente').classList.add('hidden');
     }
 
     async function guardarProyecto(event) {
@@ -248,38 +330,47 @@
         let error;
 
         if (proyectoIdSeleccionado) {
-          // ACTUALIZAR PROYECTO EXISTENTE
-          const res = await _supabase
-            .from('proyectos')
-            .update(datos)
-            .eq('id', proyectoIdSeleccionado);
+          const res = await _supabase.from('proyectos').update(datos).eq('id', proyectoIdSeleccionado);
           error = res.error;
         } else {
-          // INSERTAR NUEVO PROYECTO
-          const res = await _supabase
-            .from('proyectos')
-            .insert([datos]);
+          const res = await _supabase.from('proyectos').insert([datos]);
           error = res.error;
         }
 
         if (error) {
-          console.error("Error de Supabase:", error.message);
           alert("Error al guardar en la base de datos: " + error.message);
         } else {
           alert(proyectoIdSeleccionado ? "¡Proyecto actualizado exitosamente!" : "¡Proyecto creado exitosamente!");
           await cargarListaProyectos();
-          nuevoProyecto();
         }
       } catch (err) {
         console.error("Error inesperado:", err);
-        alert("Ocurrió un error inesperado.");
       } finally {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto en Supabase';
       }
     }
 
-    window.onload = cargarListaProyectos;
+    // SUSCRIPCIÓN EN TIEMPO REAL (REALTIME)
+    function suscribirRealtime() {
+      _supabase.channel('cambios-alumno')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'proyectos' }, () => cargarListaProyectos())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, () => {
+          if (proyectoIdSeleccionado) cargarEvaluacionDocente(proyectoIdSeleccionado);
+        })
+        .subscribe((status) => {
+          const badge = document.getElementById('realtime-status');
+          if (status === 'SUBSCRIBED') {
+            badge.className = "text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2";
+            badge.innerHTML = '<i class="fa-solid fa-bolt"></i> Realtime Activo';
+          }
+        });
+    }
+
+    window.onload = () => {
+      cargarListaProyectos();
+      suscribirRealtime();
+    };
   </script>
 </body>
 </html>
