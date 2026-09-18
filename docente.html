@@ -3,459 +3,306 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Docente - E.E.S.T. N°1 Bragado</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <title>Portal de Evaluaciones - Alumno</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Supabase JS CDN -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @media print {
-      .no-print { display: none !important; }
-      .print-only { display: block !important; }
-      body { background: white; color: black; }
+    body {
+      background-color: #f8f9fa;
+    }
+    .header-banner {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      color: white;
+      padding: 2.5rem 0;
+      margin-bottom: 2rem;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .card {
+      border: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .rubrica-select {
+      font-size: 0.95rem;
+    }
+    .badge-nivel {
+      font-size: 0.85rem;
+      padding: 0.4em 0.6em;
     }
   </style>
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+<body>
 
-  <!-- ENCABEZADO -->
-  <header class="bg-blue-900 text-white shadow-lg no-print">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Panel Docente</h1>
-        <p class="text-blue-200 text-sm">Rúbrica Cualitativa de 5 Niveles (Heurística + Validación Manual) • 7° Año (2026)</p>
-      </div>
-      <div class="flex gap-3">
-        <button onclick="cargarProyectos()" class="bg-blue-700 hover:bg-blue-600 px-4 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2">
-          <i class="fa-solid fa-rotate"></i> Actualizar
-        </button>
+  <!-- Encabezado -->
+  <header class="header-banner">
+    <div class="container text-center">
+      <h1 class="display-5 fw-bold" id="txt-nombre-emprendimiento">Cargando emprendimiento...</h1>
+      <p class="lead mb-0" id="txt-integrantes">Cargando integrantes...</p>
+      <div class="mt-2" id="txt-curso-container">
+        <span class="badge bg-light text-primary fs-6" id="txt-curso">---</span>
       </div>
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-6 py-8">
+  <div class="container pb-5">
+    
+    <!-- Mensajes de Estado / Alertas -->
+    <div id="alert-container"></div>
 
-    <!-- METRICAS DE EVALUACION DUAL -->
-    <section class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8 no-print">
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-semibold text-slate-400">Total Proyectos</p>
-          <p id="stat-total" class="text-3xl font-bold text-slate-800">0</p>
-        </div>
-        <div class="bg-blue-50 text-blue-600 p-3 rounded-lg"><i class="fa-solid fa-folder-open text-xl"></i></div>
-      </div>
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-semibold text-slate-400">Sin Encuesta Validada</p>
-          <p id="stat-mercado" class="text-3xl font-bold text-amber-600">0</p>
-        </div>
-        <div class="bg-amber-50 text-amber-600 p-3 rounded-lg"><i class="fa-solid fa-chart-pie text-xl"></i></div>
-      </div>
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-semibold text-slate-400">Prom. Nota Etapa</p>
-          <p id="stat-prom-proceso" class="text-3xl font-bold text-emerald-600">0.0</p>
-        </div>
-        <div class="bg-emerald-50 text-emerald-600 p-3 rounded-lg"><i class="fa-solid fa-list-check text-xl"></i></div>
-      </div>
-      <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
-        <div>
-          <p class="text-xs uppercase font-semibold text-slate-400">Prom. Nota Global</p>
-          <p id="stat-prom-global" class="text-3xl font-bold text-indigo-600">0.0</p>
-        </div>
-        <div class="bg-indigo-50 text-indigo-600 p-3 rounded-lg"><i class="fa-solid fa-graduation-cap text-xl"></i></div>
-      </div>
-    </section>
-
-    <!-- GRILLA GENERAL COMPARATIVA -->
-    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden mb-12 no-print">
-      <div class="p-5 border-b border-slate-200 flex justify-between items-center bg-slate-50">
-        <div>
-          <h2 class="font-bold text-slate-800 text-lg">Grilla de Evaluación Cualitativa y Proceso</h2>
-          <p class="text-xs text-slate-500">Matriz de 5 niveles cualitativos (0% - 35% - 55% - 75% - 100%) aplicada a cada propuesta</p>
+    <form id="form-alumno" onsubmit="guardarEvaluacionAlumno(event)">
+      
+      <!-- Sección de Entrega de Archivo -->
+      <div class="card p-4">
+        <h4 class="card-title text-primary mb-3">📁 Entrega del Proyecto / Presentación</h4>
+        <div class="row g-3 align-items-center">
+          <div class="col-md-8">
+            <label for="input-archivo" class="form-label">Subir o actualizar archivo de presentación (PDF / Documento):</label>
+            <input type="file" class="form-control" id="input-archivo" accept=".pdf,.doc,.docx,.ppt,.pptx">
+          </div>
+          <div class="col-md-4 text-end" id="container-descarga">
+            <!-- Botón de descarga si ya existe un archivo cargado -->
+          </div>
         </div>
       </div>
 
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-xs text-slate-600 border-collapse">
-          <thead class="bg-slate-100 text-slate-700 font-semibold border-b border-slate-200 uppercase">
-            <tr>
-              <th class="p-3">Emprendimiento</th>
-              <th class="p-2 text-center">Nivel Madurez General</th>
-              <th class="p-2 text-center">Inconsist.</th>
-              <th class="p-2 text-center bg-emerald-50 text-emerald-900 border-x">Nota Etapa (Proceso)</th>
-              <th class="p-2 text-center bg-indigo-50 text-indigo-900 border-r">Nota Global (Plan Final)</th>
-              <th class="p-3 text-center">Acción</th>
-            </tr>
-          </thead>
-          <tbody id="tabla-proyectos" class="divide-y divide-slate-200">
-            <!-- Carga dinámica -->
-          </tbody>
-        </table>
-      </div>
-    </section>
+      <!-- Sección Rúbrica de 5 Niveles -->
+      <div class="card p-4">
+        <h4 class="card-title text-primary mb-3">📝 Rúbrica de Autoevaluación (5 Niveles)</h4>
+        <p class="text-muted">Selecciona el nivel que consideras alcanzado para cada criterio de evaluación.</p>
 
-    <!-- DETALLE Y VALIDADOR DOCENTE DE 5 NIVELES -->
-    <section id="informe-seccion" class="hidden bg-white p-8 rounded-xl shadow-md border border-slate-200 mb-12">
-      <div class="flex justify-between items-center border-b pb-4 mb-6 no-print">
-        <div>
-          <span class="text-xs font-semibold uppercase text-blue-600">Rúbrica Cualitativa de 5 Niveles e Inspección</span>
-          <h3 id="informe-titulo-proyecto" class="text-xl font-bold text-slate-800"></h3>
-        </div>
-        <div class="flex gap-2">
-          <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-700 text-white px-3 py-1.5 rounded text-xs transition">
-            <i class="fa-solid fa-print"></i> Imprimir Informe
-          </button>
-          <button onclick="cerrarInforme()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 px-3 py-1.5 rounded text-xs transition">
-            Cerrar
-          </button>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th style="width: 30%;">Criterio</th>
+                <th style="width: 70%;">Nivel de Desempeño Seleccionado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-rubrica-body">
+              <!-- Criterios generados dinámicamente -->
+            </tbody>
+          </table>
         </div>
       </div>
 
-      <div id="informe-contenido">
-        <!-- Renderizado dinámico del despiece cualitativo -->
+      <!-- Observaciones / Comentarios Adicionales -->
+      <div class="card p-4">
+        <h4 class="card-title text-primary mb-3">💬 Comentarios u Observaciones del Equipo</h4>
+        <div class="mb-3">
+          <textarea class="form-control" id="txt-observaciones" rows="4" placeholder="Escribe aquí aclaraciones sobre la entrega, autocrítica o reflexiones del equipo..."></textarea>
+        </div>
       </div>
-    </section>
 
-  </main>
+      <!-- Botón Guardar -->
+      <div class="text-end mb-4">
+        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm" id="btn-guardar">
+          💾 Guardar Entrega y Autoevaluación
+        </button>
+      </div>
 
+    </form>
+  </div>
+
+  <!-- Script Principal JS -->
   <script>
-    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    // 1. CONFIGURACIÓN DE SUPABASE (Reemplazar con tus credenciales si corresponden)
+    const SUPABASE_URL = "https://TU_PROYECTO.supabase.co"; 
+    const SUPABASE_ANON_KEY = "TU_ANON_KEY"; 
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    let proyectosCargados = [];
-    let evaluacionesManuales = {};
-
-    // Puntos cualitativos esperados a la fecha (6 etapas al 100% = 600 puntos)
-    const PUNTOS_ESPERADOS_A_LA_FECHA = 600;
-
-    const ETAPAS_NOMBRE = [
-      "1. Diagnóstico e Idea de Negocio",
-      "2. Equipo y Estructura Humana",
-      "3. Estudio de Mercado y Encuesta",
-      "4. Producto, Servicio y Público Target",
-      "5. Marketing y Estrategia Comercial (4 Ps)",
-      "6. Operativa, Proceso y Competencia",
-      "7. Estructura Financiera y Costos",
-      "8. Plan de Implementación y Tiempos",
-      "9. Estrategias de Crecimiento y Escalabilidad",
-      "10. Conclusiones y Viabilidad Integral"
+    // 2. CRITERIOS Y DEFINICIÓN DE LOS 5 NIVELES
+    const criteriosEvaluacion = [
+      { id: "criterio1", nombre: "1. Definición de la Propuesta de Valor" },
+      { id: "criterio2", nombre: "2. Modelo de Negocio y Viabilidad" },
+      { id: "criterio3", nombre: "3. Calidad de la Presentación y Pitch" },
+      { id: "criterio4", nombre: "4. Trabajo en Equipo y Colaboración" },
+      { id: "criterio5", nombre: "5. Innovación e Impacto del Proyecto" }
     ];
 
-    async function cargarProyectos() {
-      const { data, error } = await _supabase.from('proyectos').select('*');
-      if (error) {
-        console.error("Error al cargar proyectos:", error);
-        return;
+    const opcionesNivel = [
+      { valor: 1, texto: "Nivel 1: Inicial / Insuficiente" },
+      { valor: 2, texto: "Nivel 2: En Proceso / Basico" },
+      { valor: 3, texto: "Nivel 3: Aceptable / Satisfactorio" },
+      { valor: 4, texto: "Nivel 4: Avanzado / Destacado" },
+      { valor: 5, texto: "Nivel 5: Excelente / Sobresaliente" }
+    ];
+
+    let emprendimientoId = null;
+
+    // 3. INICIALIZACIÓN
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      emprendimientoId = urlParams.get("id");
+
+      renderizarTablaRubrica();
+
+      if (emprendimientoId) {
+        await cargarDatosEmprendimiento(emprendimientoId);
+      } else {
+        mostrarAlerta("No se especificó un ID de emprendimiento en la URL. Ej: ?id=1", "warning");
       }
-      proyectosCargados = data || [];
-      
-      proyectosCargados.forEach(p => {
-        if (!evaluacionesManuales[p.id]) {
-          evaluacionesManuales[p.id] = generarEvaluacionHeuristica(p);
-        }
-      });
+    });
 
-      renderizarGrilla(proyectosCargados);
-      actualizarEstadisticas(proyectosCargados);
-    }
+    // Renderizar las filas de la rúbrica dinámicamente
+    function renderizarTablaRubrica() {
+      const tbody = document.getElementById("tabla-rubrica-body");
+      tbody.innerHTML = "";
 
-    function contarPalabras(texto) {
-      if (!texto) return 0;
-      return texto.toString().trim().split(/\s+/).filter(w => w.length > 0).length;
-    }
+      criteriosEvaluacion.forEach(criterio => {
+        const tr = document.createElement("tr");
+        
+        let selectOptionsHtml = `<option value="">-- Seleccionar Nivel --</option>`;
+        opcionesNivel.forEach(op => {
+          selectOptionsHtml += `<option value="${op.valor}">${op.texto}</option>`;
+        });
 
-    function contieneNumeros(texto) {
-      if (!texto) return false;
-      return /\d+/.test(texto.toString());
-    }
-
-    // HEURÍSTICA AUTOMÁTICA ADAPTADA A LA ESCALA DE 5 NIVELES (0, 35, 55, 75, 100)
-    function evaluarCualitativoHeuristico(p, numEtapa) {
-      let texto = '';
-      let cant = 0;
-
-      switch(numEtapa) {
-        case 1: // Idea de Negocio
-          texto = (p.slogan || '') + ' ' + (p.nombreProyecto || '');
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Campo vacío." };
-          if (cant < 5) return { val: 35, razon: "Insuficiente: Nombra la idea sin detallar necesidad ni propuesta." };
-          if (cant < 12) return { val: 55, razon: "En Desarrollo: Describe el producto/servicio pero sin precisar nicho." };
-          if (cant < 25) return { val: 75, razon: "Satisfactorio: Idea clara con propuesta de valor comprensible." };
-          return { val: 100, razon: "Excelente: Propuesta sólida, alineada al contexto local." };
-
-        case 2: // Equipo y Empresa
-          texto = p.integrantes || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Sin integrantes asignados." };
-          if (cant < 4) return { val: 35, razon: "Insuficiente: Menciona integrantes aislados sin especificar roles." };
-          if (cant < 10) return { val: 55, razon: "En Desarrollo: Roles nombrados de forma general sin tareas detalladas." };
-          if (cant < 20) return { val: 75, razon: "Satisfactorio: División clara de responsabilidades en el equipo." };
-          return { val: 100, razon: "Excelente: Estructura organizacional definida con perfiles y roles." };
-
-        case 3: // Estudio de Mercado (Encuesta)
-          const url = p.encuestaUrl || '';
-          if (!url || url.length < 5) return { val: 0, razon: "Ausente: Sin enlace a encuesta de mercado." };
-          if (!url.includes('http')) return { val: 35, razon: "Insuficiente: Formato de URL inválido o incompleto." };
-          if (contarPalabras(p.publicoObjetivo || '') < 8) return { val: 55, razon: "En Desarrollo: Encuesta vinculada pero sin análisis de resultados." };
-          if (contarPalabras(p.publicoObjetivo || '') < 20) return { val: 75, razon: "Satisfactorio: Encuesta real y síntesis de respuestas analizadas." };
-          return { val: 100, razon: "Excelente: Encuesta funcional con cruce de datos cuantitativos y cualitativos." };
-
-        case 4: // Producto / Servicio
-          texto = p.publicoObjetivo || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Falta descripción de producto/cliente target." };
-          if (cant < 8) return { val: 35, razon: "Insuficiente: Definición genérica (ej: 'público general')." };
-          if (cant < 18) return { val: 55, razon: "En Desarrollo: Describe al cliente pero no detalla los diferenciales." };
-          if (cant < 30) return { val: 75, razon: "Satisfactorio: Segmentación lógica y propuesta de valor bien explicada." };
-          return { val: 100, razon: "Excelente: Definición exhaustiva del buyer persona y ventaja competitiva." };
-
-        case 5: // Marketing y Comercial
-          texto = p.canalesVenta || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Sin estrategia ni canales comerciales." };
-          if (texto.toLowerCase().includes('redes') && cant < 6) return { val: 35, razon: "Insuficiente: Respuesta superficial ('vender en redes sociales')." };
-          if (cant < 15) return { val: 55, razon: "En Desarrollo: Nombra canales sin estrategia de precios ni difusión." };
-          if (cant < 28) return { val: 75, razon: "Satisfactorio: Mix comercial estructurado con precios y canales coherentes." };
-          return { val: 100, razon: "Excelente: Estrategia integral de las 4 Ps con tácticas multicanal y presupuesto." };
-
-        case 6: // Competencia y Operativa
-          texto = p.competidores || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Sin análisis operativo o de competencia." };
-          if (texto.toLowerCase().includes('no hay') || texto.toLowerCase().includes('ninguno')) return { val: 35, razon: "Insuficiente: Afirma erróneamente no poseer competidores." };
-          if (cant < 15) return { val: 55, razon: "En Desarrollo: Identifica rivales locales pero sin análisis comparativo." };
-          if (cant < 28) return { val: 75, razon: "Satisfactorio: Mapeo de competidores directos e indirectos con fortalezas." };
-          return { val: 100, razon: "Excelente: Matriz comparativa exhaustiva y flujo operativo detallado." };
-
-        case 7: // Finanzas y Costos
-          const inv = Number(p.inversionInicial || 0);
-          if (inv === 0) return { val: 0, razon: "Ausente: Sin números ni presupuesto financiero." };
-          if (inv > 0 && !contieneNumeros(p.conclusiones || '') && contarPalabras(p.conclusiones || '') < 10) return { val: 35, razon: "Insuficiente: Un único monto total sin desglose de costos." };
-          if (inv > 0 && contarPalabras(p.conclusiones || '') < 20) return { val: 55, razon: "En Desarrollo: Distingue inversión inicial pero omite costos fijos/variables." };
-          if (inv > 0 && contieneNumeros(p.conclusiones || '')) return { val: 75, razon: "Satisfactorio: Costos desglosados y punto de equilibrio estimativo." };
-          return { val: 100, razon: "Excelente: Estructura financiera rigurosa con margen de contribución real." };
-
-        case 8: // Plan de Implementación
-          texto = p.plan_implementacion || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Sin cronograma de trabajo." };
-          if (cant < 8) return { val: 35, razon: "Insuficiente: Pasos vagos sin fechas ni responsables." };
-          if (cant < 18) return { val: 55, razon: "En Desarrollo: Etapas en orden pero sin tiempos acotados de ejecución." };
-          if (cant < 30) return { val: 75, razon: "Satisfactorio: Cronograma claro con hitos y plazos asignados." };
-          return { val: 100, razon: "Excelente: Diagrama de Gantt o plan de acción con hitos críticos." };
-
-        case 9: // Estrategias Crecimiento
-          texto = p.estrategias_crecimiento || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Sin metas de expansión ni análisis de riesgos." };
-          if (cant < 8) return { val: 35, razon: "Insuficiente: Expresiones de deseo genéricas (ej: 'abrir sucursales')." };
-          if (cant < 18) return { val: 55, razon: "En Desarrollo: Plantea ideas de escalabilidad sin planes de contingencia." };
-          if (cant < 30) return { val: 75, razon: "Satisfactorio: Objetivos de crecimiento viables y análisis FODA." };
-          return { val: 100, razon: "Excelente: Estrategia de escalabilidad con mitigación de riesgos operativos." };
-
-        case 10: // Conclusiones / Viabilidad
-          texto = p.conclusiones || '';
-          cant = contarPalabras(texto);
-          if (cant === 0) return { val: 0, razon: "Ausente: Sin síntesis de viabilidad." };
-          if (cant < 8) return { val: 35, razon: "Insuficiente: Cierre genérico en una oración." };
-          if (cant < 18) return { val: 55, razon: "En Desarrollo: Evaluación aceptable pero aislada de las métricas." };
-          if (cant < 30) return { val: 75, razon: "Satisfactorio: Argumentación sólida de viabilidad técnica y económica." };
-          return { val: 100, razon: "Excelente: Síntesis profesional con rigor analítico y coherencia integral." };
-
-        default:
-          return { val: 0, razon: "Sin evaluar." };
-      }
-    }
-
-    function generarEvaluacionHeuristica(p) {
-      const evalObj = {};
-      for (let i = 1; i <= 10; i++) {
-        evalObj[i] = evaluarCualitativoHeuristico(p, i);
-      }
-      return evalObj;
-    }
-
-    // CÁLCULO DUAL CON LA ESCALA DE 5 NIVELES
-    function calcularNotasQualitativas(proyectoId) {
-      const evaluacion = evaluacionesManuales[proyectoId] || {};
-      let sumaPuntos = 0;
-
-      for (let i = 1; i <= 10; i++) {
-        const item = evaluacion[i] || { val: 0 };
-        sumaPuntos += item.val; // Puntos posibles por ítem: 0, 35, 55, 75 o 100
-      }
-
-      // Nota Global: Puntos Totales / 100 (Max: 1000 pts / 100 = 10.0)
-      const notaGlobal = (sumaPuntos / 100).toFixed(1);
-
-      // Nota de Etapa / Proceso: Frente a los 600 puntos esperados a la fecha
-      const ratioProceso = sumaPuntos / PUNTOS_ESPERADOS_A_LA_FECHA;
-      const notaEtapa = Math.min(10, ratioProceso * 10).toFixed(1);
-
-      const porcentajePromedio = (sumaPuntos / 10).toFixed(0);
-
-      return {
-        sumaPuntos,
-        notaGlobal,
-        notaEtapa,
-        porcentajePromedio
-      };
-    }
-
-    // BADGES DE COLOR SEGÚN NIVEL DE MADUREZ (5 NIVELES)
-    function getNivelBadge(val) {
-      if (val === 100) return `<span class="bg-emerald-100 text-emerald-800 text-[10px] font-bold px-2 py-0.5 rounded border border-emerald-300">100% Excelente</span>`;
-      if (val === 75) return `<span class="bg-blue-100 text-blue-800 text-[10px] font-bold px-2 py-0.5 rounded border border-blue-300">75% Satisfactorio</span>`;
-      if (val === 55) return `<span class="bg-amber-100 text-amber-800 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-300">55% En Desarrollo</span>`;
-      if (val === 35) return `<span class="bg-orange-100 text-orange-800 text-[10px] font-bold px-2 py-0.5 rounded border border-orange-300">35% Insuficiente</span>`;
-      return `<span class="bg-red-100 text-red-800 text-[10px] font-bold px-2 py-0.5 rounded border border-red-300">0% Ausente</span>`;
-    }
-
-    function renderizarGrilla(lista) {
-      const tbody = document.getElementById('tabla-proyectos');
-      tbody.innerHTML = '';
-
-      if (lista.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">No hay proyectos registrados.</td></tr>`;
-        return;
-      }
-
-      lista.forEach(p => {
-        const notas = calcularNotasQualitativas(p.id);
-
-        const tr = document.createElement('tr');
-        tr.className = 'hover:bg-slate-50 transition border-b border-slate-100';
         tr.innerHTML = `
-          <td class="p-3">
-            <div class="font-semibold text-slate-800 text-sm">${p.nombreProyecto || p.nombre || 'Sin nombre'}</div>
-            <div class="text-[11px] text-slate-400 truncate max-w-[250px]">${p.integrantes || 'Sin integrantes'}</div>
-          </td>
-          <td class="p-2 text-center">
-            <div class="w-full bg-slate-200 rounded-full h-2.5 max-w-[120px] mx-auto overflow-hidden mb-1">
-              <div class="bg-blue-600 h-2.5 rounded-full" style="width: ${notas.porcentajePromedio}%"></div>
-            </div>
-            <span class="text-[10px] text-slate-600 font-bold">${notas.porcentajePromedio}% de Madurez Total</span>
-          </td>
-          <td class="p-2 text-center font-semibold text-amber-600 text-sm">${p.inconsistencias_cnt || '0'}</td>
-          <td class="p-2 text-center font-bold text-emerald-700 bg-emerald-50/50 border-x text-base">${notas.notaEtapa}</td>
-          <td class="p-2 text-center font-bold text-indigo-900 bg-indigo-50/50 border-r text-base">${notas.notaGlobal}</td>
-          <td class="p-3 text-center">
-            <button onclick="verInforme(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition flex items-center gap-1 mx-auto">
-              <i class="fa-solid fa-sliders"></i> Evaluar / Validar
-            </button>
+          <td class="fw-bold text-secondary">${criterio.nombre}</td>
+          <td>
+            <select class="form-select rubrica-select" id="select-${criterio.id}" required>
+              ${selectOptionsHtml}
+            </select>
           </td>
         `;
         tbody.appendChild(tr);
       });
     }
 
-    function actualizarEstadisticas(lista) {
-      document.getElementById('stat-total').innerText = lista.length;
+    // Cargar datos existentes desde Supabase
+    async function cargarDatosEmprendimiento(id) {
+      try {
+        const { data, error } = await supabaseClient
+          .from("emprendimientos")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-      const sinEncuesta = lista.filter(p => !p.encuestaUrl || !p.encuestaUrl.includes('http')).length;
-      document.getElementById('stat-mercado').innerText = sinEncuesta;
+        if (error) throw error;
 
-      if (lista.length > 0) {
-        const sumaEtapa = lista.reduce((acc, p) => acc + parseFloat(calcularNotasQualitativas(p.id).notaEtapa), 0);
-        const sumaGlobal = lista.reduce((acc, p) => acc + parseFloat(calcularNotasQualitativas(p.id).notaGlobal), 0);
+        if (data) {
+          document.getElementById("txt-nombre-emprendimiento").innerText = data.nombre || "Sin Nombre";
+          document.getElementById("txt-integrantes").innerText = "Integrantes: " + (data.integrantes || "No especificados");
+          document.getElementById("txt-curso").innerText = "Curso / División: " + (data.curso || "N/A");
 
-        document.getElementById('stat-prom-proceso').innerText = (sumaEtapa / lista.length).toFixed(1);
-        document.getElementById('stat-prom-global').innerText = (sumaGlobal / lista.length).toFixed(1);
+          // Cargar archivo si existe
+          if (data.url_archivo) {
+            const containerDescarga = document.getElementById("container-descarga");
+            containerDescarga.innerHTML = `
+              <a href="${data.url_archivo}" target="_blank" class="btn btn-outline-success btn-sm me-2">
+                📄 Ver Archivo Actual
+              </a>
+            `;
+          }
+
+          // Cargar rúbrica guardada
+          if (data.evaluacion_alumno) {
+            const ev = data.evaluacion_alumno;
+            criteriosEvaluacion.forEach(c => {
+              if (ev[c.id]) {
+                const select = document.getElementById(`select-${c.id}`);
+                if (select) select.value = ev[c.id];
+              }
+            });
+            if (ev.observaciones) {
+              document.getElementById("txt-observaciones").value = ev.observaciones;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error al cargar datos:", err.message);
+        mostrarAlerta("Error al cargar la información del emprendimiento.", "danger");
       }
     }
 
-    // INSPECCIÓN Y PANEL DE SELECCIÓN DOCENTE (5 NIVELES)
-    function verInforme(id) {
-      const p = proyectosCargados.find(item => item.id === id);
-      if (!p) return;
+    // 4. GUARDAR DATOS Y SUBIR ARCHIVO
+    async function guardarEvaluacionAlumno(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-guardar");
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
 
-      document.getElementById('informe-titulo-proyecto').innerText = p.nombreProyecto || p.nombre || 'Proyecto';
+      try {
+        let urlArchivoSubido = null;
 
-      const evalActual = evaluacionesManuales[p.id];
-      const notas = calcularNotasQualitativas(p.id);
+        // A. Subida de archivo (si se seleccionó uno nuevo)
+        const fileInput = document.getElementById("input-archivo");
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileName = `entrega_${emprendimientoId}_${Date.now()}.${file.name.split('.').pop()}`;
 
-      const contenedor = document.getElementById('informe-contenido');
+          const { data: storageData, error: storageError } = await supabaseClient
+            .storage
+            .from("entregas")
+            .upload(fileName, file);
 
-      let htmlMatriz = '';
-      for (let i = 1; i <= 10; i++) {
-        const itemEval = evalActual[i];
-        const val = itemEval.val;
+          if (storageError) throw storageError;
 
-        htmlMatriz += `
-          <div class="p-4 bg-slate-50 border border-slate-200 rounded-lg flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div class="flex-1">
-              <div class="flex items-center gap-2 mb-1">
-                <span class="font-bold text-slate-800 text-sm">${ETAPAS_NOMBRE[i-1]}</span>
-                ${getNivelBadge(val)}
-              </div>
-              <p class="text-xs text-slate-500"><strong class="text-slate-700">Sugerencia IA:</strong> ${itemEval.razon}</p>
-            </div>
+          // Obtener URL pública
+          const { data: publicUrlData } = supabaseClient
+            .storage
+            .from("entregas")
+            .getPublicUrl(fileName);
 
-            <!-- SELECTOR CUALITATIVO DE 5 NIVELES -->
-            <div class="flex items-center gap-2 no-print">
-              <label class="text-xs font-semibold text-slate-500">Ajuste Docente:</label>
-              <select onchange="actualizarValoracionDocente(${p.id}, ${i}, this.value)" class="text-xs bg-white border border-slate-300 rounded px-2 py-1.5 font-semibold text-slate-700 focus:outline-none focus:border-blue-500 shadow-sm">
-                <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente / Incompleto</option>
-                <option value="35" ${val === 35 ? 'selected' : ''}>35% - Insuficiente / Superficial</option>
-                <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo / Básico</option>
-                <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio / Bueno</option>
-                <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente / Profesional</option>
-              </select>
-            </div>
+          urlArchivoSubido = publicUrlData.publicUrl;
+        }
 
-            <div class="print-only font-bold text-xs">
-              Valoración: ${val}%
-            </div>
-          </div>
-        `;
+        // B. Recopilar datos de la rúbrica
+        const evaluacion = {};
+        criteriosEvaluacion.forEach(c => {
+          const val = document.getElementById(`select-${c.id}`).value;
+          evaluacion[c.id] = val ? parseInt(val) : null;
+        });
+        evaluacion.observaciones = document.getElementById("txt-observaciones").value;
+
+        // C. Objeto para actualizar en BD
+        const updatePayload = {
+          evaluacion_alumno: evaluacion,
+          fecha_actualizacion: new Date().toISOString()
+        };
+
+        if (urlArchivoSubido) {
+          updatePayload.url_archivo = urlArchivoSubido;
+        }
+
+        // D. Guardar en Supabase
+        const { error: updateError } = await supabaseClient
+          .from("emprendimientos")
+          .update(updatePayload)
+          .eq("id", emprendimientoId);
+
+        if (updateError) throw updateError;
+
+        mostrarAlerta("¡Entrega y autoevaluación guardadas con éxito!", "success");
+        
+        // Recargar datos para refrescar la vista
+        await cargarDatosEmprendimiento(emprendimientoId);
+
+      } catch (err) {
+        console.error("Error al guardar:", err.message);
+        mostrarAlerta("Ocurrió un error al guardar la información: " + err.message, "danger");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "💾 Guardar Entrega y Autoevaluación";
       }
+    }
 
-      contenedor.innerHTML = `
-        <div class="space-y-6">
-          <!-- RESUMEN DE NOTAS DUALES -->
-          <div class="grid grid-cols-2 gap-4">
-            <div class="bg-emerald-50 p-4 rounded-lg border border-emerald-200">
-              <span class="text-xs font-bold text-emerald-800 uppercase">Nota de Etapa / Proceso</span>
-              <p class="text-3xl font-extrabold text-emerald-900 mt-1">${notas.notaEtapa} <span class="text-xs font-normal text-slate-500">/ 10</span></p>
-              <p class="text-[11px] text-emerald-700 mt-1">Nivel cualitativo frente a la meta esperada a la fecha (${PUNTOS_ESPERADOS_A_LA_FECHA} pts).</p>
-            </div>
-
-            <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
-              <span class="text-xs font-bold text-indigo-800 uppercase">Nota Global (Plan Completo)</span>
-              <p class="text-3xl font-extrabold text-indigo-900 mt-1">${notas.notaGlobal} <span class="text-xs font-normal text-slate-500">/ 10</span></p>
-              <p class="text-[11px] text-indigo-700 mt-1">Porcentaje de calidad total alcanzado sobre el Plan Final de 10 etapas (1000 pts).</p>
-            </div>
-          </div>
-
-          <!-- MATRIZ DE ETAPAS -->
-          <div class="space-y-3">
-            <h4 class="font-bold text-slate-800 text-sm border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h4>
-            ${htmlMatriz}
-          </div>
+    // Helper para alertas
+    function mostrarAlerta(mensaje, tipo) {
+      const alertContainer = document.getElementById("alert-container");
+      alertContainer.innerHTML = `
+        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+          ${mensaje}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
       `;
-
-      document.getElementById('informe-seccion').classList.remove('hidden');
-      document.getElementById('informe-seccion').scrollIntoView({ behavior: 'smooth' });
     }
-
-    function actualizarValoracionDocente(proyectoId, numEtapa, nuevoValor) {
-      const valNum = parseInt(nuevoValor, 10);
-      evaluacionesManuales[proyectoId][numEtapa].val = valNum;
-      evaluacionesManuales[proyectoId][numEtapa].razon = "Ajustado manualmente por el docente.";
-
-      renderizarGrilla(proyectosCargados);
-      actualizarEstadisticas(proyectosCargados);
-      verInforme(proyectoId);
-    }
-
-    function cerrarInforme() {
-      document.getElementById('informe-seccion').classList.add('hidden');
-    }
-
-    window.onload = cargarProyectos;
   </script>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
