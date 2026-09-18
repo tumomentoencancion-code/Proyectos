@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Evaluaciones - Alumno</title>
+  <!-- Bootstrap 5 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Supabase JS CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+    .header-banner {
+      background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+      color: white;
+      padding: 2.5rem 0;
+      margin-bottom: 2rem;
+      border-radius: 0 0 15px 15px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .card {
+      border: none;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+    }
+    .rubrica-select {
+      font-size: 0.95rem;
+    }
+    .badge-nivel {
+      font-size: 0.85rem;
+      padding: 0.4em 0.6em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Encabezado -->
+  <header class="header-banner">
+    <div class="container text-center">
+      <h1 class="display-5 fw-bold" id="txt-nombre-emprendimiento">Cargando emprendimiento...</h1>
+      <p class="lead mb-0" id="txt-integrantes">Cargando integrantes...</p>
+      <div class="mt-2" id="txt-curso-container">
+        <span class="badge bg-light text-primary fs-6" id="txt-curso">---</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="container pb-5">
+    
+    <!-- Mensajes de Estado / Alertas -->
+    <div id="alert-container"></div>
+
+    <form id="form-alumno" onsubmit="guardarEvaluacionAlumno(event)">
+      
+      <!-- Sección de Entrega de Archivo -->
+      <div class="card p-4">
+        <h4 class="card-title text-primary mb-3">📁 Entrega del Proyecto / Presentación</h4>
+        <div class="row g-3 align-items-center">
+          <div class="col-md-8">
+            <label for="input-archivo" class="form-label">Subir o actualizar archivo de presentación (PDF / Documento):</label>
+            <input type="file" class="form-control" id="input-archivo" accept=".pdf,.doc,.docx,.ppt,.pptx">
+          </div>
+          <div class="col-md-4 text-end" id="container-descarga">
+            <!-- Botón de descarga si ya existe un archivo cargado -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Sección Rúbrica de 5 Niveles -->
+      <div class="card p-4">
+        <h4 class="card-title text-primary mb-3">📝 Rúbrica de Autoevaluación (5 Niveles)</h4>
+        <p class="text-muted">Selecciona el nivel que consideras alcanzado para cada criterio de evaluación.</p>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead class="table-dark">
+              <tr>
+                <th style="width: 30%;">Criterio</th>
+                <th style="width: 70%;">Nivel de Desempeño Seleccionado</th>
+              </tr>
+            </thead>
+            <tbody id="tabla-rubrica-body">
+              <!-- Criterios generados dinámicamente -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Observaciones / Comentarios Adicionales -->
+      <div class="card p-4">
+        <h4 class="card-title text-primary mb-3">💬 Comentarios u Observaciones del Equipo</h4>
+        <div class="mb-3">
+          <textarea class="form-control" id="txt-observaciones" rows="4" placeholder="Escribe aquí aclaraciones sobre la entrega, autocrítica o reflexiones del equipo..."></textarea>
+        </div>
+      </div>
+
+      <!-- Botón Guardar -->
+      <div class="text-end mb-4">
+        <button type="submit" class="btn btn-primary btn-lg px-5 shadow-sm" id="btn-guardar">
+          💾 Guardar Entrega y Autoevaluación
+        </button>
+      </div>
+
+    </form>
+  </div>
+
+  <!-- Script Principal JS -->
+  <script>
+    // 1. CONFIGURACIÓN DE SUPABASE (Reemplazar con tus credenciales si corresponden)
+    const SUPABASE_URL = "https://TU_PROYECTO.supabase.co"; 
+    const SUPABASE_ANON_KEY = "TU_ANON_KEY"; 
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // 2. CRITERIOS Y DEFINICIÓN DE LOS 5 NIVELES
+    const criteriosEvaluacion = [
+      { id: "criterio1", nombre: "1. Definición de la Propuesta de Valor" },
+      { id: "criterio2", nombre: "2. Modelo de Negocio y Viabilidad" },
+      { id: "criterio3", nombre: "3. Calidad de la Presentación y Pitch" },
+      { id: "criterio4", nombre: "4. Trabajo en Equipo y Colaboración" },
+      { id: "criterio5", nombre: "5. Innovación e Impacto del Proyecto" }
+    ];
+
+    const opcionesNivel = [
+      { valor: 1, texto: "Nivel 1: Inicial / Insuficiente" },
+      { valor: 2, texto: "Nivel 2: En Proceso / Basico" },
+      { valor: 3, texto: "Nivel 3: Aceptable / Satisfactorio" },
+      { valor: 4, texto: "Nivel 4: Avanzado / Destacado" },
+      { valor: 5, texto: "Nivel 5: Excelente / Sobresaliente" }
+    ];
+
+    let emprendimientoId = null;
+
+    // 3. INICIALIZACIÓN
+    document.addEventListener("DOMContentLoaded", async () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      emprendimientoId = urlParams.get("id");
+
+      renderizarTablaRubrica();
+
+      if (emprendimientoId) {
+        await cargarDatosEmprendimiento(emprendimientoId);
+      } else {
+        mostrarAlerta("No se especificó un ID de emprendimiento en la URL. Ej: ?id=1", "warning");
+      }
+    });
+
+    // Renderizar las filas de la rúbrica dinámicamente
+    function renderizarTablaRubrica() {
+      const tbody = document.getElementById("tabla-rubrica-body");
+      tbody.innerHTML = "";
+
+      criteriosEvaluacion.forEach(criterio => {
+        const tr = document.createElement("tr");
+        
+        let selectOptionsHtml = `<option value="">-- Seleccionar Nivel --</option>`;
+        opcionesNivel.forEach(op => {
+          selectOptionsHtml += `<option value="${op.valor}">${op.texto}</option>`;
+        });
+
+        tr.innerHTML = `
+          <td class="fw-bold text-secondary">${criterio.nombre}</td>
+          <td>
+            <select class="form-select rubrica-select" id="select-${criterio.id}" required>
+              ${selectOptionsHtml}
+            </select>
+          </td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Cargar datos existentes desde Supabase
+    async function cargarDatosEmprendimiento(id) {
+      try {
+        const { data, error } = await supabaseClient
+          .from("emprendimientos")
+          .select("*")
+          .eq("id", id)
+          .single();
+
+        if (error) throw error;
+
+        if (data) {
+          document.getElementById("txt-nombre-emprendimiento").innerText = data.nombre || "Sin Nombre";
+          document.getElementById("txt-integrantes").innerText = "Integrantes: " + (data.integrantes || "No especificados");
+          document.getElementById("txt-curso").innerText = "Curso / División: " + (data.curso || "N/A");
+
+          // Cargar archivo si existe
+          if (data.url_archivo) {
+            const containerDescarga = document.getElementById("container-descarga");
+            containerDescarga.innerHTML = `
+              <a href="${data.url_archivo}" target="_blank" class="btn btn-outline-success btn-sm me-2">
+                📄 Ver Archivo Actual
+              </a>
+            `;
+          }
+
+          // Cargar rúbrica guardada
+          if (data.evaluacion_alumno) {
+            const ev = data.evaluacion_alumno;
+            criteriosEvaluacion.forEach(c => {
+              if (ev[c.id]) {
+                const select = document.getElementById(`select-${c.id}`);
+                if (select) select.value = ev[c.id];
+              }
+            });
+            if (ev.observaciones) {
+              document.getElementById("txt-observaciones").value = ev.observaciones;
+            }
+          }
+        }
+      } catch (err) {
+        console.error("Error al cargar datos:", err.message);
+        mostrarAlerta("Error al cargar la información del emprendimiento.", "danger");
+      }
+    }
+
+    // 4. GUARDAR DATOS Y SUBIR ARCHIVO
+    async function guardarEvaluacionAlumno(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-guardar");
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
+      try {
+        let urlArchivoSubido = null;
+
+        // A. Subida de archivo (si se seleccionó uno nuevo)
+        const fileInput = document.getElementById("input-archivo");
+        if (fileInput.files.length > 0) {
+          const file = fileInput.files[0];
+          const fileName = `entrega_${emprendimientoId}_${Date.now()}.${file.name.split('.').pop()}`;
+
+          const { data: storageData, error: storageError } = await supabaseClient
+            .storage
+            .from("entregas")
+            .upload(fileName, file);
+
+          if (storageError) throw storageError;
+
+          // Obtener URL pública
+          const { data: publicUrlData } = supabaseClient
+            .storage
+            .from("entregas")
+            .getPublicUrl(fileName);
+
+          urlArchivoSubido = publicUrlData.publicUrl;
+        }
+
+        // B. Recopilar datos de la rúbrica
+        const evaluacion = {};
+        criteriosEvaluacion.forEach(c => {
+          const val = document.getElementById(`select-${c.id}`).value;
+          evaluacion[c.id] = val ? parseInt(val) : null;
+        });
+        evaluacion.observaciones = document.getElementById("txt-observaciones").value;
+
+        // C. Objeto para actualizar en BD
+        const updatePayload = {
+          evaluacion_alumno: evaluacion,
+          fecha_actualizacion: new Date().toISOString()
+        };
+
+        if (urlArchivoSubido) {
+          updatePayload.url_archivo = urlArchivoSubido;
+        }
+
+        // D. Guardar en Supabase
+        const { error: updateError } = await supabaseClient
+          .from("emprendimientos")
+          .update(updatePayload)
+          .eq("id", emprendimientoId);
+
+        if (updateError) throw updateError;
+
+        mostrarAlerta("¡Entrega y autoevaluación guardadas con éxito!", "success");
+        
+        // Recargar datos para refrescar la vista
+        await cargarDatosEmprendimiento(emprendimientoId);
+
+      } catch (err) {
+        console.error("Error al guardar:", err.message);
+        mostrarAlerta("Ocurrió un error al guardar la información: " + err.message, "danger");
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "💾 Guardar Entrega y Autoevaluación";
+      }
+    }
+
+    // Helper para alertas
+    function mostrarAlerta(mensaje, tipo) {
+      const alertContainer = document.getElementById("alert-container");
+      alertContainer.innerHTML = `
+        <div class="alert alert-${tipo} alert-dismissible fade show" role="alert">
+          ${mensaje}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      `;
+    }
+  </script>
+
+  <!-- Bootstrap 5 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
