@@ -10,86 +10,47 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
-  <!-- ENCABEZADO -->
   <header class="bg-blue-900 text-white shadow-lg">
     <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
         <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Portal Alumnos</h1>
-        <p class="text-blue-200 text-xs">Formulario de Formulación e Inserción de Proyectos • 7° Año (2026)</p>
+        <p class="text-blue-200 text-xs">Formulación e Inserción de Proyectos • 7° Año (2026)</p>
       </div>
       <div class="flex items-center gap-3">
         <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
-          <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando Realtime...
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...
         </span>
-        <a href="docente.html" class="text-xs bg-blue-800 hover:bg-blue-700 px-3 py-1.5 rounded transition">
-          <i class="fa-solid fa-lock"></i> Panel Docente
-        </a>
       </div>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-    <!-- SELECCIÓN O CREACIÓN DE PROYECTO -->
+    <!-- SELECCIÓN O CREACIÓN -->
     <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
       <h2 class="text-lg font-bold text-slate-800 mb-2">1. Gestión de Proyecto</h2>
-      <p class="text-xs text-slate-500 mb-4">Selecciona tu proyecto existente para continuar editando o crea uno nuevo para tu equipo.</p>
-      
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label class="block text-xs font-semibold text-slate-600 mb-1">Cargar Proyecto Existente:</label>
-          <select id="select-proyectos" onchange="seleccionarProyecto(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs text-slate-700 font-medium focus:ring-2 focus:ring-blue-500">
+          <select id="select-proyectos" onchange="seleccionarProyecto(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs text-slate-700 font-medium">
             <option value="">-- Seleccionar de la lista --</option>
           </select>
         </div>
         <div class="flex items-end">
-          <button onclick="nuevoProyecto()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
+          <button type="button" onclick="nuevoProyecto()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-plus"></i> Registrar Nuevo Proyecto
           </button>
         </div>
       </div>
     </section>
 
-    <!-- PANEL DE ESTADO Y EVALUACIÓN DOCENTE (TIEMPO REAL) -->
-    <section id="panel-evaluacion-docente" class="hidden bg-white p-6 rounded-xl shadow-sm border border-blue-200 bg-blue-50/30">
-      <div class="flex justify-between items-start mb-3">
-        <div>
-          <h3 class="text-sm font-bold text-blue-900 flex items-center gap-2">
-            <i class="fa-solid fa-graduation-cap"></i> Estado de Evaluación Docente
-          </h3>
-          <p class="text-xs text-slate-500">Devolución y calificación en tiempo real por el profesor.</p>
-        </div>
-        <span id="eval-badge-estado" class="text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider bg-slate-200 text-slate-700">Sin Evaluar</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-blue-100 pt-3 text-xs">
-        <div>
-          <span class="text-slate-500 block">Puntaje Etapas 1 a 5:</span>
-          <strong id="eval-nota1" class="text-slate-800 text-sm">- / 10</strong>
-        </div>
-        <div>
-          <span class="text-slate-500 block">Puntaje Etapas 6 a 10:</span>
-          <strong id="eval-nota2" class="text-slate-800 text-sm">- / 10</strong>
-        </div>
-        <div>
-          <span class="text-slate-500 block">Nota Final Promedio:</span>
-          <strong id="eval-nota-final" class="text-blue-900 text-base font-bold">- / 10</strong>
-        </div>
-      </div>
-
-      <div class="mt-3 pt-3 border-t border-blue-100 text-xs">
-        <strong class="text-slate-700 block mb-1">Devolución / Observaciones del Docente:</strong>
-        <p id="eval-devolucion" class="text-slate-600 bg-white p-3 rounded-lg border border-slate-200 italic whitespace-pre-line">No hay observaciones registradas aún.</p>
-      </div>
-    </section>
-
-    <!-- FORMULARIO DE LAS 10 ETAPAS -->
+    <!-- FORMULARIO 10 ETAPAS -->
     <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 space-y-6">
       
       <div class="border-b pb-4 flex justify-between items-center">
         <div>
           <h2 class="text-xl font-bold text-slate-800">2. Formulación por Etapas</h2>
-          <p class="text-xs text-slate-500">Completa la información técnica de tu emprendimiento para la evaluación cualitativa.</p>
+          <p class="text-xs text-slate-500">Completa o edita la información técnica de tu emprendimiento.</p>
         </div>
         <span id="badge-id" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-mono">Modo: Nuevo</span>
       </div>
@@ -97,15 +58,14 @@
       <!-- ETAPA 1 -->
       <div class="space-y-4">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 1: Diagnóstico e Idea de Negocio</h3>
-        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Proyecto / Emprendimiento *</label>
-            <input type="text" id="nombreProyecto" required placeholder="Ej: Ecobrick Bragado" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Proyecto *</label>
+            <input type="text" id="nombreProyecto" required placeholder="Ej: ECO-LUZ" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Slogan o Frase Identificatoria</label>
-            <input type="text" id="slogan" placeholder="Ej: Construyendo un futuro sustentable" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Slogan</label>
+            <input type="text" id="slogan" placeholder="Frase identificatoria" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
           </div>
         </div>
       </div>
@@ -115,7 +75,7 @@
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 2: Equipo y Estructura Humana</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Integrantes y Roles *</label>
-          <textarea id="integrantes" rows="2" required placeholder="Ej: Juan Pérez (Diseño), María Gómez (Finanzas)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          <textarea id="integrantes" rows="2" required placeholder="Nombres de integrantes..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
@@ -123,81 +83,58 @@
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 3: Estudio de Mercado y Encuesta</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de la Encuesta de Mercado (Google Forms, etc.) *</label>
-          <input type="url" id="encuestaUrl" required placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta (Opcional - Google Forms)</label>
+          <input type="url" id="encuestaUrl" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
         </div>
       </div>
 
-      <!-- ETAPA 4 -->
+      <!-- ETAPAS 4 A 10 -->
       <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 4: Producto, Servicio y Público Target</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Público Objetante / Segmentación de Clientes *</label>
-          <textarea id="publicoObjetivo" rows="3" required placeholder="Describe la edad, necesidades y perfil de tus clientes objetivo..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapas 4 a 6: Mercado y Operativa</h3>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Público Target</label>
+            <textarea id="publicoObjetivo" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Canales y Marketing</label>
+            <textarea id="canalesVenta" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores</label>
+            <textarea id="competidores" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
         </div>
       </div>
 
-      <!-- ETAPA 5 -->
       <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 5: Marketing y Estrategia Comercial (4 Ps)</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Canales de Venta y Estrategia de Difusión *</label>
-          <textarea id="canalesVenta" rows="3" required placeholder="Redes sociales, venta directa, precios estimados, promociones..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapas 7 a 10: Finanzas e Implementación</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS)</label>
+            <input type="number" id="inversionInicial" step="0.01" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Plan de Implementación</label>
+            <textarea id="plan_implementacion" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento</label>
+            <textarea id="estrategias_crecimiento" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Conclusiones y Viabilidad</label>
+            <textarea id="conclusiones" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          </div>
         </div>
       </div>
 
-      <!-- ETAPA 6 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 6: Operativa, Proceso y Competencia</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores Directos e Indirectos *</label>
-          <textarea id="competidores" rows="3" required placeholder="Identifica a tus competidores locales o regionales y tus ventajas sobre ellos..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-      </div>
-
-      <!-- ETAPA 7 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 7: Estructura Financiera y Costos</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS) *</label>
-          <input type="number" id="inversionInicial" step="0.01" required placeholder="Ej: 150000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
-        </div>
-      </div>
-
-      <!-- ETAPA 8 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 8: Plan de Implementación</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Cronograma de Trabajo y Tiempos</label>
-          <textarea id="plan_implementacion" rows="3" placeholder="Fases principales, plazos y tareas para poner en marcha el emprendimiento..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-      </div>
-
-      <!-- ETAPA 9 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 9: Crecimiento y Escalabilidad</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento y Análisis de Riesgos</label>
-          <textarea id="estrategias_crecimiento" rows="3" placeholder="¿Cómo planean escalar la producción o las ventas? Contingencias..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-      </div>
-
-      <!-- ETAPA 10 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 10: Conclusiones y Viabilidad Integral</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Síntesis de Viabilidad *</label>
-          <textarea id="conclusiones" rows="3" required placeholder="Justificación de por qué el proyecto es viable técnica y económicamente..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
-        </div>
-      </div>
-
-      <!-- BOTONES DE ACCIÓN -->
       <div class="pt-6 border-t flex justify-end gap-3">
-        <button type="button" onclick="nuevoProyecto()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-5 rounded-lg text-xs transition">
-          Cancelar / Limpiar
-        </button>
-        <button type="submit" id="btn-guardar" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow transition flex items-center gap-2">
-          <i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto en Supabase
+        <button type="button" onclick="nuevoProyecto()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-5 rounded-lg text-xs">Limpiar</button>
+        <button type="submit" id="btn-guardar" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow flex items-center gap-2">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto
         </button>
       </div>
 
@@ -214,14 +151,10 @@
 
     async function cargarListaProyectos() {
       const { data, error } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-      if (error) {
-        console.error("Error al cargar lista de proyectos:", error);
-        return;
-      }
+      if (error) return;
 
       listaProyectos = data || [];
       const select = document.getElementById('select-proyectos');
-      const valPrevia = select.value;
       select.innerHTML = '<option value="">-- Seleccionar de la lista --</option>';
 
       listaProyectos.forEach(p => {
@@ -233,43 +166,7 @@
 
       if (proyectoIdSeleccionado) {
         select.value = proyectoIdSeleccionado;
-        cargarEvaluacionDocente(proyectoIdSeleccionado);
       }
-    }
-
-    async function cargarEvaluacionDocente(id) {
-      const panel = document.getElementById('panel-evaluacion-docente');
-      if (!id) {
-        panel.classList.add('hidden');
-        return;
-      }
-
-      const { data, error } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
-      
-      panel.classList.remove('hidden');
-
-      if (error || !data) {
-        document.getElementById('eval-badge-estado').innerText = "Sin Evaluar";
-        document.getElementById('eval-badge-estado').className = "text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider bg-slate-200 text-slate-700";
-        document.getElementById('eval-nota1').innerText = "- / 10";
-        document.getElementById('eval-nota2').innerText = "- / 10";
-        document.getElementById('eval-nota-final').innerText = "- / 10";
-        document.getElementById('eval-devolucion').innerText = "El docente aún no ha calificado este proyecto.";
-        return;
-      }
-
-      const estado = data.estado_revision || 'En Revisión';
-      let badgeColor = 'bg-slate-200 text-slate-700';
-      if (estado === 'Aprobado') badgeColor = 'bg-emerald-100 text-emerald-800';
-      if (estado === 'Rehacer') badgeColor = 'bg-rose-100 text-rose-800';
-      if (estado === 'En Revisión') badgeColor = 'bg-amber-100 text-amber-800';
-
-      document.getElementById('eval-badge-estado').innerText = estado;
-      document.getElementById('eval-badge-estado').className = `text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider ${badgeColor}`;
-      document.getElementById('eval-nota1').innerText = `${data.nota_etapa1_5 || 0} / 10`;
-      document.getElementById('eval-nota2').innerText = `${data.nota_etapa6_10 || 0} / 10`;
-      document.getElementById('eval-nota-final').innerText = `${data.nota_final || 0} / 10`;
-      document.getElementById('eval-devolucion').innerText = data.devolucion_docente || "Sin observaciones escritas.";
     }
 
     function seleccionarProyecto(id) {
@@ -294,8 +191,6 @@
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
       document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
-
-      cargarEvaluacionDocente(proyectoIdSeleccionado);
     }
 
     function nuevoProyecto() {
@@ -303,7 +198,6 @@
       document.getElementById('form-proyecto').reset();
       document.getElementById('select-proyectos').value = "";
       document.getElementById('badge-id').innerText = "Modo: Nuevo";
-      document.getElementById('panel-evaluacion-docente').classList.add('hidden');
     }
 
     async function guardarProyecto(event) {
@@ -316,7 +210,7 @@
         nombreProyecto: document.getElementById('nombreProyecto').value,
         slogan: document.getElementById('slogan').value,
         integrantes: document.getElementById('integrantes').value,
-        encuestaUrl: document.getElementById('encuestaUrl').value,
+        encuestaUrl: document.getElementById('encuestaUrl').value || '',
         publicoObjetivo: document.getElementById('publicoObjetivo').value,
         canalesVenta: document.getElementById('canalesVenta').value,
         competidores: document.getElementById('competidores').value,
@@ -327,57 +221,39 @@
       };
 
       try {
-        let error;
-
+        let res;
         if (proyectoIdSeleccionado) {
-          const res = await _supabase.from('proyectos').update(datos).eq('id', proyectoIdSeleccionado);
-          error = res.error;
+          res = await _supabase.from('proyectos').update(datos).eq('id', proyectoIdSeleccionado);
         } else {
-          const res = await _supabase.from('proyectos').insert([datos]);
-          error = res.error;
+          res = await _supabase.from('proyectos').insert([datos]);
         }
 
-        if (error) {
-          alert("Error al guardar en la base de datos: " + error.message);
+        if (res.error) {
+          alert("Error al guardar: " + res.error.message);
         } else {
           alert(proyectoIdSeleccionado ? "¡Proyecto actualizado exitosamente!" : "¡Proyecto creado exitosamente!");
           await cargarListaProyectos();
         }
       } catch (err) {
-        console.error("Error inesperado:", err);
+        console.error(err);
       } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto en Supabase';
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto';
       }
     }
 
-    // SUSCRIPCIÓN EN TIEMPO REAL (REALTIME)
-    function suscribirRealtime() {
-      _supabase.channel('cambios-alumno')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'proyectos' }, () => cargarListaProyectos())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, () => {
-          if (proyectoIdSeleccionado) cargarEvaluacionDocente(proyectoIdSeleccionado);
-        })
-        .subscribe((status) => {
-          const badge = document.getElementById('realtime-status');
-          if (status === 'SUBSCRIBED') {
-            badge.className = "text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2";
-            badge.innerHTML = '<i class="fa-solid fa-bolt"></i> Realtime Activo';
-          }
-        });
-    }
-
     window.onload = () => {
-  cargarListaProyectos();
-  suscribirRealtime();
+      cargarListaProyectos();
 
-  // Detecta el ID enviado desde el portal y lo abre automáticamente
-  const urlParams = new URLSearchParams(window.location.search);
-  const idProyecto = urlParams.get('id');
-  if (idProyecto) {
-    seleccionarProyecto(idProyecto); // o la función que use tu archivo para cargar el proyecto en pantalla
-  }
-};
+      const urlParams = new URLSearchParams(window.location.search);
+      const idProyecto = urlParams.get('id');
+      if (idProyecto) {
+        setTimeout(() => {
+          seleccionarProyecto(idProyecto);
+          document.getElementById('select-proyectos').value = idProyecto;
+        }, 500);
+      }
+    };
   </script>
 </body>
 </html>
