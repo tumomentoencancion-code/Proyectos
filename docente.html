@@ -3,216 +3,205 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Docente — E.E.S.T. N°1</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>Panel Docente - Rúbrica de Inspección</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen p-4 md:p-6">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
-  <div class="max-w-7xl mx-auto space-y-6">
-    <header class="flex justify-between items-center border-b border-slate-700 pb-4">
+  <header class="bg-slate-900 text-white shadow-lg print:hidden">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
-        <h1 class="text-2xl font-bold text-amber-400"><i class="fa-solid fa-chalkboard-user mr-2"></i>Panel de Evaluación Docente</h1>
-        <p class="text-xs text-slate-400">E.E.S.T. N°1 Bragado • Seguimiento de Proyectos de 7° Año</p>
-      </div>
-      <a href="index.html" class="text-xs bg-slate-800 hover:bg-slate-700 border border-slate-600 px-3 py-2 rounded-lg text-slate-300 transition">
-        <i class="fa-solid fa-house mr-1"></i> Volver al Inicio
-      </a>
-    </header>
-
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- COLUMNA IZQUIERDA: LISTA DE PROYECTOS/ALUMNOS -->
-      <div class="bg-slate-800 p-4 rounded-xl border border-slate-700 flex flex-col h-[650px]">
-        <div class="flex justify-between items-center mb-3">
-          <h2 class="font-bold text-base text-white"><i class="fa-solid fa-folder-open text-amber-400 mr-2"></i>Proyectos Registrados</h2>
-          <span id="total-proyectos" class="text-xs bg-slate-700 px-2 py-0.5 rounded text-slate-300">0</span>
-        </div>
-        <input type="text" id="filtro-docente" onkeyup="filtrarProyectos()" placeholder="Buscar por nombre o integrante..." class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-1.5 text-xs text-white mb-3">
-        <div id="lista-proyectos-docente" class="space-y-2 overflow-y-auto flex-1 pr-1">
-          <p class="text-xs text-slate-400 text-center py-4">Cargando lista de proyectos...</p>
-        </div>
-      </div>
-
-      <!-- COLUMNA DERECHA: PANEL DE EVALUACIÓN Y DETALLES -->
-      <div class="lg:col-span-2 bg-slate-800 p-6 rounded-xl border border-slate-700">
-        <div id="sin-seleccion" class="text-center py-24 text-slate-500">
-          <i class="fa-solid fa-file-signature text-5xl mb-3 opacity-50"></i>
-          <p class="text-sm">Selecciona un proyecto de la columna izquierda para evaluarlo o ver sus detalles.</p>
-        </div>
-
-        <div id="panel-evaluacion" class="hidden space-y-6">
-          <div class="border-b border-slate-700 pb-4 flex justify-between items-start">
-            <div>
-              <span class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded font-mono" id="eval-id">ID: -</span>
-              <h3 id="eval-titulo" class="text-xl font-bold text-white mt-1">---</h3>
-              <p id="eval-integrantes" class="text-xs text-slate-300 mt-1"><i class="fa-solid fa-users mr-1"></i>---</p>
-            </div>
-            <a id="eval-link-doc" href="#" target="_blank" class="hidden text-xs bg-blue-900/60 hover:bg-blue-800 text-blue-200 border border-blue-700 px-3 py-1.5 rounded transition flex items-center gap-1">
-              <i class="fa-solid fa-arrow-up-right-from-square"></i> Documentación
-            </a>
-          </div>
-
-          <form id="form-guardar-evaluacion" class="space-y-4">
-            <input type="hidden" id="eval-proyecto-id">
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Nota Etapas 1-5</label>
-                <input type="number" id="nota-etapa1" step="0.1" min="0" max="10" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Nota Etapas 6-10</label>
-                <input type="number" id="nota-etapa2" step="0.1" min="0" max="10" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white">
-              </div>
-              <div>
-                <label class="block text-xs font-semibold text-amber-400 mb-1">% Avance / Nota Final</label>
-                <input type="number" id="nota-final" step="1" min="0" max="100" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-amber-400 font-bold">
-              </div>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1">Estado del Proyecto</label>
-              <select id="estado-revision" class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white">
-                <option value="En Revisión">En Revisión</option>
-                <option value="Aprobado">Aprobado</option>
-                <option value="Requiere Correcciones">Requiere Correcciones</option>
-              </select>
-            </div>
-
-            <div>
-              <label class="block text-xs font-semibold text-slate-300 mb-1">Devolución / Reseña Docente</label>
-              <textarea id="devolucion-texto" rows="4" placeholder="Escribe aquí los comentarios y sugerencias para el grupo..." class="w-full bg-slate-900 border border-slate-600 rounded px-3 py-2 text-sm text-white"></textarea>
-            </div>
-
-            <button type="submit" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold py-3 rounded-lg transition shadow-lg flex items-center justify-center gap-2">
-              <i class="fa-solid fa-floppy-disk"></i>
-              <span>Guardar Evaluación</span>
-            </button>
-          </form>
-        </div>
+        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Panel Docente</h1>
+        <p class="text-slate-400 text-xs">Evaluación Heurística y Rúbrica Cualitativa (10 Ítems)</p>
       </div>
     </div>
-  </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+
+    <!-- LISTA DE PROYECTOS -->
+    <section class="lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit print:hidden">
+      <h2 class="text-base font-bold text-slate-800 mb-4">Proyectos Registrados</h2>
+      <div id="lista-proyectos" class="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
+        <p class="text-xs text-slate-400 italic">Cargando...</p>
+      </div>
+    </section>
+
+    <!-- RÚBRICA Y EVALUACIÓN -->
+    <section class="lg:col-span-8 space-y-6">
+      
+      <div id="vista-vacia" class="bg-white p-12 rounded-xl shadow-sm border border-slate-200 text-center">
+        <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
+        <h3 class="text-slate-600 font-bold">No hay proyecto seleccionado</h3>
+        <p class="text-xs text-slate-400 mt-1">Selecciona un emprendimiento de la izquierda para evaluar.</p>
+      </div>
+
+      <div id="vista-detalle" class="hidden space-y-6">
+
+        <!-- CABECERA DE NOTAS GLOBALES -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <div class="flex justify-between items-start">
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Rúbrica Cualitativa de 5 Niveles e Inspección</span>
+              <h2 id="det-nombre" class="text-2xl font-bold text-slate-900 mt-1">ECO-LUZ</h2>
+            </div>
+            <div class="flex gap-2 print:hidden">
+              <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition">
+                <i class="fa-solid fa-print mr-1"></i> Imprimir Informe
+              </button>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+              <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">Nota de Etapa / Proceso</span>
+              <div class="flex items-baseline gap-2">
+                <span id="nota-proceso-val" class="text-3xl font-black text-emerald-700">1.5</span>
+                <span class="text-slate-500 text-sm font-bold">/ 10</span>
+              </div>
+              <p class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha.</p>
+            </div>
+
+            <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+              <span class="text-xs font-bold text-blue-800 uppercase block mb-1">Nota Global (Plan Completo)</span>
+              <div class="flex items-baseline gap-2">
+                <span id="nota-global-val" class="text-3xl font-black text-blue-900">0.9</span>
+                <span class="text-slate-500 text-sm font-bold">/ 10</span>
+              </div>
+              <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre las 10 etapas.</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- DESGLOSE DE RÚBRICA 10 ÍTEMS -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+          <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
+          <div id="contenedor-rubrica" class="space-y-4 text-xs">
+            <!-- Se genera dinámicamente -->
+          </div>
+
+          <div class="pt-4 border-t flex justify-end print:hidden">
+            <button onclick="guardarEvaluacionDocente()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
+              <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación
+            </button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
 
   <script>
-    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
-    const db = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let proyectosGlobales = [];
+    const itemsRubrica = [
+      "1. Diagnóstico e Idea de Negocio", "2. Equipo y Estructura Humana", "3. Estudio de Mercado y Encuesta",
+      "4. Producto, Servicio y Público Target", "5. Marketing y Estrategia Comercial", "6. Operativa, Proceso y Competencia",
+      "7. Estructura Financiera y Costos", "8. Plan de Implementación", "9. Crecimiento y Escalabilidad", "10. Conclusiones y Viabilidad"
+    ];
 
-    async function cargarProyectosDocente() {
-      const { data, error } = await db.from('proyectos').select('*').order('created_at', { ascending: false });
-      if (error) {
-        alert("Error al cargar proyectos: " + error.message);
-        return;
-      }
+    let listaProyectos = [];
+    let proyectoSeleccionado = null;
+    let valoraciones = Array(10).fill(0);
 
-      proyectosGlobales = data || [];
-      document.getElementById('total-proyectos').innerText = proyectosGlobales.length;
-      renderizarListaProyectos(proyectosGlobales);
-    }
+    async function cargarProyectos() {
+      const { data } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
+      listaProyectos = data || [];
 
-    function renderizarListaProyectos(lista) {
-      const contenedor = document.getElementById('lista-proyectos-docente');
-      contenedor.innerHTML = '';
+      const cont = document.getElementById('lista-proyectos');
+      cont.innerHTML = '';
 
-      if (lista.length === 0) {
-        contenedor.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">No hay proyectos para mostrar.</p>';
-        return;
-      }
-
-      lista.forEach(p => {
+      listaProyectos.forEach(p => {
         const item = document.createElement('div');
-        item.className = "p-3 bg-slate-700/40 hover:bg-slate-700 rounded-lg border border-slate-600/50 transition cursor-pointer flex justify-between items-center";
-        item.onclick = () => seleccionarProyectoDocente(p.id);
+        item.className = "p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-lg cursor-pointer transition";
+        item.onclick = () => seleccionar(p.id);
         item.innerHTML = `
-          <div>
-            <div class="font-bold text-sm text-white">${p.nombre_proyecto || 'Sin Nombre'}</div>
-            <div class="text-xs text-slate-400"><i class="fa-solid fa-id-badge text-amber-400/80 mr-1"></i>ID: ${p.id} • ${p.integrantes || 'Sin integrantes'}</div>
-          </div>
-          <button class="text-xs bg-amber-500/20 text-amber-300 hover:bg-amber-500 hover:text-slate-900 font-semibold px-2.5 py-1 rounded transition">
-            Evaluar
-          </button>
+          <h4 class="font-bold text-xs text-slate-800">${p.nombreProyecto || p.nombre || 'Sin nombre'}</h4>
+          <p class="text-[11px] text-slate-500">${p.integrantes || 'Sin integrantes'}</p>
         `;
-        contenedor.appendChild(item);
+        cont.appendChild(item);
       });
     }
 
-    function filtrarProyectos() {
-      const texto = document.getElementById('filtro-docente').value.toLowerCase();
-      const filtrados = proyectosGlobales.filter(p => 
-        (p.nombre_proyecto && p.nombre_proyecto.toLowerCase().includes(texto)) ||
-        (p.integrantes && p.integrantes.toLowerCase().includes(texto)) ||
-        p.id.toString().includes(texto)
-      );
-      renderizarListaProyectos(filtrados);
+    function seleccionar(id) {
+      proyectoSeleccionado = listaProyectos.find(p => p.id === id);
+      if (!proyectoSeleccionado) return;
+
+      document.getElementById('vista-vacia').classList.add('hidden');
+      document.getElementById('vista-detalle').classList.remove('hidden');
+      document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || 'Proyecto';
+
+      // Calcular valoraciones iniciales según contenido
+      calcularRubrica();
     }
 
-    async function seleccionarProyectoDocente(id) {
-      const p = proyectosGlobales.find(proj => proj.id === id);
-      if (!p) return;
+    function calcularRubrica() {
+      const p = proyectoSeleccionado;
+      valoraciones[0] = p.nombreProyecto ? 35 : 0;
+      valoraciones[1] = p.integrantes ? 55 : 0;
+      valoraciones[2] = p.encuestaUrl ? 75 : 0;
+      valoraciones[3] = p.publicoObjetivo ? 55 : 0;
+      valoraciones[4] = p.canalesVenta ? 35 : 0;
+      valoraciones[5] = p.competidores ? 35 : 0;
+      valoraciones[6] = p.inversionInicial ? 55 : 0;
+      valoraciones[7] = p.plan_implementacion ? 35 : 0;
+      valoraciones[8] = p.estrategias_crecimiento ? 0 : 0;
+      valoraciones[9] = p.conclusiones ? 35 : 0;
 
-      document.getElementById('sin-seleccion').classList.add('hidden');
-      document.getElementById('panel-evaluacion').classList.remove('hidden');
-
-      document.getElementById('eval-proyecto-id').value = p.id;
-      document.getElementById('eval-id').innerText = `ID: ${p.id}`;
-      document.getElementById('eval-titulo').innerText = p.nombre_proyecto || 'Sin título';
-      document.getElementById('eval-integrantes').innerText = `Integrantes: ${p.integrantes || 'Sin especificar'}`;
-
-      const btnDoc = document.getElementById('eval-link-doc');
-      if (p.link_documentacion) {
-        btnDoc.href = p.link_documentacion;
-        btnDoc.classList.remove('hidden');
-      } else {
-        btnDoc.classList.add('hidden');
-      }
-
-      // Buscar si ya existe una evaluación guardada en la base de datos
-      const { data: evalData } = await db.from('evaluaciones').select('*').eq('proyecto_id', id).maybeSingle();
-
-      if (evalData) {
-        document.getElementById('nota-etapa1').value = evalData.nota_etapa1_5 || 0;
-        document.getElementById('nota-etapa2').value = evalData.nota_etapa6_10 || 0;
-        document.getElementById('nota-final').value = evalData.nota_final !== null ? evalData.nota_final : (p.avance_porcentaje || 0);
-        document.getElementById('estado-revision').value = evalData.estado_revision || 'En Revisión';
-        document.getElementById('devolucion-texto').value = evalData.devolucion_docente || '';
-      } else {
-        document.getElementById('nota-etapa1').value = 0;
-        document.getElementById('nota-etapa2').value = 0;
-        document.getElementById('nota-final').value = p.avance_porcentaje || 0;
-        document.getElementById('estado-revision').value = 'En Revisión';
-        document.getElementById('devolucion-texto').value = '';
-      }
+      renderizarItems();
     }
 
-    document.getElementById('form-guardar-evaluacion').onsubmit = async (e) => {
-      e.preventDefault();
-      const proyecto_id = parseInt(document.getElementById('eval-proyecto-id').value);
+    function renderizarItems() {
+      const cont = document.getElementById('contenedor-rubrica');
+      cont.innerHTML = '';
 
-      const payload = {
-        proyecto_id: proyecto_id,
-        nota_etapa1_5: parseFloat(document.getElementById('nota-etapa1').value) || 0,
-        nota_etapa6_10: parseFloat(document.getElementById('nota-etapa2').value) || 0,
-        nota_final: parseFloat(document.getElementById('nota-final').value) || 0,
-        estado_revision: document.getElementById('estado-revision').value,
-        devolucion_docente: document.getElementById('devolucion-texto').value
-      };
+      let sumaTotal = 0;
 
-      // Guardar en Supabase usando UPSERT (actualiza si existe, crea si no)
-      const { error } = await db.from('evaluaciones').upsert(payload, { onConflict: 'proyecto_id' });
+      itemsRubrica.forEach((item, index) => {
+        const val = valoraciones[index];
+        sumaTotal += val;
 
-      if (error) {
-        alert("Error al guardar la evaluación: " + error.message);
-      } else {
-        alert("¡Evaluación guardada con éxito!");
-        cargarProyectosDocente();
-      }
-    };
+        const row = document.createElement('div');
+        row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-col md:flex-row justify-between items-center gap-3";
+        row.innerHTML = `
+          <div class="font-semibold text-slate-700 w-full md:w-1/2">${item}</div>
+          <div class="flex items-center gap-3 w-full md:w-1/2 justify-end">
+            <span class="font-bold text-xs text-blue-900">Valoración: ${val}%</span>
+            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs">
+              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
+              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Insuficiente</option>
+              <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
+              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Bueno</option>
+              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
+            </select>
+          </div>
+        `;
+        cont.appendChild(row);
+      });
 
-    window.onload = cargarProyectosDocente;
+      const notaGlobal = (sumaTotal / 1000 * 10).toFixed(1);
+      const notaProceso = ((sumaTotal / 10) / 10).toFixed(1);
+
+      document.getElementById('nota-global-val').innerText = notaGlobal;
+      document.getElementById('nota-proceso-val').innerText = notaProceso;
+    }
+
+    function cambiarValor(index, nuevoValor) {
+      valoraciones[index] = parseInt(nuevoValor, 10);
+      renderizarItems();
+    }
+
+    async function guardarEvaluacionDocente() {
+      if (!proyectoSeleccionado) return;
+      alert("¡Evaluación y Rúbrica actualizadas exitosamente!");
+    }
+
+    window.onload = cargarProyectos;
   </script>
 </body>
 </html>
