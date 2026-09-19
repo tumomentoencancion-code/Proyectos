@@ -26,7 +26,7 @@
 
   <main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
 
-    <!-- SELECCIÓN O CREACIÓN -->
+    <!-- SELECCIÓN DE PROYECTO -->
     <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
       <h2 class="text-lg font-bold text-slate-800 mb-2">1. Gestión de Proyecto</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -44,13 +44,37 @@
       </div>
     </section>
 
-    <!-- FORMULARIO 10 ETAPAS -->
+    <!-- TARJETA DE DEVOLUCIÓN Y NOTA EN TIEMPO REAL -->
+    <section id="tarjeta-evaluacion" class="hidden bg-blue-900 text-white p-6 rounded-xl shadow-md border border-blue-800 space-y-3">
+      <div class="flex justify-between items-center border-b border-blue-800 pb-2">
+        <h3 class="font-bold text-sm text-blue-200 flex items-center gap-2">
+          <i class="fa-solid fa-graduation-cap text-amber-400"></i> Estado de Evaluación Docente
+        </h3>
+        <span id="eval-estado-badge" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded font-semibold">En Revisión</span>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
+        <div class="bg-blue-950/60 p-3 rounded-lg border border-blue-800">
+          <span class="text-[11px] text-blue-300 font-semibold block">Nota / Calificación Actual</span>
+          <div class="flex items-baseline gap-1 mt-1">
+            <span id="eval-nota-val" class="text-2xl font-black text-amber-400">0.0</span>
+            <span class="text-xs text-blue-300 font-bold">/ 10 pts</span>
+          </div>
+        </div>
+
+        <div class="md:col-span-2 bg-blue-950/60 p-3 rounded-lg border border-blue-800">
+          <span class="text-[11px] text-blue-300 font-semibold block mb-1">Devolución y Observaciones del Docente:</span>
+          <p id="eval-devolucion-txt" class="text-xs text-slate-200 italic">No hay devoluciones registradas aún.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FORMULARIO POR ETAPAS -->
     <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 space-y-6">
-      
       <div class="border-b pb-4 flex justify-between items-center">
         <div>
           <h2 class="text-xl font-bold text-slate-800">2. Formulación por Etapas</h2>
-          <p class="text-xs text-slate-500">Completa o edita la información técnica de tu emprendimiento.</p>
+          <p class="text-xs text-slate-500">Edita la información de tu emprendimiento.</p>
         </div>
         <span id="badge-id" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-mono">Modo: Nuevo</span>
       </div>
@@ -83,7 +107,7 @@
       <div class="space-y-4 pt-4 border-t">
         <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 3: Estudio de Mercado y Encuesta</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta (Opcional - Google Forms)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta (Opcional)</label>
           <input type="url" id="encuestaUrl" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
         </div>
       </div>
@@ -137,7 +161,6 @@
           <i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto
         </button>
       </div>
-
     </form>
   </main>
 
@@ -150,10 +173,9 @@
     let proyectoIdSeleccionado = null;
 
     async function cargarListaProyectos() {
-      const { data, error } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-      if (error) return;
-
+      const { data } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
       listaProyectos = data || [];
+
       const select = document.getElementById('select-proyectos');
       select.innerHTML = '<option value="">-- Seleccionar de la lista --</option>';
 
@@ -166,6 +188,24 @@
 
       if (proyectoIdSeleccionado) {
         select.value = proyectoIdSeleccionado;
+      }
+    }
+
+    async function cargarEvaluacionDocente(id) {
+      if (!id) return;
+      const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).maybeSingle();
+
+      const sec = document.getElementById('tarjeta-evaluacion');
+      sec.classList.remove('hidden');
+
+      if (data) {
+        document.getElementById('eval-nota-val').innerText = (data.nota_final || 0).toFixed(1);
+        document.getElementById('eval-devolucion-txt').innerText = data.devolucion_docente || 'Sin devoluciones registradas aún.';
+        document.getElementById('eval-estado-badge').innerText = data.estado_revision || 'En Revisión';
+      } else {
+        document.getElementById('eval-nota-val').innerText = '0.0';
+        document.getElementById('eval-devolucion-txt').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
+        document.getElementById('eval-estado-badge').innerText = 'En Revisión';
       }
     }
 
@@ -191,6 +231,8 @@
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
       document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
+
+      cargarEvaluacionDocente(proyectoIdSeleccionado);
     }
 
     function nuevoProyecto() {
@@ -198,6 +240,7 @@
       document.getElementById('form-proyecto').reset();
       document.getElementById('select-proyectos').value = "";
       document.getElementById('badge-id').innerText = "Modo: Nuevo";
+      document.getElementById('tarjeta-evaluacion').classList.add('hidden');
     }
 
     async function guardarProyecto(event) {
@@ -242,8 +285,25 @@
       }
     }
 
-    window.onload = () => {
-      cargarListaProyectos();
+    function suscribirRealtime() {
+      _supabase.channel('cambios-alumno')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, (payload) => {
+          if (proyectoIdSeleccionado && payload.new && payload.new.proyecto_id === proyectoIdSeleccionado) {
+            cargarEvaluacionDocente(proyectoIdSeleccionado);
+          }
+        })
+        .subscribe((status) => {
+          const badge = document.getElementById('realtime-status');
+          if (status === 'SUBSCRIBED') {
+            badge.className = "text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2";
+            badge.innerHTML = '<i class="fa-solid fa-bolt"></i> Realtime Activo';
+          }
+        });
+    }
+
+    window.onload = async () => {
+      await cargarListaProyectos();
+      suscribirRealtime();
 
       const urlParams = new URLSearchParams(window.location.search);
       const idProyecto = urlParams.get('id');
@@ -251,7 +311,7 @@
         setTimeout(() => {
           seleccionarProyecto(idProyecto);
           document.getElementById('select-proyectos').value = idProyecto;
-        }, 500);
+        }, 300);
       }
     };
   </script>
