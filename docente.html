@@ -115,7 +115,6 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // ESTRUCTURA COMPLETA DE ANÁLISIS CUALITATIVO Y REGLAS HEURÍSTICAS DE IA
     const itemsDefinicion = [
       {
         titulo: "1. Diagnóstico e Idea de Negocio",
@@ -214,15 +213,22 @@
     let sugerenciasIA = Array(10).fill("");
 
     async function cargarDatos() {
-      const { data: pData } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-      listaProyectos = pData || [];
+      try {
+        const { data: pData, error: pError } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
+        if (pError) console.error("Error al cargar proyectos:", pError);
+        listaProyectos = pData || [];
 
-      const { data: eData } = await _supabase.from('evaluaciones').select('*');
-      listaEvaluaciones = eData || [];
+        renderizarLista();
 
-      renderizarLista();
-      if (proyectoSeleccionado) {
-        seleccionarProyecto(proyectoSeleccionado.id);
+        const { data: eData, error: eError } = await _supabase.from('evaluaciones').select('*');
+        if (eError) console.warn("Aviso de evaluaciones:", eError);
+        listaEvaluaciones = eData || [];
+
+        if (proyectoSeleccionado) {
+          seleccionarProyecto(proyectoSeleccionado.id);
+        }
+      } catch (err) {
+        console.error("Excepción al cargar datos:", err);
       }
     }
 
@@ -268,7 +274,6 @@
 
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
 
-      // Ejecutar inspección heurística de IA sobre el proyecto
       itemsDefinicion.forEach((def, idx) => {
         const txt = obtenerTextoCampo(proyectoSeleccionado, def.campos);
         const res = def.analizar(txt);
@@ -290,7 +295,6 @@
       cont.innerHTML = '';
 
       let sumaTotal = 0;
-      // Etapas 1 a 6 representan el avance esperado a la fecha (600 pts)
       let sumaProceso = 0;
 
       itemsDefinicion.forEach((def, index) => {
@@ -332,10 +336,7 @@
         cont.appendChild(row);
       });
 
-      // Cálculo corregido exacto al formato original:
-      // Nota de Proceso = Etapas 1-6 sobre 600 pts traducido a escala 0-10
       const notaProceso = (sumaProceso / 60).toFixed(1);
-      // Nota Global = Total de 10 Etapas sobre 1000 pts traducido a escala 0-10
       const notaGlobal = (sumaTotal / 100).toFixed(1);
 
       document.getElementById('nota-proceso-val').innerText = notaProceso;
