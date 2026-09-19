@@ -42,28 +42,44 @@
       </div>
     </section>
 
-    <!-- ESTADO DE EVALUACIÓN DOCENTE -->
-    <section class="bg-slate-900 text-white p-6 rounded-xl shadow-md border border-slate-800 space-y-4">
-      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
-        <h3 class="text-sm font-bold flex items-center gap-2 text-amber-400">
-          <i class="fa-solid fa-graduation-cap"></i> Estado de Evaluación Docente
+    <!-- ESTADO DE EVALUACIÓN DOCENTE (AMBAS NOTAS DUPLICADAS DEL DOCENTE) -->
+    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="text-sm font-bold flex items-center gap-2 text-slate-800">
+          <i class="fa-solid fa-graduation-cap text-blue-600"></i> Estado de Evaluación Docente
         </h3>
-        <span id="eval-estado" class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-bold uppercase border border-slate-700">En Revisión</span>
+        <span id="eval-estado" class="text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">En Revisión</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
-        <div class="md:col-span-4 bg-slate-800/80 p-4 rounded-lg border border-slate-700 flex flex-col justify-center">
-          <span class="text-[11px] font-bold text-slate-400 uppercase">Nota / Calificación Actual</span>
-          <div class="flex items-baseline gap-1 mt-1">
-            <span id="eval-nota" class="text-3xl font-black text-amber-400">0.0</span>
-            <span class="text-xs text-slate-400 font-bold">/ 10 pts</span>
+      <!-- DUAL NOTA: PROCESO Y GLOBAL -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        
+        <!-- NOTA PROCESO -->
+        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
+          <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO</span>
+          <div class="flex items-baseline gap-2">
+            <span id="eval-nota-proceso" class="text-3xl font-black text-emerald-700">0.0</span>
+            <span class="text-slate-500 text-sm font-bold">/ 10</span>
           </div>
+          <p class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha (600 pts).</p>
         </div>
 
-        <div class="md:col-span-8 bg-slate-800/80 p-4 rounded-lg border border-slate-700">
-          <span class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Devolución y Observaciones del Docente:</span>
-          <p id="eval-devolucion" class="text-xs text-slate-300 italic">Aún no hay observaciones del docente registradas para este proyecto.</p>
+        <!-- NOTA GLOBAL -->
+        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
+          <span class="text-xs font-bold text-blue-800 uppercase block mb-1">NOTA GLOBAL (PLAN COMPLETO)</span>
+          <div class="flex items-baseline gap-2">
+            <span id="eval-nota-global" class="text-3xl font-black text-blue-900">0.0</span>
+            <span class="text-slate-500 text-sm font-bold">/ 10</span>
+          </div>
+          <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre el Plan Final de 10 etapas (1000 pts).</p>
         </div>
+
+      </div>
+
+      <!-- DEVOLUCIÓN DEL DOCENTE -->
+      <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl pt-3">
+        <span class="text-[11px] font-bold text-slate-600 uppercase block mb-1">Devolución y Observaciones Generales del Docente:</span>
+        <p id="eval-devolucion" class="text-xs text-slate-700 italic">Aún no hay observaciones del docente registradas para este proyecto.</p>
       </div>
     </section>
 
@@ -201,7 +217,6 @@
         select.appendChild(option);
       });
 
-      // Detectar si hay ID en la URL (?id=X)
       const urlParams = new URLSearchParams(window.location.search);
       const urlId = urlParams.get('id');
       if (urlId) {
@@ -241,11 +256,14 @@
       const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
       
       if (data) {
-        document.getElementById('eval-nota').innerText = (data.nota_final || 0).toFixed(1);
+        // Asignación de ambas notas sincronizadas con el docente
+        document.getElementById('eval-nota-proceso').innerText = (data.nota_etapa1_5 || 0).toFixed(1);
+        document.getElementById('eval-nota-global').innerText = (data.nota_final || 0).toFixed(1);
         document.getElementById('eval-devolucion').innerText = data.devolucion_docente || 'Sin observaciones registradas.';
         document.getElementById('eval-estado').innerText = data.estado_revision || 'En Revisión';
       } else {
-        document.getElementById('eval-nota').innerText = '0.0';
+        document.getElementById('eval-nota-proceso').innerText = '0.0';
+        document.getElementById('eval-nota-global').innerText = '0.0';
         document.getElementById('eval-devolucion').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
         document.getElementById('eval-estado').innerText = 'En Revisión';
       }
@@ -302,7 +320,8 @@
       proyectoActualId = null;
       document.getElementById('form-proyecto').reset();
       document.getElementById('modo-form').innerText = "Modo: Nuevo Registro";
-      document.getElementById('eval-nota').innerText = '0.0';
+      document.getElementById('eval-nota-proceso').innerText = '0.0';
+      document.getElementById('eval-nota-global').innerText = '0.0';
       document.getElementById('eval-devolucion').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
       document.getElementById('eval-estado').innerText = 'En Revisión';
     }
