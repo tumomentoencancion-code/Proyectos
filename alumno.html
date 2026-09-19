@@ -3,85 +3,81 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Carga de Proyecto - E.E.S.T. N°1 Bragado</title>
+  <title>Formulación de Proyecto - E.E.S.T. N°1 Bragado</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <header class="bg-blue-900 text-white shadow-lg">
+  <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Portal Alumnos</h1>
-        <p class="text-blue-200 text-xs">Formulación e Inserción de Proyectos • 7° Año (2026)</p>
+        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Portal de Proyectos</h1>
+        <p class="text-slate-400 text-xs">Formulación por Etapas e Integración Heurística • 7° Año</p>
       </div>
-      <div class="flex items-center gap-3">
-        <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
-          <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...
-        </span>
-      </div>
+      <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
+        <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...
+      </span>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-6 py-8 space-y-6">
+  <main class="max-w-5xl mx-auto px-6 space-y-8">
 
-    <!-- SELECCIÓN DE PROYECTO -->
+    <!-- SELECTOR DE PROYECTO -->
     <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-      <h2 class="text-lg font-bold text-slate-800 mb-2">1. Gestión de Proyecto</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label class="block text-xs font-semibold text-slate-600 mb-1">Cargar Proyecto Existente:</label>
-          <select id="select-proyectos" onchange="seleccionarProyecto(this.value)" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2.5 text-xs text-slate-700 font-medium">
-            <option value="">-- Seleccionar de la lista --</option>
+      <h2 class="text-base font-bold text-slate-800 mb-3">1. Gestión de Proyecto</h2>
+      <div class="flex flex-col sm:flex-row gap-4 items-center">
+        <div class="w-full sm:w-2/3">
+          <label class="block text-xs font-semibold text-slate-500 mb-1">Cargar Proyecto Existente:</label>
+          <select id="select-proyectos" onchange="cargarProyectoSeleccionado(this.value)" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-medium">
+            <option value="">-- Seleccionar Emprendimiento --</option>
           </select>
         </div>
-        <div class="flex items-end">
-          <button type="button" onclick="nuevoProyecto()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
+        <div class="w-full sm:w-1/3 pt-5">
+          <button onclick="nuevoProyecto()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-plus"></i> Registrar Nuevo Proyecto
           </button>
         </div>
       </div>
     </section>
 
-    <!-- TARJETA DE DEVOLUCIÓN Y NOTA EN TIEMPO REAL -->
-    <section id="tarjeta-evaluacion" class="hidden bg-blue-900 text-white p-6 rounded-xl shadow-md border border-blue-800 space-y-3">
-      <div class="flex justify-between items-center border-b border-blue-800 pb-2">
-        <h3 class="font-bold text-sm text-blue-200 flex items-center gap-2">
-          <i class="fa-solid fa-graduation-cap text-amber-400"></i> Estado de Evaluación Docente
+    <!-- ESTADO DE EVALUACIÓN DOCENTE -->
+    <section class="bg-slate-900 text-white p-6 rounded-xl shadow-md border border-slate-800 space-y-4">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold flex items-center gap-2 text-amber-400">
+          <i class="fa-solid fa-graduation-cap"></i> Estado de Evaluación Docente
         </h3>
-        <span id="eval-estado-badge" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2.5 py-0.5 rounded font-semibold">En Revisión</span>
+        <span id="eval-estado" class="text-[10px] bg-slate-800 text-slate-300 px-2.5 py-1 rounded-md font-bold uppercase border border-slate-700">En Revisión</span>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-1">
-        <div class="bg-blue-950/60 p-3 rounded-lg border border-blue-800">
-          <span class="text-[11px] text-blue-300 font-semibold block">Nota / Calificación Actual</span>
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+        <div class="md:col-span-4 bg-slate-800/80 p-4 rounded-lg border border-slate-700 flex flex-col justify-center">
+          <span class="text-[11px] font-bold text-slate-400 uppercase">Nota / Calificación Actual</span>
           <div class="flex items-baseline gap-1 mt-1">
-            <span id="eval-nota-val" class="text-2xl font-black text-amber-400">0.0</span>
-            <span class="text-xs text-blue-300 font-bold">/ 10 pts</span>
+            <span id="eval-nota" class="text-3xl font-black text-amber-400">0.0</span>
+            <span class="text-xs text-slate-400 font-bold">/ 10 pts</span>
           </div>
         </div>
 
-        <div class="md:col-span-2 bg-blue-950/60 p-3 rounded-lg border border-blue-800">
-          <span class="text-[11px] text-blue-300 font-semibold block mb-1">Devolución y Observaciones del Docente:</span>
-          <p id="eval-devolucion-txt" class="text-xs text-slate-200 italic">No hay devoluciones registradas aún.</p>
+        <div class="md:col-span-8 bg-slate-800/80 p-4 rounded-lg border border-slate-700">
+          <span class="text-[11px] font-bold text-slate-400 uppercase block mb-1">Devolución y Observaciones del Docente:</span>
+          <p id="eval-devolucion" class="text-xs text-slate-300 italic">Aún no hay observaciones del docente registradas para este proyecto.</p>
         </div>
       </div>
     </section>
 
-    <!-- FORMULARIO POR ETAPAS -->
-    <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-8 rounded-xl shadow-sm border border-slate-200 space-y-6">
-      <div class="border-b pb-4 flex justify-between items-center">
-        <div>
-          <h2 class="text-xl font-bold text-slate-800">2. Formulación por Etapas</h2>
-          <p class="text-xs text-slate-500">Edita la información técnica de tu emprendimiento.</p>
-        </div>
-        <span id="badge-id" class="text-xs bg-slate-100 text-slate-600 px-3 py-1 rounded-full font-mono">Modo: Nuevo</span>
+    <!-- FORMULARIO COMPLETO DESGLOSADO EN 10 ETAPAS -->
+    <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+      
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-base font-bold text-slate-800">2. Formulación por Etapas</h2>
+        <span id="modo-form" class="text-xs font-bold text-slate-400">Modo: Nuevo Registro</span>
       </div>
 
-      <!-- ETAPA 1 -->
+      <!-- ETAPAS 1 A 3 -->
       <div class="space-y-4">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 1: Diagnóstico e Idea de Negocio</h3>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 1: Diagnóstico e Idea de Negocio</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Proyecto *</label>
@@ -89,79 +85,97 @@
           </div>
           <div>
             <label class="block text-xs font-semibold text-slate-700 mb-1">Slogan</label>
-            <input type="text" id="slogan" placeholder="Frase identificatoria" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+            <input type="text" id="slogan" placeholder="Ej: Cuidando el planeta" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
           </div>
         </div>
       </div>
 
-      <!-- ETAPA 2 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 2: Equipo y Estructura Humana</h3>
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 2: Equipo y Estructura Humana</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Integrantes y Roles *</label>
-          <textarea id="integrantes" rows="2" required placeholder="Nombres de integrantes..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="integrantes" rows="2" required placeholder="Ej: Johana Garcia (Coordinación), Pedro Pérez (Técnico)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
-      <!-- ETAPA 3 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapa 3: Estudio de Mercado y Encuesta</h3>
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 3: Estudio de Mercado y Encuesta</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta (Opcional - Google Forms)</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta (Google Forms, SurveyMars, etc.)</label>
           <input type="url" id="encuestaUrl" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
         </div>
       </div>
 
-      <!-- ETAPAS 4 A 10 -->
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapas 4 a 6: Mercado y Operativa</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Público Target</label>
-            <textarea id="publicoObjetivo" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Canales y Marketing</label>
-            <textarea id="canalesVenta" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores</label>
-            <textarea id="competidores" rows="3" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-          </div>
+      <!-- ETAPAS 4 A 6 -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 4: Producto, Servicio y Público Target</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Público Target / Cliente Ideal</label>
+          <textarea id="publicoObjetivo" rows="2" placeholder="Describe edad, ubicación, hábitos e intereses de tus clientes..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
-      <div class="space-y-4 pt-4 border-t">
-        <h3 class="font-bold text-blue-900 text-sm border-l-4 border-blue-600 pl-2">Etapas 7 a 10: Finanzas e Implementación</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS)</label>
-            <input type="number" id="inversionInicial" step="0.01" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Plan de Implementación</label>
-            <textarea id="plan_implementacion" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-          </div>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento</label>
-            <textarea id="estrategias_crecimiento" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Conclusiones y Viabilidad</label>
-            <textarea id="conclusiones" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-          </div>
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 5: Marketing y Estrategia Comercial (4 Ps)</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Canales y Marketing</label>
+          <textarea id="canalesVenta" rows="2" placeholder="Estrategia de precios, canales de difusión (redes, venta directa)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
-      <div class="pt-6 border-t flex justify-end gap-3">
-        <button type="button" onclick="nuevoProyecto()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-medium py-2.5 px-5 rounded-lg text-xs">Limpiar</button>
-        <button type="submit" id="btn-guardar" class="bg-blue-800 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow flex items-center gap-2">
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 6: Operativa, Proceso y Competencia</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores e Insumos</label>
+          <textarea id="competidores" rows="2" placeholder="Análisis de competidores directos, proveedores y ventaja competitiva..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+        </div>
+      </div>
+
+      <!-- ETAPAS 7 A 10 DESGLOSADAS -->
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 7: Estructura Financiera y Costos</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS)</label>
+          <input type="text" id="inversionInicial" placeholder="Ej: 150000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 8: Plan de Implementación</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Plan de Implementación y Cronograma</label>
+          <textarea id="plan_implementacion" rows="2" placeholder="Hitos principales, tareas clave y tiempos de ejecución..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 9: Crecimiento y Escalabilidad</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento</label>
+          <textarea id="estrategias_crecimiento" rows="2" placeholder="Planes para escalar el negocio a futuro..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+        </div>
+      </div>
+
+      <div class="space-y-4">
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 10: Conclusiones y Viabilidad</h3>
+        <div>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Conclusiones y Viabilidad</label>
+          <textarea id="conclusiones" rows="2" placeholder="Síntesis final sobre la factibilidad del emprendimiento..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+        </div>
+      </div>
+
+      <!-- BOTONES DE ACCIÓN -->
+      <div class="pt-4 border-t flex justify-end gap-3">
+        <button type="button" onclick="limpiarFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-xs transition">
+          Limpiar
+        </button>
+        <button type="submit" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow transition flex items-center gap-2">
           <i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto
         </button>
       </div>
+
     </form>
+
   </main>
 
   <script>
@@ -169,15 +183,16 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let proyectoActualId = null;
     let listaProyectos = [];
-    let proyectoIdSeleccionado = null;
 
-    async function cargarListaProyectos() {
-      const { data } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
+    async function cargarProyectos() {
+      const { data, error } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
+      if (error) return console.error(error);
+      
       listaProyectos = data || [];
-
       const select = document.getElementById('select-proyectos');
-      select.innerHTML = '<option value="">-- Seleccionar de la lista --</option>';
+      select.innerHTML = '<option value="">-- Seleccionar Emprendimiento --</option>';
 
       listaProyectos.forEach(p => {
         const option = document.createElement('option');
@@ -186,48 +201,27 @@
         select.appendChild(option);
       });
 
-      if (proyectoIdSeleccionado) {
-        select.value = proyectoIdSeleccionado;
+      // Detectar si hay ID en la URL (?id=X)
+      const urlParams = new URLSearchParams(window.location.search);
+      const urlId = urlParams.get('id');
+      if (urlId) {
+        select.value = urlId;
+        cargarProyectoSeleccionado(urlId);
       }
     }
 
-    async function cargarEvaluacionDocente(id) {
-      if (!id) return;
-
-      const { data, error } = await _supabase
-        .from('evaluaciones')
-        .select('*')
-        .eq('proyecto_id', id)
-        .order('id', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      const sec = document.getElementById('tarjeta-evaluacion');
-      if (sec) sec.classList.remove('hidden');
-
-      if (data && !error) {
-        const notaVal = (data.nota_final !== null && data.nota_final !== undefined) ? data.nota_final : 0.0;
-        document.getElementById('eval-nota-val').innerText = parseFloat(notaVal).toFixed(1);
-        document.getElementById('eval-devolucion-txt').innerText = data.devolucion_docente || 'Sin devoluciones registradas aún.';
-        document.getElementById('eval-estado-badge').innerText = data.estado_revision || 'En Revisión';
-      } else {
-        document.getElementById('eval-nota-val').innerText = '0.0';
-        document.getElementById('eval-devolucion-txt').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
-        document.getElementById('eval-estado-badge').innerText = 'En Revisión';
-      }
-    }
-
-    function seleccionarProyecto(id) {
+    function cargarProyectoSeleccionado(id) {
       if (!id) {
-        nuevoProyecto();
+        limpiarFormulario();
         return;
       }
 
-      proyectoIdSeleccionado = parseInt(id, 10);
-      const p = listaProyectos.find(item => item.id === proyectoIdSeleccionado);
+      proyectoActualId = parseInt(id, 10);
+      const p = listaProyectos.find(item => item.id === proyectoActualId);
       if (!p) return;
 
-      document.getElementById('badge-id').innerText = `Modo: Editando ID ${p.id}`;
+      document.getElementById('modo-form').innerText = `Modo: Editando ID ${p.id}`;
+
       document.getElementById('nombreProyecto').value = p.nombreProyecto || p.nombre || '';
       document.getElementById('slogan').value = p.slogan || '';
       document.getElementById('integrantes').value = p.integrantes || '';
@@ -235,70 +229,88 @@
       document.getElementById('publicoObjetivo').value = p.publicoObjetivo || '';
       document.getElementById('canalesVenta').value = p.canalesVenta || '';
       document.getElementById('competidores').value = p.competidores || '';
-      document.getElementById('inversionInicial').value = p.inversionInicial || '';
+      document.getElementById('inversionInicial').value = p.inversionInicial || p.inversion_inicial || '';
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
-      document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || '';
+      document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || p.estrategia_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
 
-      cargarEvaluacionDocente(proyectoIdSeleccionado);
+      cargarEvaluacion(proyectoActualId);
     }
 
-    function nuevoProyecto() {
-      proyectoIdSeleccionado = null;
-      document.getElementById('form-proyecto').reset();
-      document.getElementById('select-proyectos').value = "";
-      document.getElementById('badge-id').innerText = "Modo: Nuevo";
-      document.getElementById('tarjeta-evaluacion').classList.add('hidden');
+    async function cargarEvaluacion(id) {
+      const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
+      
+      if (data) {
+        document.getElementById('eval-nota').innerText = (data.nota_final || 0).toFixed(1);
+        document.getElementById('eval-devolucion').innerText = data.devolucion_docente || 'Sin observaciones registradas.';
+        document.getElementById('eval-estado').innerText = data.estado_revision || 'En Revisión';
+      } else {
+        document.getElementById('eval-nota').innerText = '0.0';
+        document.getElementById('eval-devolucion').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
+        document.getElementById('eval-estado').innerText = 'En Revisión';
+      }
     }
 
-    async function guardarProyecto(event) {
-      event.preventDefault();
+    async function guardarProyecto(e) {
+      e.preventDefault();
       const btn = document.getElementById('btn-guardar');
       btn.disabled = true;
       btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
 
-      const datos = {
+      const payload = {
         nombreProyecto: document.getElementById('nombreProyecto').value,
+        nombre: document.getElementById('nombreProyecto').value,
         slogan: document.getElementById('slogan').value,
         integrantes: document.getElementById('integrantes').value,
-        encuestaUrl: document.getElementById('encuestaUrl').value || '',
+        encuestaUrl: document.getElementById('encuestaUrl').value,
         publicoObjetivo: document.getElementById('publicoObjetivo').value,
         canalesVenta: document.getElementById('canalesVenta').value,
         competidores: document.getElementById('competidores').value,
-        inversionInicial: parseFloat(document.getElementById('inversionInicial').value) || 0,
+        inversionInicial: document.getElementById('inversionInicial').value,
+        inversion_inicial: document.getElementById('inversionInicial').value,
         plan_implementacion: document.getElementById('plan_implementacion').value,
         estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value,
+        estrategia_crecimiento: document.getElementById('estrategias_crecimiento').value,
         conclusiones: document.getElementById('conclusiones').value
       };
 
-      try {
-        let res;
-        if (proyectoIdSeleccionado) {
-          res = await _supabase.from('proyectos').update(datos).eq('id', proyectoIdSeleccionado);
-        } else {
-          res = await _supabase.from('proyectos').insert([datos]);
+      let res;
+      if (proyectoActualId) {
+        res = await _supabase.from('proyectos').update(payload).eq('id', proyectoActualId);
+      } else {
+        res = await _supabase.from('proyectos').insert([payload]).select();
+        if (res.data && res.data[0]) {
+          proyectoActualId = res.data[0].id;
         }
-
-        if (res.error) {
-          alert("Error al guardar: " + res.error.message);
-        } else {
-          alert(proyectoIdSeleccionado ? "¡Proyecto actualizado exitosamente!" : "¡Proyecto creado exitosamente!");
-          await cargarListaProyectos();
-        }
-      } catch (err) {
-        console.error(err);
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto';
       }
+
+      if (res.error) {
+        alert("Error al guardar: " + res.error.message);
+      } else {
+        alert("¡Proyecto guardado correctamente!");
+        await cargarProyectos();
+        if (proyectoActualId) {
+          document.getElementById('select-proyectos').value = proyectoActualId;
+        }
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto';
+    }
+
+    function limpiarFormulario() {
+      proyectoActualId = null;
+      document.getElementById('form-proyecto').reset();
+      document.getElementById('modo-form').innerText = "Modo: Nuevo Registro";
+      document.getElementById('eval-nota').innerText = '0.0';
+      document.getElementById('eval-devolucion').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
+      document.getElementById('eval-estado').innerText = 'En Revisión';
     }
 
     function suscribirRealtime() {
       _supabase.channel('cambios-alumno')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, (payload) => {
-          if (proyectoIdSeleccionado && payload.new && payload.new.proyecto_id === proyectoIdSeleccionado) {
-            cargarEvaluacionDocente(proyectoIdSeleccionado);
-          }
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, () => {
+          if (proyectoActualId) cargarEvaluacion(proyectoActualId);
         })
         .subscribe((status) => {
           const badge = document.getElementById('realtime-status');
@@ -309,18 +321,9 @@
         });
     }
 
-    window.onload = async () => {
-      await cargarListaProyectos();
+    window.onload = () => {
+      cargarProyectos();
       suscribirRealtime();
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const idProyecto = urlParams.get('id');
-      if (idProyecto) {
-        setTimeout(() => {
-          seleccionarProyecto(idProyecto);
-          document.getElementById('select-proyectos').value = idProyecto;
-        }, 300);
-      }
     };
   </script>
 </body>
