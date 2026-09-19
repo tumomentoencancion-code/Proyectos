@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Docente - Rúbrica de Inspección</title>
+  <title>Panel Docente - E.E.S.T. N°1 Bragado</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,7 +14,12 @@
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
         <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Panel Docente</h1>
-        <p class="text-slate-400 text-xs">Evaluación Heurística y Rúbrica Cualitativa (10 Ítems)</p>
+        <p class="text-slate-400 text-xs">Evaluación Heurística y Rúbrica Cualitativa (10 Ítems) • 7° Año</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
+          <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...
+        </span>
       </div>
     </div>
   </header>
@@ -23,29 +28,35 @@
 
     <!-- LISTA DE PROYECTOS -->
     <section class="lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit print:hidden">
-      <h2 class="text-base font-bold text-slate-800 mb-4">Proyectos Registrados</h2>
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="text-base font-bold text-slate-800">Proyectos Registrados</h2>
+        <button onclick="cargarDatos()" class="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium">
+          <i class="fa-solid fa-rotate"></i> Recargar
+        </button>
+      </div>
       <div id="lista-proyectos" class="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
-        <p class="text-xs text-slate-400 italic">Cargando...</p>
+        <p class="text-xs text-slate-400 italic">Cargando proyectos...</p>
       </div>
     </section>
 
-    <!-- RÚBRICA Y EVALUACIÓN -->
+    <!-- DETALLE Y RÚBRICA -->
     <section class="lg:col-span-8 space-y-6">
       
       <div id="vista-vacia" class="bg-white p-12 rounded-xl shadow-sm border border-slate-200 text-center">
         <i class="fa-solid fa-folder-open text-4xl text-slate-300 mb-3"></i>
         <h3 class="text-slate-600 font-bold">No hay proyecto seleccionado</h3>
-        <p class="text-xs text-slate-400 mt-1">Selecciona un emprendimiento de la izquierda para evaluar.</p>
+        <p class="text-xs text-slate-400 mt-1">Selecciona un emprendimiento de la lista izquierda para evaluar.</p>
       </div>
 
       <div id="vista-detalle" class="hidden space-y-6">
 
-        <!-- CABECERA DE NOTAS GLOBALES -->
+        <!-- CABECERA NOTAS -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-start">
             <div>
               <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Rúbrica Cualitativa de 5 Niveles e Inspección</span>
-              <h2 id="det-nombre" class="text-2xl font-bold text-slate-900 mt-1">ECO-LUZ</h2>
+              <h2 id="det-nombre" class="text-2xl font-bold text-slate-900 mt-1">-</h2>
+              <p id="det-integrantes" class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-users mr-1"></i> -</p>
             </div>
             <div class="flex gap-2 print:hidden">
               <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition">
@@ -58,7 +69,7 @@
             <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
               <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">Nota de Etapa / Proceso</span>
               <div class="flex items-baseline gap-2">
-                <span id="nota-proceso-val" class="text-3xl font-black text-emerald-700">1.5</span>
+                <span id="nota-proceso-val" class="text-3xl font-black text-emerald-700">0.0</span>
                 <span class="text-slate-500 text-sm font-bold">/ 10</span>
               </div>
               <p class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha.</p>
@@ -67,7 +78,7 @@
             <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
               <span class="text-xs font-bold text-blue-800 uppercase block mb-1">Nota Global (Plan Completo)</span>
               <div class="flex items-baseline gap-2">
-                <span id="nota-global-val" class="text-3xl font-black text-blue-900">0.9</span>
+                <span id="nota-global-val" class="text-3xl font-black text-blue-900">0.0</span>
                 <span class="text-slate-500 text-sm font-bold">/ 10</span>
               </div>
               <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre las 10 etapas.</p>
@@ -79,11 +90,16 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
           <div id="contenedor-rubrica" class="space-y-4 text-xs">
-            <!-- Se genera dinámicamente -->
+            <!-- Items generados dinámicamente -->
+          </div>
+
+          <div class="pt-4 border-t space-y-3">
+            <label class="block text-xs font-bold text-slate-700">Devolución / Observaciones Generales del Docente:</label>
+            <textarea id="eval-devolucion-docente" rows="3" placeholder="Escribe aquí los comentarios finales para el alumno..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
 
           <div class="pt-4 border-t flex justify-end print:hidden">
-            <button onclick="guardarEvaluacionDocente()" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
+            <button onclick="guardarEvaluacionDocente()" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
               <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación
             </button>
           </div>
@@ -99,77 +115,127 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const itemsRubrica = [
-      "1. Diagnóstico e Idea de Negocio", "2. Equipo y Estructura Humana", "3. Estudio de Mercado y Encuesta",
-      "4. Producto, Servicio y Público Target", "5. Marketing y Estrategia Comercial", "6. Operativa, Proceso y Competencia",
-      "7. Estructura Financiera y Costos", "8. Plan de Implementación", "9. Crecimiento y Escalabilidad", "10. Conclusiones y Viabilidad"
+    const itemsDefinicion = [
+      { titulo: "1. Diagnóstico e Idea de Negocio", campo: ["nombreProyecto", "nombre", "slogan"] },
+      { titulo: "2. Equipo y Estructura Humana", campo: ["integrantes"] },
+      { titulo: "3. Estudio de Mercado y Encuesta", campo: ["encuestaUrl"] },
+      { titulo: "4. Producto, Servicio y Público Target", campo: ["publicoObjetivo"] },
+      { titulo: "5. Marketing y Estrategia Comercial", campo: ["canalesVenta"] },
+      { titulo: "6. Operativa, Proceso y Competencia", campo: ["competidores"] },
+      { titulo: "7. Estructura Financiera y Costos", campo: ["inversionInicial"] },
+      { titulo: "8. Plan de Implementación", campo: ["plan_implementacion"] },
+      { titulo: "9. Crecimiento y Escalabilidad", campo: ["estrategias_crecimiento"] },
+      { titulo: "10. Conclusiones y Viabilidad", campo: ["conclusiones"] }
     ];
 
     let listaProyectos = [];
+    let listaEvaluaciones = [];
     let proyectoSeleccionado = null;
     let valoraciones = Array(10).fill(0);
 
-    async function cargarProyectos() {
-      const { data } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-      listaProyectos = data || [];
+    async function cargarDatos() {
+      const { data: pData } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
+      listaProyectos = pData || [];
 
+      const { data: eData } = await _supabase.from('evaluaciones').select('*');
+      listaEvaluaciones = eData || [];
+
+      renderizarLista();
+      if (proyectoSeleccionado) {
+        seleccionarProyecto(proyectoSeleccionado.id);
+      }
+    }
+
+    function renderizarLista() {
       const cont = document.getElementById('lista-proyectos');
       cont.innerHTML = '';
 
+      if (listaProyectos.length === 0) {
+        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos registrados.</p>';
+        return;
+      }
+
       listaProyectos.forEach(p => {
         const item = document.createElement('div');
-        item.className = "p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-lg cursor-pointer transition";
-        item.onclick = () => seleccionar(p.id);
+        item.className = "p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-lg cursor-pointer transition mb-2";
+        item.onclick = () => seleccionarProyecto(p.id);
+        const nombre = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
         item.innerHTML = `
-          <h4 class="font-bold text-xs text-slate-800">${p.nombreProyecto || p.nombre || 'Sin nombre'}</h4>
+          <h4 class="font-bold text-xs text-slate-800">${nombre}</h4>
           <p class="text-[11px] text-slate-500">${p.integrantes || 'Sin integrantes'}</p>
         `;
         cont.appendChild(item);
       });
     }
 
-    function seleccionar(id) {
+    function obtenerTextoCampo(p, campos) {
+      for (let c of campos) {
+        if (p[c] && p[c].toString().trim() !== '') return p[c].toString().trim();
+      }
+      return '';
+    }
+
+    function seleccionarProyecto(id) {
       proyectoSeleccionado = listaProyectos.find(p => p.id === id);
       if (!proyectoSeleccionado) return;
 
       document.getElementById('vista-vacia').classList.add('hidden');
       document.getElementById('vista-detalle').classList.remove('hidden');
-      document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || 'Proyecto';
 
-      // Calcular valoraciones iniciales según contenido
-      calcularRubrica();
+      const nombre = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || `Proyecto ID: ${proyectoSeleccionado.id}`;
+      document.getElementById('det-nombre').innerText = nombre;
+      document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
+
+      // Calcular o cargar evaluación existente
+      const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
+
+      itemsDefinicion.forEach((def, idx) => {
+        const txt = obtenerTextoCampo(proyectoSeleccionado, def.campo);
+        if (txt) {
+          // Si tiene contenido cargado, asigna porcentaje automático
+          valoraciones[idx] = txt.length > 50 ? 75 : 55;
+        } else {
+          valoraciones[idx] = 0;
+        }
+      });
+
+      if (evalP) {
+        if (evalP.nota_final) {
+          // Si el docente ya guardó notas previamente
+          document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente || '';
+        }
+      } else {
+        document.getElementById('eval-devolucion-docente').value = '';
+      }
+
+      renderizarRubrica();
     }
 
-    function calcularRubrica() {
-      const p = proyectoSeleccionado;
-      valoraciones[0] = p.nombreProyecto ? 35 : 0;
-      valoraciones[1] = p.integrantes ? 55 : 0;
-      valoraciones[2] = p.encuestaUrl ? 75 : 0;
-      valoraciones[3] = p.publicoObjetivo ? 55 : 0;
-      valoraciones[4] = p.canalesVenta ? 35 : 0;
-      valoraciones[5] = p.competidores ? 35 : 0;
-      valoraciones[6] = p.inversionInicial ? 55 : 0;
-      valoraciones[7] = p.plan_implementacion ? 35 : 0;
-      valoraciones[8] = p.estrategias_crecimiento ? 0 : 0;
-      valoraciones[9] = p.conclusiones ? 35 : 0;
-
-      renderizarItems();
-    }
-
-    function renderizarItems() {
+    function renderizarRubrica() {
       const cont = document.getElementById('contenedor-rubrica');
       cont.innerHTML = '';
 
       let sumaTotal = 0;
 
-      itemsRubrica.forEach((item, index) => {
+      itemsDefinicion.forEach((def, index) => {
         const val = valoraciones[index];
         sumaTotal += val;
+
+        let badgeText = "Ausente / Incompleto";
+        let badgeClass = "bg-rose-100 text-rose-800";
+
+        if (val === 35) { badgeText = "Insuficiente"; badgeClass = "bg-amber-100 text-amber-800"; }
+        if (val === 55) { badgeText = "En Desarrollo"; badgeClass = "bg-yellow-100 text-yellow-800"; }
+        if (val === 75) { badgeText = "Satisfactorio / Bueno"; badgeClass = "bg-blue-100 text-blue-800"; }
+        if (val === 100) { badgeText = "Excelente"; badgeClass = "bg-emerald-100 text-emerald-800"; }
 
         const row = document.createElement('div');
         row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-col md:flex-row justify-between items-center gap-3";
         row.innerHTML = `
-          <div class="font-semibold text-slate-700 w-full md:w-1/2">${item}</div>
+          <div class="w-full md:w-1/2">
+            <div class="font-semibold text-slate-800">${def.titulo}</div>
+            <span class="text-[10px] px-2 py-0.5 rounded font-medium ${badgeClass}">${badgeText}</span>
+          </div>
           <div class="flex items-center gap-3 w-full md:w-1/2 justify-end">
             <span class="font-bold text-xs text-blue-900">Valoración: ${val}%</span>
             <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs">
@@ -184,8 +250,8 @@
         cont.appendChild(row);
       });
 
-      const notaGlobal = (sumaTotal / 1000 * 10).toFixed(1);
-      const notaProceso = ((sumaTotal / 10) / 10).toFixed(1);
+      const notaGlobal = (sumaTotal / 100).toFixed(1);
+      const notaProceso = (sumaTotal / 100).toFixed(1);
 
       document.getElementById('nota-global-val').innerText = notaGlobal;
       document.getElementById('nota-proceso-val').innerText = notaProceso;
@@ -193,15 +259,63 @@
 
     function cambiarValor(index, nuevoValor) {
       valoraciones[index] = parseInt(nuevoValor, 10);
-      renderizarItems();
+      renderizarRubrica();
     }
 
     async function guardarEvaluacionDocente() {
       if (!proyectoSeleccionado) return;
-      alert("¡Evaluación y Rúbrica actualizadas exitosamente!");
+
+      const btn = document.getElementById('btn-guardar');
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+
+      const notaFinalCalculada = parseFloat(document.getElementById('nota-global-val').innerText) || 0;
+      const devolucionText = document.getElementById('eval-devolucion-docente').value;
+
+      const payload = {
+        proyecto_id: proyectoSeleccionado.id,
+        nota_final: notaFinalCalculada,
+        devolucion_docente: devolucionText,
+        estado_revision: notaFinalCalculada >= 6 ? 'Aprobado' : 'En Revisión'
+      };
+
+      const evalP = listaEvaluaciones.find(e => e.proyecto_id === proyectoSeleccionado.id);
+      let res;
+
+      if (evalP) {
+        res = await _supabase.from('evaluaciones').update(payload).eq('id', evalP.id);
+      } else {
+        res = await _supabase.from('evaluaciones').insert([payload]);
+      }
+
+      if (res.error) {
+        alert("Error al guardar: " + res.error.message);
+      } else {
+        alert("¡Evaluación guardada y sincronizada exitosamente!");
+        await cargarDatos();
+      }
+
+      btn.disabled = false;
+      btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación';
     }
 
-    window.onload = cargarProyectos;
+    function suscribirRealtime() {
+      _supabase.channel('cambios-docente')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'proyectos' }, () => cargarDatos())
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, () => cargarDatos())
+        .subscribe((status) => {
+          const badge = document.getElementById('realtime-status');
+          if (status === 'SUBSCRIBED') {
+            badge.className = "text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2";
+            badge.innerHTML = '<i class="fa-solid fa-bolt"></i> Realtime Activo';
+          }
+        });
+    }
+
+    window.onload = () => {
+      cargarDatos();
+      suscribirRealtime();
+    };
   </script>
 </body>
 </html>
