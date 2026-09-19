@@ -95,11 +95,11 @@
 
           <div class="pt-4 border-t space-y-3">
             <label class="block text-xs font-bold text-slate-700">Devolución / Observaciones Generales del Docente:</label>
-            <textarea id="eval-devolucion-docente" rows="3" placeholder="Escribe aquí los comentarios finales para el alumno..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500" onchange="guardarEvaluacionDocente()"></textarea>
+            <textarea id="eval-devolucion-docente" rows="3" placeholder="Escribe aquí los comentarios finales para el alumno..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500" onchange="guardarEvaluacionDocente(false)"></textarea>
           </div>
 
           <div class="pt-4 border-t flex justify-end print:hidden">
-            <button onclick="guardarEvaluacionDocente()" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
+            <button onclick="guardarEvaluacionDocente(true)" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
               <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación
             </button>
           </div>
@@ -111,7 +111,6 @@
   </main>
 
   <script>
-    // URL OFICIAL CON LA K INCLUIDA
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -175,7 +174,7 @@
       },
       {
         titulo: "7. Estructura Financiera y Costos",
-        campos: ["inversionInicial"],
+        campos: ["inversionInicial", "inversion_inicial"],
         analizar: (txt) => {
           if (!txt || parseFloat(txt) === 0) return { val: 0, sug: "Ausente: Sin inversión estimada ni costos." };
           return { val: 55, sug: "En Desarrollo: Inversión inicial estimada ingresada." };
@@ -186,15 +185,17 @@
         campos: ["plan_implementacion"],
         analizar: (txt) => {
           if (!txt) return { val: 0, sug: "Ausente: Sin cronograma ni plan de ejecución." };
-          return { val: 35, sug: "Insuficiente: Etapas generales sin fechas ni hitos concretos." };
+          if (txt.length < 30) return { val: 35, sug: "Insuficiente: Etapas generales sin fechas ni hitos concretos." };
+          return { val: 55, sug: "En Desarrollo: Plan de ejecución formulado." };
         }
       },
       {
         titulo: "9. Crecimiento y Escalabilidad",
-        campos: ["estrategias_crecimiento"],
+        campos: ["estrategias_crecimiento", "estrategia_crecimiento"],
         analizar: (txt) => {
           if (!txt) return { val: 0, sug: "Ausente: Sin proyección de crecimiento." };
-          return { val: 35, sug: "Insuficiente: Ideas de expansión preliminares." };
+          if (txt.length < 30) return { val: 35, sug: "Insuficiente: Ideas de expansión preliminares." };
+          return { val: 55, sug: "En Desarrollo: Estrategias de crecimiento definidas." };
         }
       },
       {
@@ -202,7 +203,8 @@
         campos: ["conclusiones"],
         analizar: (txt) => {
           if (!txt) return { val: 0, sug: "Ausente: Sin conclusiones de viabilidad." };
-          return { val: 35, sug: "Insuficiente: Cierre descriptivo sin síntesis financiera." };
+          if (txt.length < 30) return { val: 35, sug: "Insuficiente: Cierre descriptivo sin síntesis de viabilidad." };
+          return { val: 55, sug: "En Desarrollo: Conclusiones y viabilidad formuladas." };
         }
       }
     ];
@@ -212,6 +214,8 @@
     let proyectoSeleccionado = null;
     let valoraciones = Array(10).fill(0);
     let sugerenciasIA = Array(10).fill("");
+    // Mantiene el registro de los ajustes manuales hechos por el docente para que no se reseteen
+    let ajustesManuales = {};
 
     async function cargarDatos() {
       try {
@@ -226,7 +230,7 @@
         listaEvaluaciones = eData || [];
 
         if (proyectoSeleccionado) {
-          seleccionarProyecto(proyectoSeleccionado.id);
+          seleccionarProyecto(proyectoSeleccionado.id, false);
         }
       } catch (err) {
         console.error("Excepción al cargar datos:", err);
@@ -245,7 +249,7 @@
       listaProyectos.forEach(p => {
         const item = document.createElement('div');
         item.className = "p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-lg cursor-pointer transition mb-2";
-        item.onclick = () => seleccionarProyecto(p.id);
+        item.onclick = () => seleccionarProyecto(p.id, false);
         const nombre = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
         item.innerHTML = `
           <h4 class="font-bold text-xs text-slate-800">${nombre}</h4>
@@ -262,7 +266,7 @@
       return '';
     }
 
-    function seleccionarProyecto(id) {
+    function seleccionarProyecto(id, recalcularAnalisis = true) {
       proyectoSeleccionado = listaProyectos.find(p => p.id === id);
       if (!proyectoSeleccionado) return;
 
@@ -276,10 +280,18 @@
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
 
       itemsDefinicion.forEach((def, idx) => {
+        const keyAjuste = `${id}_${idx}`;
         const txt = obtenerTextoCampo(proyectoSeleccionado, def.campos);
         const res = def.analizar(txt);
-        valoraciones[idx] = res.val;
-        sugerenciasIA[idx] = res.sug;
+
+        // Si el docente ya había ajustado manualmente este ítem, respetamos su decisión
+        if (ajustesManuales[keyAjuste] !== undefined) {
+          valoraciones[idx] = ajustesManuales[keyAjuste];
+          sugerenciasIA[idx] = `Ajustado manualmente por el docente a ${ajustesManuales[keyAjuste]}%.`;
+        } else {
+          valoraciones[idx] = res.val;
+          sugerenciasIA[idx] = res.sug;
+        }
       });
 
       if (evalP) {
@@ -345,17 +357,25 @@
     }
 
     function cambiarValor(index, nuevoValor) {
-      valoraciones[index] = parseInt(nuevoValor, 10);
-      sugerenciasIA[index] = `Ajustado manualmente por el docente a ${nuevoValor}%.`;
+      if (!proyectoSeleccionado) return;
+      const v = parseInt(nuevoValor, 10);
+      
+      // Guardar de forma permanente el ajuste manual del docente
+      const keyAjuste = `${proyectoSeleccionado.id}_${index}`;
+      ajustesManuales[keyAjuste] = v;
+      
+      valoraciones[index] = v;
+      sugerenciasIA[index] = `Ajustado manualmente por el docente a ${v}%.`;
+      
       renderizarRubrica();
-      guardarEvaluacionDocente();
+      guardarEvaluacionDocente(false);
     }
 
-    async function guardarEvaluacionDocente() {
+    async function guardarEvaluacionDocente(mostrarAlerta = false) {
       if (!proyectoSeleccionado) return;
 
       const btn = document.getElementById('btn-guardar');
-      if (btn) {
+      if (btn && mostrarAlerta) {
         btn.disabled = true;
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
       }
@@ -391,9 +411,12 @@
         } else {
           listaEvaluaciones.push(payload);
         }
+        if (mostrarAlerta) {
+          alert("¡Evaluación guardada y validada correctamente!");
+        }
       }
 
-      if (btn) {
+      if (btn && mostrarAlerta) {
         btn.disabled = false;
         btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación';
       }
