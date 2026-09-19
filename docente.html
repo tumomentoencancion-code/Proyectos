@@ -95,7 +95,7 @@
 
           <div class="pt-4 border-t space-y-3">
             <label class="block text-xs font-bold text-slate-700">Devolución / Observaciones Generales del Docente:</label>
-            <textarea id="eval-devolucion-docente" rows="3" placeholder="Escribe aquí los comentarios finales para el alumno..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <textarea id="eval-devolucion-docente" rows="3" placeholder="Escribe aquí los comentarios finales para el alumno..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500" onchange="guardarEvaluacionDocente()"></textarea>
           </div>
 
           <div class="pt-4 border-t flex justify-end print:hidden">
@@ -186,13 +186,11 @@
       document.getElementById('det-nombre').innerText = nombre;
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
 
-      // Calcular o cargar evaluación existente
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
 
       itemsDefinicion.forEach((def, idx) => {
         const txt = obtenerTextoCampo(proyectoSeleccionado, def.campo);
         if (txt) {
-          // Si tiene contenido cargado, asigna porcentaje automático
           valoraciones[idx] = txt.length > 50 ? 75 : 55;
         } else {
           valoraciones[idx] = 0;
@@ -200,10 +198,7 @@
       });
 
       if (evalP) {
-        if (evalP.nota_final) {
-          // Si el docente ya guardó notas previamente
-          document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente || '';
-        }
+        document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente || '';
       } else {
         document.getElementById('eval-devolucion-docente').value = '';
       }
@@ -260,22 +255,28 @@
     function cambiarValor(index, nuevoValor) {
       valoraciones[index] = parseInt(nuevoValor, 10);
       renderizarRubrica();
+      guardarEvaluacionDocente();
     }
 
     async function guardarEvaluacionDocente() {
       if (!proyectoSeleccionado) return;
 
       const btn = document.getElementById('btn-guardar');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
+      }
 
-      const notaFinalCalculada = parseFloat(document.getElementById('nota-global-val').innerText) || 0;
+      const sumaTotal = valoraciones.reduce((acc, curr) => acc + curr, 0);
+      const notaFinalCalculada = parseFloat((sumaTotal / 100).toFixed(1));
       const devolucionText = document.getElementById('eval-devolucion-docente').value;
 
       const payload = {
         proyecto_id: proyectoSeleccionado.id,
         nota_final: notaFinalCalculada,
-        devolucion_docente: devolucionText,
+        nota_etapa1_5: parseFloat((valoraciones.slice(0, 5).reduce((a, b) => a + b, 0) / 50).toFixed(1)),
+        nota_etapa6_10: parseFloat((valoraciones.slice(5, 10).reduce((a, b) => a + b, 0) / 50).toFixed(1)),
+        devolucion_docente: devolucionText || 'Evaluación en proceso por el cuerpo docente.',
         estado_revision: notaFinalCalculada >= 6 ? 'Aprobado' : 'En Revisión'
       };
 
@@ -289,14 +290,20 @@
       }
 
       if (res.error) {
-        alert("Error al guardar: " + res.error.message);
+        console.error("Error al guardar evaluación:", res.error.message);
       } else {
-        alert("¡Evaluación guardada y sincronizada exitosamente!");
-        await cargarDatos();
+        const idx = listaEvaluaciones.findIndex(e => e.proyecto_id === proyectoSeleccionado.id);
+        if (idx !== -1) {
+          listaEvaluaciones[idx] = { ...listaEvaluaciones[idx], ...payload };
+        } else {
+          listaEvaluaciones.push(payload);
+        }
       }
 
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación';
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación';
+      }
     }
 
     function suscribirRealtime() {
