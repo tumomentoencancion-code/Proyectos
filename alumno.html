@@ -35,14 +35,14 @@
           </select>
         </div>
         <div class="w-full sm:w-1/3 pt-5">
-          <button onclick="nuevoProyecto()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
+          <button onclick="limpiarFormulario()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
             <i class="fa-solid fa-plus"></i> Registrar Nuevo Proyecto
           </button>
         </div>
       </div>
     </section>
 
-    <!-- ESTADO DE EVALUACIÓN DOCENTE (AMBAS NOTAS DUPLICADAS DEL DOCENTE) -->
+    <!-- ESTADO DE EVALUACIÓN DOCENTE -->
     <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
       <div class="flex justify-between items-center border-b pb-3">
         <h3 class="text-sm font-bold flex items-center gap-2 text-slate-800">
@@ -51,10 +51,7 @@
         <span id="eval-estado" class="text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">En Revisión</span>
       </div>
 
-      <!-- DUAL NOTA: PROCESO Y GLOBAL -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        
-        <!-- NOTA PROCESO -->
         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
           <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO</span>
           <div class="flex items-baseline gap-2">
@@ -64,7 +61,6 @@
           <p class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha (600 pts).</p>
         </div>
 
-        <!-- NOTA GLOBAL -->
         <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
           <span class="text-xs font-bold text-blue-800 uppercase block mb-1">NOTA GLOBAL (PLAN COMPLETO)</span>
           <div class="flex items-baseline gap-2">
@@ -73,17 +69,15 @@
           </div>
           <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre el Plan Final de 10 etapas (1000 pts).</p>
         </div>
-
       </div>
 
-      <!-- DEVOLUCIÓN DEL DOCENTE -->
       <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl pt-3">
         <span class="text-[11px] font-bold text-slate-600 uppercase block mb-1">Devolución y Observaciones Generales del Docente:</span>
         <p id="eval-devolucion" class="text-xs text-slate-700 italic">Aún no hay observaciones del docente registradas para este proyecto.</p>
       </div>
     </section>
 
-    <!-- FORMULARIO COMPLETO DESGLOSADO EN 10 ETAPAS -->
+    <!-- FORMULARIO 10 ETAPAS -->
     <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
       
       <div class="flex justify-between items-center border-b pb-3">
@@ -91,7 +85,7 @@
         <span id="modo-form" class="text-xs font-bold text-slate-400">Modo: Nuevo Registro</span>
       </div>
 
-      <!-- ETAPAS 1 A 3 -->
+      <!-- ETAPA 1 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 1: Diagnóstico e Idea de Negocio</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -106,14 +100,16 @@
         </div>
       </div>
 
+      <!-- ETAPA 2 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 2: Equipo y Estructura Humana</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Integrantes y Roles *</label>
-          <textarea id="integrantes" rows="2" required placeholder="Ej: Johana Garcia (Coordinación), Pedro Pérez (Técnico)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="integrantes" rows="2" required placeholder="Ej: Johana Garcia (Coordinación)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
+      <!-- ETAPA 3 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 3: Estudio de Mercado y Encuesta</h3>
         <div>
@@ -122,32 +118,44 @@
         </div>
       </div>
 
-      <!-- ETAPAS 4 A 6 -->
+      <!-- ETAPA 4 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 4: Producto, Servicio y Público Target</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Público Target / Cliente Ideal</label>
-          <textarea id="publicoObjetivo" rows="2" placeholder="Describe edad, ubicación, hábitos e intereses de tus clientes..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="publicoObjetivo" rows="2" placeholder="Describe edad, ubicación, hábitos e intereses..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
+      <!-- ETAPA 5 (CON REDES SOCIALES Y VIDEO) -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 5: Marketing y Estrategia Comercial (4 Ps)</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Canales y Marketing</label>
-          <textarea id="canalesVenta" rows="2" placeholder="Estrategia de precios, canales de difusión (redes, venta directa)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategia Comercial y Canales de Venta</label>
+          <textarea id="canalesVenta" rows="2" placeholder="Estrategia de precios y canales de difusión..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1"><i class="fa-brands fa-instagram text-pink-600 mr-1"></i> Link Red Social (Instagram, TikTok, Facebook)</label>
+            <input type="url" id="redes_sociales" placeholder="https://instagram.com/tu_proyecto" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1"><i class="fa-solid fa-video text-red-600 mr-1"></i> Link Video Promocional (YouTube, Drive, TikTok)</label>
+            <input type="url" id="video_promo" placeholder="https://youtube.com/watch?v=..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
         </div>
       </div>
 
+      <!-- ETAPA 6 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 6: Operativa, Proceso y Competencia</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores e Insumos</label>
-          <textarea id="competidores" rows="2" placeholder="Análisis de competidores directos, proveedores y ventaja competitiva..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="competidores" rows="2" placeholder="Análisis de competencia y ventajas..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
-      <!-- ETAPAS 7 A 10 DESGLOSADAS -->
+      <!-- ETAPA 7 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 7: Estructura Financiera y Costos</h3>
         <div>
@@ -156,31 +164,34 @@
         </div>
       </div>
 
+      <!-- ETAPA 8 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 8: Plan de Implementación</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Plan de Implementación y Cronograma</label>
-          <textarea id="plan_implementacion" rows="2" placeholder="Hitos principales, tareas clave y tiempos de ejecución..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="plan_implementacion" rows="2" placeholder="Hitos principales y tareas..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
+      <!-- ETAPA 9 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 9: Crecimiento y Escalabilidad</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento</label>
-          <textarea id="estrategias_crecimiento" rows="2" placeholder="Planes para escalar el negocio a futuro..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="estrategias_crecimiento" rows="2" placeholder="Planes para escalar el negocio..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
+      <!-- ETAPA 10 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 10: Conclusiones y Viabilidad</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">Conclusiones y Viabilidad</label>
-          <textarea id="conclusiones" rows="2" placeholder="Síntesis final sobre la factibilidad del emprendimiento..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <textarea id="conclusiones" rows="2" placeholder="Síntesis final sobre la factibilidad..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
-      <!-- BOTONES DE ACCIÓN -->
+      <!-- BOTONES -->
       <div class="pt-4 border-t flex justify-end gap-3">
         <button type="button" onclick="limpiarFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-xs transition">
           Limpiar
@@ -243,6 +254,8 @@
       document.getElementById('encuestaUrl').value = p.encuestaUrl || '';
       document.getElementById('publicoObjetivo').value = p.publicoObjetivo || '';
       document.getElementById('canalesVenta').value = p.canalesVenta || '';
+      document.getElementById('redes_sociales').value = p.redes_sociales || '';
+      document.getElementById('video_promo').value = p.video_promo || '';
       document.getElementById('competidores').value = p.competidores || '';
       document.getElementById('inversionInicial').value = p.inversionInicial || p.inversion_inicial || '';
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
@@ -256,7 +269,6 @@
       const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
       
       if (data) {
-        // Asignación de ambas notas sincronizadas con el docente
         document.getElementById('eval-nota-proceso').innerText = (data.nota_etapa1_5 || 0).toFixed(1);
         document.getElementById('eval-nota-global').innerText = (data.nota_final || 0).toFixed(1);
         document.getElementById('eval-devolucion').innerText = data.devolucion_docente || 'Sin observaciones registradas.';
@@ -277,12 +289,13 @@
 
       const payload = {
         nombreProyecto: document.getElementById('nombreProyecto').value,
-        nombre: document.getElementById('nombreProyecto').value,
         slogan: document.getElementById('slogan').value,
         integrantes: document.getElementById('integrantes').value,
         encuestaUrl: document.getElementById('encuestaUrl').value,
         publicoObjetivo: document.getElementById('publicoObjetivo').value,
         canalesVenta: document.getElementById('canalesVenta').value,
+        redes_sociales: document.getElementById('redes_sociales').value,
+        video_promo: document.getElementById('video_promo').value,
         competidores: document.getElementById('competidores').value,
         inversionInicial: document.getElementById('inversionInicial').value,
         inversion_inicial: document.getElementById('inversionInicial').value,
