@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Docente - E.E.S.T. N°1 Bragado</title>
+  <title>Panel Docente — E.E.S.T. N°1 Bragado</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -14,7 +14,7 @@
     <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
         <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Panel Docente</h1>
-        <p class="text-slate-400 text-xs">Evaluación Heurística y Rúbrica Cualitativa (10 Ítems) • 7° Año</p>
+        <p class="text-slate-400 text-xs">Evaluación Heurística e Inspección Cualitativa (10 Ítems) • 7° Año</p>
       </div>
       <div class="flex items-center gap-3">
         <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
@@ -39,7 +39,7 @@
       </div>
     </section>
 
-    <!-- DETALLE Y RÚBRICA -->
+    <!-- DETALLE Y RÚBRICA HEURÍSTICA COMPLETA -->
     <section class="lg:col-span-8 space-y-6">
       
       <div id="vista-vacia" class="bg-white p-12 rounded-xl shadow-sm border border-slate-200 text-center">
@@ -50,11 +50,11 @@
 
       <div id="vista-detalle" class="hidden space-y-6">
 
-        <!-- CABECERA NOTAS -->
+        <!-- CABECERA NOTAS PROCESO VS GLOBAL -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">Rúbrica Cualitativa de 5 Niveles e Inspección</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">RÚBRICA CUALITATIVA DE 5 NIVELES E INSPECCIÓN</span>
               <h2 id="det-nombre" class="text-2xl font-bold text-slate-900 mt-1">-</h2>
               <p id="det-integrantes" class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-users mr-1"></i> -</p>
             </div>
@@ -67,30 +67,30 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
             <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
-              <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">Nota de Etapa / Proceso</span>
+              <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO</span>
               <div class="flex items-baseline gap-2">
                 <span id="nota-proceso-val" class="text-3xl font-black text-emerald-700">0.0</span>
                 <span class="text-slate-500 text-sm font-bold">/ 10</span>
               </div>
-              <p class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha.</p>
+              <p id="nota-proceso-sub" class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha (600 pts).</p>
             </div>
 
             <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
-              <span class="text-xs font-bold text-blue-800 uppercase block mb-1">Nota Global (Plan Completo)</span>
+              <span class="text-xs font-bold text-blue-800 uppercase block mb-1">NOTA GLOBAL (PLAN COMPLETO)</span>
               <div class="flex items-baseline gap-2">
                 <span id="nota-global-val" class="text-3xl font-black text-blue-900">0.0</span>
                 <span class="text-slate-500 text-sm font-bold">/ 10</span>
               </div>
-              <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre las 10 etapas.</p>
+              <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre el Plan Final de 10 etapas (1000 pts).</p>
             </div>
           </div>
         </div>
 
-        <!-- DESGLOSE DE RÚBRICA 10 ÍTEMS -->
+        <!-- DESGLOSE DE RÚBRICA 10 ÍTEMS CON SUGERENCIA IA -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
           <div id="contenedor-rubrica" class="space-y-4 text-xs">
-            <!-- Items generados dinámicamente -->
+            <!-- Render dinámico completo -->
           </div>
 
           <div class="pt-4 border-t space-y-3">
@@ -111,27 +111,107 @@
   </main>
 
   <script>
-    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_URL = "https://pwwnhxwmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    // ESTRUCTURA COMPLETA DE ANÁLISIS CUALITATIVO Y REGLAS HEURÍSTICAS DE IA
     const itemsDefinicion = [
-      { titulo: "1. Diagnóstico e Idea de Negocio", campo: ["nombreProyecto", "nombre", "slogan"] },
-      { titulo: "2. Equipo y Estructura Humana", campo: ["integrantes"] },
-      { titulo: "3. Estudio de Mercado y Encuesta", campo: ["encuestaUrl"] },
-      { titulo: "4. Producto, Servicio y Público Target", campo: ["publicoObjetivo"] },
-      { titulo: "5. Marketing y Estrategia Comercial", campo: ["canalesVenta"] },
-      { titulo: "6. Operativa, Proceso y Competencia", campo: ["competidores"] },
-      { titulo: "7. Estructura Financiera y Costos", campo: ["inversionInicial"] },
-      { titulo: "8. Plan de Implementación", campo: ["plan_implementacion"] },
-      { titulo: "9. Crecimiento y Escalabilidad", campo: ["estrategias_crecimiento"] },
-      { titulo: "10. Conclusiones y Viabilidad", campo: ["conclusiones"] }
+      {
+        titulo: "1. Diagnóstico e Idea de Negocio",
+        campos: ["nombreProyecto", "nombre", "slogan"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin nombre ni propuesta definida." };
+          if (txt.length < 15) return { val: 35, sug: "Insuficiente: Solo título básico sin slogan o fundamentación." };
+          if (txt.length < 50) return { val: 55, sug: "En Desarrollo: Describe el producto/servicio pero sin precisar nicho." };
+          return { val: 75, sug: "Satisfactorio: Propuesta de valor clara e idea bien fundamentada." };
+        }
+      },
+      {
+        titulo: "2. Equipo y Estructura Humana",
+        campos: ["integrantes"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin equipo asignado." };
+          if (txt.length < 20) return { val: 35, sug: "Insuficiente: Nombres sin roles específicos." };
+          if (txt.length < 60) return { val: 55, sug: "En Desarrollo: Roles nombrados de forma general sin tareas detalladas." };
+          return { val: 75, sug: "Satisfactorio: Estructura organizacional y funciones definidas." };
+        }
+      },
+      {
+        titulo: "3. Estudio de Mercado y Encuesta",
+        campos: ["encuestaUrl"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin enlace de encuesta ni estudio de mercado." };
+          if (!txt.includes("http")) return { val: 35, sug: "Insuficiente: Texto descriptivo pero sin enlace funcional a encuesta." };
+          return { val: 55, sug: "En Desarrollo: Encuesta vinculada pero sin análisis de resultados." };
+        }
+      },
+      {
+        titulo: "4. Producto, Servicio y Público Target",
+        campos: ["publicoObjetivo"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin especificación de público objetivo." };
+          if (txt.length < 25) return { val: 35, sug: "Insuficiente: Definición genérica (ej: 'público general')." };
+          return { val: 55, sug: "En Desarrollo: Cliente ideal identificado con variables demográficas básicas." };
+        }
+      },
+      {
+        titulo: "5. Marketing y Estrategia Comercial (4 Ps)",
+        campos: ["canalesVenta"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin estrategia ni canales comerciales." };
+          if (txt.length < 25) return { val: 35, sug: "Insuficiente: Menciona canales de forma aislada." };
+          return { val: 55, sug: "En Desarrollo: Canales de venta y estrategia básica planteados." };
+        }
+      },
+      {
+        titulo: "6. Operativa, Proceso y Competencia",
+        campos: ["competidores"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin análisis de competidores ni proceso productivo." };
+          if (txt.length < 25) return { val: 35, sug: "Insuficiente: Nombra competidores sin diferencial." };
+          return { val: 55, sug: "En Desarrollo: Mapeo de competidores directos con fortalezas." };
+        }
+      },
+      {
+        titulo: "7. Estructura Financiera y Costos",
+        campos: ["inversionInicial"],
+        analizar: (txt) => {
+          if (!txt || parseFloat(txt) === 0) return { val: 0, sug: "Ausente: Sin inversión estimada ni costos." };
+          return { val: 55, sug: "En Desarrollo: Inversión inicial estimada ingresada." };
+        }
+      },
+      {
+        titulo: "8. Plan de Implementación",
+        campos: ["plan_implementacion"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin cronograma ni plan de ejecución." };
+          return { val: 35, sug: "Insuficiente: Etapas generales sin fechas ni hitos concretos." };
+        }
+      },
+      {
+        titulo: "9. Crecimiento y Escalabilidad",
+        campos: ["estrategias_crecimiento"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin proyección de crecimiento." };
+          return { val: 35, sug: "Insuficiente: Ideas de expansión preliminares." };
+        }
+      },
+      {
+        titulo: "10. Conclusiones y Viabilidad",
+        campos: ["conclusiones"],
+        analizar: (txt) => {
+          if (!txt) return { val: 0, sug: "Ausente: Sin conclusiones de viabilidad." };
+          return { val: 35, sug: "Insuficiente: Cierre descriptivo sin síntesis financiera." };
+        }
+      }
     ];
 
     let listaProyectos = [];
     let listaEvaluaciones = [];
     let proyectoSeleccionado = null;
     let valoraciones = Array(10).fill(0);
+    let sugerenciasIA = Array(10).fill("");
 
     async function cargarDatos() {
       const { data: pData } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
@@ -188,13 +268,12 @@
 
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
 
+      // Ejecutar inspección heurística de IA sobre el proyecto
       itemsDefinicion.forEach((def, idx) => {
-        const txt = obtenerTextoCampo(proyectoSeleccionado, def.campo);
-        if (txt) {
-          valoraciones[idx] = txt.length > 50 ? 75 : 55;
-        } else {
-          valoraciones[idx] = 0;
-        }
+        const txt = obtenerTextoCampo(proyectoSeleccionado, def.campos);
+        const res = def.analizar(txt);
+        valoraciones[idx] = res.val;
+        sugerenciasIA[idx] = res.sug;
       });
 
       if (evalP) {
@@ -211,49 +290,61 @@
       cont.innerHTML = '';
 
       let sumaTotal = 0;
+      // Etapas 1 a 6 representan el avance esperado a la fecha (600 pts)
+      let sumaProceso = 0;
 
       itemsDefinicion.forEach((def, index) => {
         const val = valoraciones[index];
+        const sug = sugerenciasIA[index];
         sumaTotal += val;
+        if (index < 6) sumaProceso += val;
 
-        let badgeText = "Ausente / Incompleto";
+        let badgeText = "0% Ausente";
         let badgeClass = "bg-rose-100 text-rose-800";
 
-        if (val === 35) { badgeText = "Insuficiente"; badgeClass = "bg-amber-100 text-amber-800"; }
-        if (val === 55) { badgeText = "En Desarrollo"; badgeClass = "bg-yellow-100 text-yellow-800"; }
-        if (val === 75) { badgeText = "Satisfactorio / Bueno"; badgeClass = "bg-blue-100 text-blue-800"; }
-        if (val === 100) { badgeText = "Excelente"; badgeClass = "bg-emerald-100 text-emerald-800"; }
+        if (val === 35) { badgeText = "35% Insuficiente"; badgeClass = "bg-amber-100 text-amber-800"; }
+        if (val === 55) { badgeText = "55% En Desarrollo"; badgeClass = "bg-yellow-100 text-yellow-800"; }
+        if (val === 75) { badgeText = "75% Satisfactorio"; badgeClass = "bg-blue-100 text-blue-800"; }
+        if (val === 100) { badgeText = "100% Excelente"; badgeClass = "bg-emerald-100 text-emerald-800"; }
 
         const row = document.createElement('div');
-        row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg flex flex-col md:flex-row justify-between items-center gap-3";
+        row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
         row.innerHTML = `
-          <div class="w-full md:w-1/2">
-            <div class="font-semibold text-slate-800">${def.titulo}</div>
-            <span class="text-[10px] px-2 py-0.5 rounded font-medium ${badgeClass}">${badgeText}</span>
+          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
+            <div class="flex items-center gap-2">
+              <span class="font-bold text-slate-800">${def.titulo}</span>
+              <span class="text-[10px] px-2 py-0.5 rounded font-bold ${badgeClass}">${badgeText}</span>
+            </div>
+            <div class="flex items-center gap-2 self-end md:self-auto">
+              <span class="text-[11px] text-slate-500 font-medium">Ajuste Docente:</span>
+              <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs">
+                <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente / Incompleto</option>
+                <option value="35" ${val === 35 ? 'selected' : ''}>35% - Insuficiente / Superficial</option>
+                <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo / Básico</option>
+                <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio / Bueno</option>
+                <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente / Destacado</option>
+              </select>
+              <span class="font-bold text-xs text-blue-900 ml-1">Valoración: ${val}%</span>
+            </div>
           </div>
-          <div class="flex items-center gap-3 w-full md:w-1/2 justify-end">
-            <span class="font-bold text-xs text-blue-900">Valoración: ${val}%</span>
-            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs">
-              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
-              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Insuficiente</option>
-              <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
-              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Bueno</option>
-              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
-            </select>
-          </div>
+          <p class="text-[11px] text-slate-500 italic"><span class="font-semibold text-slate-700">Sugerencia IA:</span> ${sug}</p>
         `;
         cont.appendChild(row);
       });
 
+      // Cálculo corregido exacto al formato original:
+      // Nota de Proceso = Etapas 1-6 sobre 600 pts traducido a escala 0-10
+      const notaProceso = (sumaProceso / 60).toFixed(1);
+      // Nota Global = Total de 10 Etapas sobre 1000 pts traducido a escala 0-10
       const notaGlobal = (sumaTotal / 100).toFixed(1);
-      const notaProceso = (sumaTotal / 100).toFixed(1);
 
-      document.getElementById('nota-global-val').innerText = notaGlobal;
       document.getElementById('nota-proceso-val').innerText = notaProceso;
+      document.getElementById('nota-global-val').innerText = notaGlobal;
     }
 
     function cambiarValor(index, nuevoValor) {
       valoraciones[index] = parseInt(nuevoValor, 10);
+      sugerenciasIA[index] = `Ajustado manualmente por el docente a ${nuevoValor}%.`;
       renderizarRubrica();
       guardarEvaluacionDocente();
     }
@@ -267,17 +358,17 @@
         btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
       }
 
-      const sumaTotal = valoraciones.reduce((acc, curr) => acc + curr, 0);
-      const notaFinalCalculada = parseFloat((sumaTotal / 100).toFixed(1));
+      const notaProceso = parseFloat(document.getElementById('nota-proceso-val').innerText) || 0;
+      const notaGlobal = parseFloat(document.getElementById('nota-global-val').innerText) || 0;
       const devolucionText = document.getElementById('eval-devolucion-docente').value;
 
       const payload = {
         proyecto_id: proyectoSeleccionado.id,
-        nota_final: notaFinalCalculada,
-        nota_etapa1_5: parseFloat((valoraciones.slice(0, 5).reduce((a, b) => a + b, 0) / 50).toFixed(1)),
-        nota_etapa6_10: parseFloat((valoraciones.slice(5, 10).reduce((a, b) => a + b, 0) / 50).toFixed(1)),
-        devolucion_docente: devolucionText || 'Evaluación en proceso por el cuerpo docente.',
-        estado_revision: notaFinalCalculada >= 6 ? 'Aprobado' : 'En Revisión'
+        nota_final: notaGlobal,
+        nota_etapa1_5: notaProceso,
+        nota_etapa6_10: notaGlobal,
+        devolucion_docente: devolucionText || 'Evaluación cualitativa registrada por el cuerpo docente.',
+        estado_revision: notaGlobal >= 6 ? 'Aprobado' : 'En Revisión'
       };
 
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === proyectoSeleccionado.id);
