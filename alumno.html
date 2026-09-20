@@ -127,7 +127,7 @@
         </div>
       </div>
 
-      <!-- ETAPA 5 (CON REDES SOCIALES Y VIDEO) -->
+      <!-- ETAPA 5 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 5: Marketing y Estrategia Comercial (4 Ps)</h3>
         <div>
@@ -155,12 +155,51 @@
         </div>
       </div>
 
-      <!-- ETAPA 7 -->
-      <div class="space-y-4">
+      <!-- ETAPA 7: SIMULACIÓN Y PROYECCIÓN FINANCIERA (PLANILLA DOCENTE) -->
+      <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 7: Estructura Financiera y Costos</h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">A) Inversión Inicial Total ($ ARS)</label>
+            <input type="number" id="inversionInicial" oninput="calcularPuntoEquilibrio()" placeholder="Ej: 5000000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">B) Gastos Mensuales Totales - Costo Fijo ($ ARS)</label>
+            <input type="number" id="gastos_mensuales" oninput="calcularPuntoEquilibrio()" placeholder="Ej: 300000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Costo Unitario por Producto ($)</label>
+            <input type="number" id="costo_unitario" oninput="calcularPuntoEquilibrio()" placeholder="Ej: 1500" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Precio Venta Dado ($)</label>
+            <input type="number" id="precio_venta" oninput="calcularPuntoEquilibrio()" placeholder="Ej: 2500" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Ganancia por Unid. (B = Precio - Costo)</label>
+            <input type="number" id="ganancia_unitaria" readonly placeholder="Auto-calculado" class="w-full border border-slate-200 bg-slate-100 rounded-lg p-2.5 text-xs font-bold text-emerald-700">
+          </div>
+        </div>
+
+        <!-- CÁLCULO DE PUNTO DE EQUILIBRIO -->
+        <div class="bg-blue-900 text-white p-3.5 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-2 mt-2">
+          <div class="text-xs">
+            <span class="font-bold text-blue-200 uppercase block">Cálculo de Punto de Equilibrio (A / B)</span>
+            <span class="text-[11px] text-slate-300">Unidades a vender por mes para cubrir todos los gastos fijos:</span>
+          </div>
+          <div class="text-right">
+            <span id="punto_equilibrio_val" class="text-2xl font-black text-amber-400">0</span>
+            <span class="text-xs text-blue-200 font-medium"> un. / mes</span>
+          </div>
+        </div>
+
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS)</label>
-          <input type="text" id="inversionInicial" placeholder="Ej: 150000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-2">Detalle de Inversión y Gastos (Maquinaria, Alquiler, Servicios, MOD/MOI)</label>
+          <textarea id="desglose_inversion_inicial" rows="2" placeholder="Ej: Maquinaria ($2M), Alquiler ($200k), Luz/Gas ($50k)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
@@ -213,6 +252,22 @@
     let proyectoActualId = null;
     let listaProyectos = [];
 
+    function calcularPuntoEquilibrio() {
+      const gastosMensuales = parseFloat(document.getElementById('gastos_mensuales').value) || 0;
+      const costoUnitario = parseFloat(document.getElementById('costo_unitario').value) || 0;
+      const precioVenta = parseFloat(document.getElementById('precio_venta').value) || 0;
+
+      const ganancia = precioVenta - costoUnitario;
+      document.getElementById('ganancia_unitaria').value = ganancia > 0 ? ganancia : 0;
+
+      if (gastosMensuales > 0 && ganancia > 0) {
+        const unidadesEq = Math.ceil(gastosMensuales / ganancia);
+        document.getElementById('punto_equilibrio_val').innerText = unidadesEq.toLocaleString('es-AR');
+      } else {
+        document.getElementById('punto_equilibrio_val').innerText = '0';
+      }
+    }
+
     async function cargarProyectos() {
       const { data, error } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
       if (error) return console.error(error);
@@ -257,7 +312,16 @@
       document.getElementById('redes_sociales').value = p.redes_sociales || '';
       document.getElementById('video_promo').value = p.video_promo || '';
       document.getElementById('competidores').value = p.competidores || '';
+
+      // Carga financiera
       document.getElementById('inversionInicial').value = p.inversionInicial || p.inversion_inicial || '';
+      document.getElementById('gastos_mensuales').value = p.gastos_mensuales || '';
+      document.getElementById('costo_unitario').value = p.costo_unitario || '';
+      document.getElementById('precio_venta').value = p.precio_venta || '';
+      document.getElementById('desglose_inversion_inicial').value = p.desglose_inversion_inicial || '';
+
+      calcularPuntoEquilibrio();
+
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
       document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || p.estrategia_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
@@ -297,8 +361,17 @@
         redes_sociales: document.getElementById('redes_sociales').value,
         video_promo: document.getElementById('video_promo').value,
         competidores: document.getElementById('competidores').value,
+
+        // Payload financiero
         inversionInicial: document.getElementById('inversionInicial').value,
         inversion_inicial: document.getElementById('inversionInicial').value,
+        gastos_mensuales: document.getElementById('gastos_mensuales').value,
+        costo_unitario: document.getElementById('costo_unitario').value,
+        precio_venta: document.getElementById('precio_venta').value,
+        ganancia_unitaria: document.getElementById('ganancia_unitaria').value,
+        desglose_inversion_inicial: document.getElementById('desglose_inversion_inicial').value,
+        punto_equilibrio: document.getElementById('punto_equilibrio_val').innerText,
+
         plan_implementacion: document.getElementById('plan_implementacion').value,
         estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value,
         estrategia_crecimiento: document.getElementById('estrategias_crecimiento').value,
@@ -335,6 +408,7 @@
       document.getElementById('modo-form').innerText = "Modo: Nuevo Registro";
       document.getElementById('eval-nota-proceso').innerText = '0.0';
       document.getElementById('eval-nota-global').innerText = '0.0';
+      document.getElementById('punto_equilibrio_val').innerText = '0';
       document.getElementById('eval-devolucion').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
       document.getElementById('eval-estado').innerText = 'En Revisión';
     }
