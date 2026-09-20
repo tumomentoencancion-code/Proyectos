@@ -185,8 +185,9 @@
     campos: ["nombreProyecto", "nombre", "slogan"], 
     analizar: (txt) => {
       if (!txt) return { val: 0, sug: "Ausente: Falta definir el nombre o la idea principal." };
-      if (txt.length < 15) return { val: 35, sug: "Inicial: El nombre o slogan es muy breve." };
-      return { val: 75, sug: "Satisfactorio: Idea de negocio definida." };
+      if (txt.length < 20) return { val: 25, sug: "Inicial: El nombre o slogan es muy elemental." };
+      if (txt.length < 50) return { val: 45, sug: "Aceptable: Nombre e idea básica definidos." };
+      return { val: 65, sug: "Satisfactorio: Idea de negocio y concepto bien estructurados." };
     }
   },
   { 
@@ -194,8 +195,9 @@
     campos: ["integrantes"], 
     analizar: (txt) => {
       if (!txt) return { val: 0, sug: "Ausente: No hay integrantes registrados." };
-      if (txt.length < 20) return { val: 35, sug: "Inicial: Se mencionan nombres sin roles claros." };
-      return { val: 75, sug: "Satisfactorio: Equipo e integrantes detallados." };
+      if (txt.length < 25) return { val: 25, sug: "Inicial: Lista de nombres sin roles asignados." };
+      if (txt.length < 60) return { val: 45, sug: "Aceptable: Integrantes con roles básicos." };
+      return { val: 65, sug: "Satisfactorio: Equipo y distribución de responsabilidades clara." };
     }
   },
   { 
@@ -203,7 +205,7 @@
     campos: ["encuestaUrl"], 
     analizar: (txt) => {
       if (!txt || !txt.includes('http')) return { val: 0, sug: "Ausente: Sin enlace de encuesta validado." };
-      return { val: 75, sug: "Satisfactorio: Link de encuesta de mercado cargado." };
+      return { val: 55, sug: "En Desarrollo: Link de encuesta cargado." };
     }
   },
   { 
@@ -211,9 +213,10 @@
     campos: ["publicoObjetivo"], 
     analizar: (txt) => {
       if (!txt) return { val: 0, sug: "Ausente: No se describió el público objetivo." };
-      if (txt.length < 30) return { val: 35, sug: "Inicial: Descripción del cliente muy general." };
-      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Define el perfil pero falta segmentación." };
-      return { val: 75, sug: "Satisfactorio: Público objetivo bien delimitado." };
+      if (txt.length < 40) return { val: 25, sug: "Inicial: Perfil de cliente muy vago o escaso." };
+      if (txt.length < 100) return { val: 45, sug: "Aceptable: Define segmento pero falta detalle demográfico." };
+      if (txt.length < 200) return { val: 55, sug: "En Desarrollo: Público objetivo delimitado correctamente." };
+      return { val: 75, sug: "Satisfactorio: Segmentación detallada del cliente ideal." };
     }
   },
   { 
@@ -221,9 +224,10 @@
     campos: ["canalesVenta", "redes_sociales", "video_promo"], 
     analizar: (txt) => {
       if (!txt) return { val: 0, sug: "Ausente: Sin estrategia ni material multimedia." };
-      if (txt.length < 30) return { val: 35, sug: "Inicial: Pocos detalles sobre comercialización." };
-      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Canales definidos pero requiere profundizar en difusión." };
-      return { val: 75, sug: "Satisfactorio: Canales y estrategia comercial claros." };
+      if (txt.length < 40) return { val: 25, sug: "Inicial: Menciona canales de forma muy superficial." };
+      if (txt.length < 120) return { val: 45, sug: "Aceptable: Canales básicos pero requiere profundizar en propuesta comercial." };
+      if (txt.length < 220) return { val: 55, sug: "En Desarrollo: Canales y difusión definidos." };
+      return { val: 75, sug: "Satisfactorio: Estrategia de marketing integral." };
     }
   },
   { 
@@ -231,37 +235,40 @@
     campos: ["competidores"], 
     analizar: (txt) => {
       if (!txt) return { val: 0, sug: "Ausente: Sin análisis de competidores ni insumos." };
-      if (txt.length < 30) return { val: 35, sug: "Inicial: Análisis de competencia muy breve." };
-      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Competidores identificados pero falta diferenciar valor." };
-      return { val: 75, sug: "Satisfactorio: Proceso operativo y competencia analizados." };
+      if (txt.length < 40) return { val: 25, sug: "Inicial: Mención elemental de competencia." };
+      if (txt.length < 100) return { val: 45, sug: "Aceptable: Competidores identificados sin profundizar ventajas." };
+      if (txt.length < 200) return { val: 55, sug: "En Desarrollo: Operativa y competencia analizadas." };
+      return { val: 75, sug: "Satisfactorio: Análisis operativo y diferencial competitivo robusto." };
     }
   },
   { 
     titulo: "7. Estructura Financiera y Costos", 
     campos: ["inversionInicial", "inversion_inicial", "gastos_mensuales"], 
     analizar: (txt) => {
-      if (!txt || txt === "0") return { val: 0, sug: "Ausente: Sin valores financieros o de inversión cargados." };
-      return { val: 55, sug: "En Desarrollo: Costos cargados; verificar punto de equilibrio." };
+      if (!txt || txt === "0") return { val: 0, sug: "Ausente: Sin valores financieros cargados." };
+      return { val: 45, sug: "Aceptable: Costos básicos cargados; revisar punto de equilibrio." };
     }
   },
   { 
     titulo: "8. Plan de Implementación", 
     campos: ["plan_implementacion"], 
     analizar: (txt) => {
-      if (!txt) return { val: 0, sug: "Ausente: Sin cronograma o plan de tareas." };
-      if (txt.length < 30) return { val: 35, sug: "Inicial: Tareas mencionadas pero sin fechas o hitos." };
-      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Buen esquema de tareas iniciales." };
-      return { val: 75, sug: "Satisfactorio: Plan de implementación estructurado." };
+      if (!txt) return { val: 0, sug: "Ausente: Sin cronograma ni plan de tareas." };
+      if (txt.length < 40) return { val: 25, sug: "Inicial: Tareas muy escasas sin fechas." };
+      if (txt.length < 120) return { val: 45, sug: "Aceptable: Esquema de pasos iniciales." };
+      if (txt.length < 220) return { val: 55, sug: "En Desarrollo: Plan de tareas estructurado." };
+      return { val: 75, sug: "Satisfactorio: Cronograma e hitos de proyecto detallados." };
     }
   },
   { 
     titulo: "9. Crecimiento y Escalabilidad", 
     campos: ["estrategias_crecimiento", "estrategia_crecimiento"], 
     analizar: (txt) => {
-      if (!txt) return { val: 0, sug: "Ausente: No se detallan perspectivas futuras." };
-      if (txt.length < 30) return { val: 35, sug: "Inicial: Ideas generales de expansión." };
-      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Estrategia de crecimiento en proceso." };
-      return { val: 75, sug: "Satisfactorio: Estrategia de escalabilidad bien enfocada." };
+      if (!txt) return { val: 0, sug: "Ausente: No se detallan perspectivas de crecimiento." };
+      if (txt.length < 40) return { val: 25, sug: "Inicial: Ideas de expansión muy genéricas." };
+      if (txt.length < 120) return { val: 45, sug: "Aceptable: Propuesta de crecimiento básica." };
+      if (txt.length < 220) return { val: 55, sug: "En Desarrollo: Plan de escalabilidad en proceso." };
+      return { val: 75, sug: "Satisfactorio: Estrategia de crecimiento clara y viable." };
     }
   },
   { 
@@ -269,13 +276,13 @@
     campos: ["conclusiones"], 
     analizar: (txt) => {
       if (!txt) return { val: 0, sug: "Ausente: Sin síntesis de viabilidad final." };
-      if (txt.length < 30) return { val: 35, sug: "Inicial: Conclusión muy concisa." };
-      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Buena síntesis pero con puntos a verificar." };
-      return { val: 75, sug: "Satisfactorio: Cierre y viabilidad del proyecto bien fundamentados." };
+      if (txt.length < 40) return { val: 25, sug: "Inicial: Conclusión muy breve o incompleta." };
+      if (txt.length < 120) return { val: 45, sug: "Aceptable: Cierre básico del proyecto." };
+      if (txt.length < 220) return { val: 55, sug: "En Desarrollo: Conclusión de viabilidad fundamentada." };
+      return { val: 75, sug: "Satisfactorio: Síntesis final amplia y bien respaldada." };
     }
   }
 ];
-
     let listaProyectos = [];
     let listaEvaluaciones = [];
     let proyectoSeleccionado = null;
