@@ -10,6 +10,33 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
+  <!-- MODAL DE ACCESO CON CLAVE -->
+  <div id="modal-auth" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-xl">
+          <i class="fa-solid fa-user-lock"></i>
+        </div>
+        <h2 class="text-lg font-bold text-slate-900">Acceso Estudiantes</h2>
+        <p class="text-xs text-slate-500">Ingresá la clave de acceso del curso para acceder a la formulación de proyectos.</p>
+      </div>
+
+      <form onsubmit="validarClave(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-700 mb-1">Contraseña de Alumno:</label>
+          <input type="password" id="input-clave" required placeholder="••••••••" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-center font-bold tracking-widest focus:ring-2 focus:ring-blue-500">
+        </div>
+        <p id="auth-error" class="text-xs text-red-600 font-bold text-center hidden"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Clave incorrecta.</p>
+        <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+          Ingresar al Portal
+        </button>
+      </form>
+      <div class="text-center">
+        <a href="index.html" class="text-xs text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left mr-1"></i> Volver a la portada</a>
+      </div>
+    </div>
+  </div>
+
   <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
@@ -20,14 +47,36 @@
         <a href="posiciones.html" target="_blank" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
           <i class="fa-solid fa-trophy"></i> Ver Tabla Posiciones
         </a>
-        <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
-          <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...
-        </span>
+        <button onclick="cerrarSesion()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition border border-slate-700">
+          <i class="fa-solid fa-right-from-bracket"></i> Salir
+        </button>
       </div>
     </div>
   </header>
 
   <main class="max-w-5xl mx-auto px-6 space-y-8">
+
+    <section class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 rounded-xl shadow-md border border-blue-800 space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div class="space-y-1">
+          <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-slate-900 px-2.5 py-0.5 rounded-md">
+            <i class="fa-solid fa-rocket mr-1"></i> Módulo de Validación de Mercado
+          </span>
+          <h2 class="text-lg font-black text-white">Competencia de Emprendimientos & Capital Semilla Simulado</h2>
+          <p class="text-xs text-blue-200 leading-relaxed max-w-2xl">
+            ¡Compartí tu emprendimiento con la comunidad de Bragado! La gente podrá ver tu propuesta, mirar tu video promocional, ingresar a tus redes sociales, **calificar tu proyecto de 1 a 10** y **simular una inversión inicial** en tu empresa.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
+          <button type="button" onclick="irAVotacionPropia()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-lg text-xs shadow transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-check-to-slot"></i> Ir a Votar Mi Proyecto
+          </button>
+          <a href="posiciones.html" target="_blank" class="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2.5 rounded-lg text-xs border border-white/20 transition flex items-center justify-center gap-2">
+            <i class="fa-solid fa-chart-line"></i> Tabla General
+          </a>
+        </div>
+      </div>
+    </section>
 
     <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
       <h2 class="text-base font-bold text-slate-800 mb-3">1. Gestión de Proyecto</h2>
@@ -61,7 +110,6 @@
             <span id="eval-nota-proceso" class="text-3xl font-black text-emerald-700">0.0</span>
             <span class="text-slate-500 text-sm font-bold">/ 10</span>
           </div>
-          <p class="text-[11px] text-emerald-600 mt-1">Nivel cualitativo frente a la meta esperada a la fecha (600 pts).</p>
         </div>
 
         <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
@@ -70,13 +118,12 @@
             <span id="eval-nota-global" class="text-3xl font-black text-blue-900">0.0</span>
             <span class="text-slate-500 text-sm font-bold">/ 10</span>
           </div>
-          <p class="text-[11px] text-blue-600 mt-1">Porcentaje de calidad total alcanzado sobre el Plan Final de 10 etapas (1000 pts).</p>
         </div>
       </div>
 
       <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl pt-3">
-        <span class="text-[11px] font-bold text-slate-600 uppercase block mb-1">Devolución y Observaciones Generales del Docente:</span>
-        <p id="eval-devolucion" class="text-xs text-slate-700 italic">Aún no hay observaciones del docente registradas para este proyecto.</p>
+        <span class="text-[11px] font-bold text-slate-600 uppercase block mb-1">Devolución del Docente:</span>
+        <p id="eval-devolucion" class="text-xs text-slate-700 italic">Aún no hay observaciones registradas.</p>
       </div>
     </section>
 
@@ -87,7 +134,6 @@
         <span id="modo-form" class="text-xs font-bold text-slate-400">Modo: Nuevo Registro</span>
       </div>
 
-      <!-- ETAPAS 1 A 10 -->
       <div class="space-y-4">
         <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 1: Diagnóstico e Idea de Negocio</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -111,7 +157,7 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 3: Estudio de Mercado y Encuesta</h3>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 3: Estudio de Mercado</h3>
         <div>
           <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta</label>
           <input type="url" id="encuestaUrl" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
@@ -119,18 +165,18 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 4: Producto, Servicio y Público Target</h3>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 4: Público Target</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Público Target / Cliente Ideal</label>
-          <textarea id="publicoObjetivo" rows="2" placeholder="Describe edad, ubicación, hábitos..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Cliente Ideal</label>
+          <textarea id="publicoObjetivo" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 5: Marketing y Estrategia Comercial</h3>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 5: Marketing y Redes</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategia Comercial y Canales</label>
-          <textarea id="canalesVenta" rows="2" placeholder="Estrategia de precios y canales de difusión..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategia Comercial</label>
+          <textarea id="canalesVenta" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
@@ -145,23 +191,21 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 6: Operativa, Proceso y Competencia</h3>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 6: Operativa y Competencia</h3>
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Competidores e Insumos</label>
           <textarea id="competidores" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
       <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 7: Estructura Financiera y Costos</h3>
-        
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 7: Estructura Financiera</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">A) Inversión Inicial Total ($ ARS)</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Total ($)</label>
             <input type="number" id="inversionInicial" oninput="calcularPuntoEquilibrio()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">B) Gastos Mensuales Totales ($ ARS)</label>
+            <label class="block text-xs font-semibold text-slate-700 mb-1">Gastos Mensuales Totales ($)</label>
             <input type="number" id="gastos_mensuales" oninput="calcularPuntoEquilibrio()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
           </div>
         </div>
@@ -182,53 +226,34 @@
         </div>
 
         <div class="bg-blue-900 text-white p-3.5 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-2 mt-2">
-          <div class="text-xs">
-            <span class="font-bold text-blue-200 uppercase block">Cálculo de Punto de Equilibrio (A / B)</span>
-            <span class="text-[11px] text-slate-300">Unidades a vender por mes para cubrir gastos:</span>
-          </div>
-          <div class="text-right">
-            <span id="punto_equilibrio_val" class="text-2xl font-black text-amber-400">0</span>
-            <span class="text-xs text-blue-200 font-medium"> un. / mes</span>
-          </div>
+          <span class="text-xs font-bold text-blue-200">Punto de Equilibrio:</span>
+          <span id="punto_equilibrio_val" class="text-2xl font-black text-amber-400">0</span>
         </div>
 
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-2">Detalle de Inversión y Gastos</label>
+          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-2">Detalle de Gastos</label>
           <textarea id="desglose_inversion_inicial" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
         </div>
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 8: Plan de Implementación</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Plan de Implementación</label>
-          <textarea id="plan_implementacion" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-        </div>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 8: Implementación</h3>
+        <textarea id="plan_implementacion" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 9: Crecimiento y Escalabilidad</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategias de Crecimiento</label>
-          <textarea id="estrategias_crecimiento" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-        </div>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 9: Escalabilidad</h3>
+        <textarea id="estrategias_crecimiento" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 10: Conclusiones y Viabilidad</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Conclusiones y Viabilidad</label>
-          <textarea id="conclusiones" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-        </div>
+        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 10: Conclusiones</h3>
+        <textarea id="conclusiones" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
       </div>
 
       <div class="pt-4 border-t flex justify-end gap-3">
-        <button type="button" onclick="limpiarFormulario()" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-xs transition">
-          Limpiar
-        </button>
-        <button type="submit" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow transition flex items-center gap-2">
-          <i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto
-        </button>
+        <button type="button" onclick="limpiarFormulario()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-xs">Limpiar</button>
+        <button type="submit" id="btn-guardar" class="bg-blue-900 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow"><i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto</button>
       </div>
 
     </form>
@@ -236,12 +261,47 @@
   </main>
 
   <script>
+    const CLAVE_ALUMNO = "alumnos2026"; // Contraseña predeterminada
+
+    function verificarAutenticacion() {
+      const auth = localStorage.getItem('auth_alumno');
+      if (auth === 'true') {
+        document.getElementById('modal-auth').classList.add('hidden');
+      } else {
+        document.getElementById('modal-auth').classList.remove('hidden');
+      }
+    }
+
+    function validarClave(e) {
+      e.preventDefault();
+      const clave = document.getElementById('input-clave').value;
+      if (clave === CLAVE_ALUMNO) {
+        localStorage.setItem('auth_alumno', 'true');
+        document.getElementById('modal-auth').classList.add('hidden');
+      } else {
+        document.getElementById('auth-error').classList.remove('hidden');
+      }
+    }
+
+    function cerrarSesion() {
+      localStorage.removeItem('auth_alumno');
+      location.reload();
+    }
+
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let proyectoActualId = null;
     let listaProyectos = [];
+
+    function irAVotacionPropia() {
+      if (!proyectoActualId) {
+        alert("Por favor, selecciona primero tu emprendimiento del listado.");
+        return;
+      }
+      window.open(`votacion.html?id=${proyectoActualId}`, '_blank');
+    }
 
     function calcularPuntoEquilibrio() {
       const gastosMensuales = parseFloat(document.getElementById('gastos_mensuales').value) || 0;
@@ -271,13 +331,6 @@
         option.textContent = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
         select.appendChild(option);
       });
-
-      const urlParams = new URLSearchParams(window.location.search);
-      const urlId = urlParams.get('id');
-      if (urlId) {
-        select.value = urlId;
-        cargarProyectoSeleccionado(urlId);
-      }
     }
 
     function cargarProyectoSeleccionado(id) {
@@ -291,7 +344,6 @@
       if (!p) return;
 
       document.getElementById('modo-form').innerText = `Modo: Editando ID ${p.id}`;
-
       document.getElementById('nombreProyecto').value = p.nombreProyecto || p.nombre || '';
       document.getElementById('slogan').value = p.slogan || '';
       document.getElementById('integrantes').value = p.integrantes || '';
@@ -319,25 +371,16 @@
 
     async function cargarEvaluacion(id) {
       const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
-      
       if (data) {
         document.getElementById('eval-nota-proceso').innerText = (data.nota_etapa1_5 || 0).toFixed(1);
         document.getElementById('eval-nota-global').innerText = (data.nota_final || 0).toFixed(1);
         document.getElementById('eval-devolucion').innerText = data.devolucion_docente || 'Sin observaciones registradas.';
         document.getElementById('eval-estado').innerText = data.estado_revision || 'En Revisión';
-      } else {
-        document.getElementById('eval-nota-proceso').innerText = '0.0';
-        document.getElementById('eval-nota-global').innerText = '0.0';
-        document.getElementById('eval-devolucion').innerText = 'Aún no hay observaciones del docente registradas para este proyecto.';
-        document.getElementById('eval-estado').innerText = 'En Revisión';
       }
     }
 
     async function guardarProyecto(e) {
       e.preventDefault();
-      const btn = document.getElementById('btn-guardar');
-      btn.disabled = true;
-
       const payload = {
         nombreProyecto: document.getElementById('nombreProyecto').value,
         slogan: document.getElementById('slogan').value,
@@ -360,7 +403,6 @@
 
         plan_implementacion: document.getElementById('plan_implementacion').value,
         estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value,
-        estrategia_crecimiento: document.getElementById('estrategias_crecimiento').value,
         conclusiones: document.getElementById('conclusiones').value
       };
 
@@ -373,19 +415,16 @@
 
       alert("¡Proyecto guardado correctamente!");
       await cargarProyectos();
-      btn.disabled = false;
     }
 
     function limpiarFormulario() {
       proyectoActualId = null;
       document.getElementById('form-proyecto').reset();
       document.getElementById('modo-form').innerText = "Modo: Nuevo Registro";
-      document.getElementById('eval-nota-proceso').innerText = '0.0';
-      document.getElementById('eval-nota-global').innerText = '0.0';
-      document.getElementById('punto_equilibrio_val').innerText = '0';
     }
 
     window.onload = () => {
+      verificarAutenticacion();
       cargarProyectos();
     };
   </script>
