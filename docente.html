@@ -179,18 +179,102 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    const itemsDefinicion = [
-      { titulo: "1. Diagnóstico e Idea de Negocio", campos: ["nombreProyecto", "nombre", "slogan"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: txt ? "Satisfactorio" : "Ausente" }) },
-      { titulo: "2. Equipo y Estructura Humana", campos: ["integrantes"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: txt ? "Satisfactorio" : "Ausente" }) },
-      { titulo: "3. Estudio de Mercado y Encuesta", campos: ["encuestaUrl"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "4. Producto, Servicio y Público Target", campos: ["publicoObjetivo"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "5. Marketing y Estrategia Comercial (4 Ps)", campos: ["canalesVenta"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "6. Operativa, Proceso y Competencia", campos: ["competidores"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "7. Estructura Financiera y Costos", campos: ["inversionInicial", "inversion_inicial"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "8. Plan de Implementación", campos: ["plan_implementacion"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "9. Crecimiento y Escalabilidad", campos: ["estrategias_crecimiento", "estrategia_crecimiento"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
-      { titulo: "10. Conclusiones y Viabilidad", campos: ["conclusiones"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) }
-    ];
+   const itemsDefinicion = [
+  { 
+    titulo: "1. Diagnóstico e Idea de Negocio", 
+    campos: ["nombreProyecto", "nombre", "slogan"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: Falta definir el nombre o la idea principal." };
+      if (txt.length < 15) return { val: 35, sug: "Inicial: El nombre o slogan es muy breve." };
+      return { val: 75, sug: "Satisfactorio: Idea de negocio definida." };
+    }
+  },
+  { 
+    titulo: "2. Equipo y Estructura Humana", 
+    campos: ["integrantes"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: No hay integrantes registrados." };
+      if (txt.length < 20) return { val: 35, sug: "Inicial: Se mencionan nombres sin roles claros." };
+      return { val: 75, sug: "Satisfactorio: Equipo e integrantes detallados." };
+    }
+  },
+  { 
+    titulo: "3. Estudio de Mercado y Encuesta", 
+    campos: ["encuestaUrl"], 
+    analizar: (txt) => {
+      if (!txt || !txt.includes('http')) return { val: 0, sug: "Ausente: Sin enlace de encuesta validado." };
+      return { val: 75, sug: "Satisfactorio: Link de encuesta de mercado cargado." };
+    }
+  },
+  { 
+    titulo: "4. Producto, Servicio y Público Target", 
+    campos: ["publicoObjetivo"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: No se describió el público objetivo." };
+      if (txt.length < 30) return { val: 35, sug: "Inicial: Descripción del cliente muy general." };
+      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Define el perfil pero falta segmentación." };
+      return { val: 75, sug: "Satisfactorio: Público objetivo bien delimitado." };
+    }
+  },
+  { 
+    titulo: "5. Marketing y Estrategia Comercial (4 Ps)", 
+    campos: ["canalesVenta", "redes_sociales", "video_promo"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: Sin estrategia ni material multimedia." };
+      if (txt.length < 30) return { val: 35, sug: "Inicial: Pocos detalles sobre comercialización." };
+      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Canales definidos pero requiere profundizar en difusión." };
+      return { val: 75, sug: "Satisfactorio: Canales y estrategia comercial claros." };
+    }
+  },
+  { 
+    titulo: "6. Operativa, Proceso y Competencia", 
+    campos: ["competidores"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: Sin análisis de competidores ni insumos." };
+      if (txt.length < 30) return { val: 35, sug: "Inicial: Análisis de competencia muy breve." };
+      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Competidores identificados pero falta diferenciar valor." };
+      return { val: 75, sug: "Satisfactorio: Proceso operativo y competencia analizados." };
+    }
+  },
+  { 
+    titulo: "7. Estructura Financiera y Costos", 
+    campos: ["inversionInicial", "inversion_inicial", "gastos_mensuales"], 
+    analizar: (txt) => {
+      if (!txt || txt === "0") return { val: 0, sug: "Ausente: Sin valores financieros o de inversión cargados." };
+      return { val: 55, sug: "En Desarrollo: Costos cargados; verificar punto de equilibrio." };
+    }
+  },
+  { 
+    titulo: "8. Plan de Implementación", 
+    campos: ["plan_implementacion"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: Sin cronograma o plan de tareas." };
+      if (txt.length < 30) return { val: 35, sug: "Inicial: Tareas mencionadas pero sin fechas o hitos." };
+      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Buen esquema de tareas iniciales." };
+      return { val: 75, sug: "Satisfactorio: Plan de implementación estructurado." };
+    }
+  },
+  { 
+    titulo: "9. Crecimiento y Escalabilidad", 
+    campos: ["estrategias_crecimiento", "estrategia_crecimiento"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: No se detallan perspectivas futuras." };
+      if (txt.length < 30) return { val: 35, sug: "Inicial: Ideas generales de expansión." };
+      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Estrategia de crecimiento en proceso." };
+      return { val: 75, sug: "Satisfactorio: Estrategia de escalabilidad bien enfocada." };
+    }
+  },
+  { 
+    titulo: "10. Conclusiones y Viabilidad", 
+    campos: ["conclusiones"], 
+    analizar: (txt) => {
+      if (!txt) return { val: 0, sug: "Ausente: Sin síntesis de viabilidad final." };
+      if (txt.length < 30) return { val: 35, sug: "Inicial: Conclusión muy concisa." };
+      if (txt.length < 80) return { val: 55, sug: "En Desarrollo: Buena síntesis pero con puntos a verificar." };
+      return { val: 75, sug: "Satisfactorio: Cierre y viabilidad del proyecto bien fundamentados." };
+    }
+  }
+];
 
     let listaProyectos = [];
     let listaEvaluaciones = [];
