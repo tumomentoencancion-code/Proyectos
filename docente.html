@@ -17,6 +17,9 @@
         <p class="text-slate-400 text-xs">Evaluación Heurística e Inspección Cualitativa (10 Ítems) • 7° Año</p>
       </div>
       <div class="flex items-center gap-3">
+        <a href="posiciones.html" target="_blank" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <i class="fa-solid fa-trophy"></i> Ver Tabla Posiciones
+        </a>
         <span id="realtime-status" class="text-xs bg-amber-500/20 text-amber-300 border border-amber-500/30 px-3 py-1 rounded-full flex items-center gap-2">
           <i class="fa-solid fa-circle-notch fa-spin"></i> Conectando...
         </span>
@@ -59,6 +62,9 @@
               <p id="det-integrantes" class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-users mr-1"></i> -</p>
             </div>
             <div class="flex gap-2 print:hidden">
+              <button onclick="blanquearVotosProyecto()" class="bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs px-3 py-2 rounded-lg font-bold border border-rose-200 transition flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i> Blanquear Votos
+              </button>
               <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition">
                 <i class="fa-solid fa-print mr-1"></i> Imprimir Informe
               </button>
@@ -86,14 +92,12 @@
           </div>
         </div>
 
-        <!-- DESGLOSE DE RÚBRICA 10 ÍTEMS CON SUGERENCIA IA -->
+        <!-- DESGLOSE DE RÚBRICA 10 ÍTEMS -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
-          <div id="contenedor-rubrica" class="space-y-4 text-xs">
-            <!-- Render dinámico completo -->
-          </div>
+          <div id="contenedor-rubrica" class="space-y-4 text-xs"></div>
 
-          <!-- OBSERVACIONES Y BOTÓN DE SÍNTESIS AUTO -->
+          <!-- OBSERVACIONES -->
           <div class="pt-4 border-t space-y-3">
             <div class="flex justify-between items-center">
               <label class="block text-xs font-bold text-slate-700">Devolución / Observaciones Generales del Docente:</label>
@@ -122,97 +126,16 @@
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const itemsDefinicion = [
-      {
-        titulo: "1. Diagnóstico e Idea de Negocio",
-        campos: ["nombreProyecto", "nombre", "slogan"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin nombre ni propuesta definida." };
-          if (txt.length < 15) return { val: 35, sug: "Insuficiente: Solo título básico sin slogan o fundamentación." };
-          if (txt.length < 50) return { val: 55, sug: "En Desarrollo: Describe el producto/servicio pero sin precisar nicho." };
-          return { val: 75, sug: "Satisfactorio: Propuesta de valor clara e idea bien fundamentada." };
-        }
-      },
-      {
-        titulo: "2. Equipo y Estructura Humana",
-        campos: ["integrantes"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin equipo asignado." };
-          if (txt.length < 20) return { val: 35, sug: "Insuficiente: Nombres sin roles específicos." };
-          if (txt.length < 60) return { val: 55, sug: "En Desarrollo: Roles nombrados de forma general sin tareas detalladas." };
-          return { val: 75, sug: "Satisfactorio: Estructura organizacional y funciones definidas." };
-        }
-      },
-      {
-        titulo: "3. Estudio de Mercado y Encuesta",
-        campos: ["encuestaUrl"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin enlace de encuesta ni estudio de mercado." };
-          if (!txt.includes("http")) return { val: 35, sug: "Insuficiente: Texto descriptivo pero sin enlace funcional a encuesta." };
-          return { val: 55, sug: "En Desarrollo: Encuesta vinculada pero sin análisis de resultados." };
-        }
-      },
-      {
-        titulo: "4. Producto, Servicio y Público Target",
-        campos: ["publicoObjetivo"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin especificación de público objetivo." };
-          if (txt.length < 25) return { val: 35, sug: "Insuficiente: Definición genérica (ej: 'público general')." };
-          return { val: 55, sug: "En Desarrollo: Cliente ideal identificado con variables demográficas básicas." };
-        }
-      },
-      {
-        titulo: "5. Marketing y Estrategia Comercial (4 Ps)",
-        campos: ["canalesVenta"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin estrategia ni canales comerciales." };
-          if (txt.length < 25) return { val: 35, sug: "Insuficiente: Menciona canales de forma aislada." };
-          return { val: 55, sug: "En Desarrollo: Canales de venta y estrategia básica planteados." };
-        }
-      },
-      {
-        titulo: "6. Operativa, Proceso y Competencia",
-        campos: ["competidores"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin análisis de competidores ni proceso productivo." };
-          if (txt.length < 25) return { val: 35, sug: "Insuficiente: Nombra competidores sin diferencial." };
-          return { val: 55, sug: "En Desarrollo: Mapeo de competidores directos con fortalezas." };
-        }
-      },
-      {
-        titulo: "7. Estructura Financiera y Costos",
-        campos: ["inversionInicial", "inversion_inicial"],
-        analizar: (txt) => {
-          if (!txt || parseFloat(txt) === 0) return { val: 0, sug: "Ausente: Sin inversión estimada ni costos." };
-          return { val: 55, sug: "En Desarrollo: Inversión inicial estimada ingresada." };
-        }
-      },
-      {
-        titulo: "8. Plan de Implementación",
-        campos: ["plan_implementacion"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin cronograma ni plan de ejecución." };
-          if (txt.length < 30) return { val: 35, sug: "Insuficiente: Etapas generales sin fechas ni hitos concretos." };
-          return { val: 55, sug: "En Desarrollo: Plan de ejecución formulado." };
-        }
-      },
-      {
-        titulo: "9. Crecimiento y Escalabilidad",
-        campos: ["estrategias_crecimiento", "estrategia_crecimiento"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin proyección de crecimiento." };
-          if (txt.length < 30) return { val: 35, sug: "Insuficiente: Ideas de expansión preliminares." };
-          return { val: 55, sug: "En Desarrollo: Estrategias de crecimiento definidas." };
-        }
-      },
-      {
-        titulo: "10. Conclusiones y Viabilidad",
-        campos: ["conclusiones"],
-        analizar: (txt) => {
-          if (!txt) return { val: 0, sug: "Ausente: Sin conclusiones de viabilidad." };
-          if (txt.length < 30) return { val: 35, sug: "Insuficiente: Cierre descriptivo sin síntesis de viabilidad." };
-          return { val: 55, sug: "En Desarrollo: Conclusiones y viabilidad formuladas." };
-        }
-      }
+      { titulo: "1. Diagnóstico e Idea de Negocio", campos: ["nombreProyecto", "nombre", "slogan"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: txt ? "Satisfactorio" : "Ausente" }) },
+      { titulo: "2. Equipo y Estructura Humana", campos: ["integrantes"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: txt ? "Satisfactorio" : "Ausente" }) },
+      { titulo: "3. Estudio de Mercado y Encuesta", campos: ["encuestaUrl"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "4. Producto, Servicio y Público Target", campos: ["publicoObjetivo"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "5. Marketing y Estrategia Comercial (4 Ps)", campos: ["canalesVenta"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "6. Operativa, Proceso y Competencia", campos: ["competidores"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "7. Estructura Financiera y Costos", campos: ["inversionInicial", "inversion_inicial"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "8. Plan de Implementación", campos: ["plan_implementacion"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "9. Crecimiento y Escalabilidad", campos: ["estrategias_crecimiento", "estrategia_crecimiento"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) },
+      { titulo: "10. Conclusiones y Viabilidad", campos: ["conclusiones"], analizar: (txt) => ({ val: txt ? 55 : 0, sug: txt ? "En Desarrollo" : "Ausente" }) }
     ];
 
     let listaProyectos = [];
@@ -223,87 +146,48 @@
     let ajustesManuales = {};
 
     async function cargarDatos() {
-      try {
-        const { data: pData, error: pError } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-        if (pError) console.error("Error al cargar proyectos:", pError);
-        listaProyectos = pData || [];
+      const { data: pData } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
+      listaProyectos = pData || [];
+      renderizarLista();
 
-        renderizarLista();
+      const { data: eData } = await _supabase.from('evaluaciones').select('*');
+      listaEvaluaciones = eData || [];
 
-        const { data: eData, error: eError } = await _supabase.from('evaluaciones').select('*');
-        if (eError) console.warn("Aviso de evaluaciones:", eError);
-        listaEvaluaciones = eData || [];
-
-        if (proyectoSeleccionado) {
-          seleccionarProyecto(proyectoSeleccionado.id, false);
-        }
-      } catch (err) {
-        console.error("Excepción al cargar datos:", err);
-      }
+      if (proyectoSeleccionado) seleccionarProyecto(proyectoSeleccionado.id, false);
     }
 
     function renderizarLista() {
       const cont = document.getElementById('lista-proyectos');
       cont.innerHTML = '';
-
-      if (listaProyectos.length === 0) {
-        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos registrados.</p>';
-        return;
-      }
-
       listaProyectos.forEach(p => {
         const item = document.createElement('div');
         item.className = "p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-lg cursor-pointer transition mb-2";
         item.onclick = () => seleccionarProyecto(p.id, false);
-        const nombre = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
-        item.innerHTML = `
-          <h4 class="font-bold text-xs text-slate-800">${nombre}</h4>
-          <p class="text-[11px] text-slate-500">${p.integrantes || 'Sin integrantes'}</p>
-        `;
+        item.innerHTML = `<h4 class="font-bold text-xs text-slate-800">${p.nombreProyecto || p.nombre || 'ID: '+p.id}</h4><p class="text-[11px] text-slate-500">${p.integrantes || '-'}</p>`;
         cont.appendChild(item);
       });
     }
 
-    function obtenerTextoCampo(p, campos) {
-      for (let c of campos) {
-        if (p[c] && p[c].toString().trim() !== '') return p[c].toString().trim();
-      }
-      return '';
-    }
-
-    function seleccionarProyecto(id, recalcularAnalisis = true) {
+    function seleccionarProyecto(id) {
       proyectoSeleccionado = listaProyectos.find(p => p.id === id);
       if (!proyectoSeleccionado) return;
 
       document.getElementById('vista-vacia').classList.add('hidden');
       document.getElementById('vista-detalle').classList.remove('hidden');
-
-      const nombre = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || `Proyecto ID: ${proyectoSeleccionado.id}`;
-      document.getElementById('det-nombre').innerText = nombre;
+      document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre;
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
 
-      const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
-
       itemsDefinicion.forEach((def, idx) => {
-        const keyAjuste = `${id}_${idx}`;
-        const txt = obtenerTextoCampo(proyectoSeleccionado, def.campos);
+        const txt = (proyectoSeleccionado[def.campos[0]] || '').toString();
         const res = def.analizar(txt);
-
-        if (ajustesManuales[keyAjuste] !== undefined) {
-          valoraciones[idx] = ajustesManuales[keyAjuste];
-          sugerenciasIA[idx] = `Ajustado manualmente por el docente a ${ajustesManuales[keyAjuste]}%.`;
-        } else {
-          valoraciones[idx] = res.val;
-          sugerenciasIA[idx] = res.sug;
-        }
+        valoraciones[idx] = res.val;
+        sugerenciasIA[idx] = res.sug;
       });
 
-      const campoDevolucion = document.getElementById('eval-devolucion-docente');
-
+      const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
       if (evalP && evalP.devolucion_docente) {
-        campoDevolucion.value = evalP.devolucion_docente;
+        document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente;
       } else {
-        // Pre-cargar síntesis de heurística por defecto si está vacío
         generarSintesisHeuristica();
       }
 
@@ -313,149 +197,82 @@
     function generarSintesisHeuristica() {
       let texto = "ANÁLISIS CUALITATIVO Y RECOMENDACIONES POR ETAPA:\n";
       itemsDefinicion.forEach((def, idx) => {
-        const val = valoraciones[idx];
-        const sug = sugerenciasIA[idx];
-        texto += `• ${def.titulo} (${val}%): ${sug}\n`;
+        texto += `• ${def.titulo} (${valoraciones[idx]}%): ${sugerenciasIA[idx]}\n`;
       });
-      texto += "\nOBSERVACIONES ADICIONALES DEL DOCENTE:\n- ";
       document.getElementById('eval-devolucion-docente').value = texto;
     }
 
     function renderizarRubrica() {
       const cont = document.getElementById('contenedor-rubrica');
       cont.innerHTML = '';
-
       let sumaTotal = 0;
       let sumaProceso = 0;
 
       itemsDefinicion.forEach((def, index) => {
         const val = valoraciones[index];
-        const sug = sugerenciasIA[index];
         sumaTotal += val;
         if (index < 6) sumaProceso += val;
-
-        let badgeText = "0% Ausente";
-        let badgeClass = "bg-rose-100 text-rose-800";
-
-        if (val === 35) { badgeText = "35% Insuficiente"; badgeClass = "bg-amber-100 text-amber-800"; }
-        if (val === 55) { badgeText = "55% En Desarrollo"; badgeClass = "bg-yellow-100 text-yellow-800"; }
-        if (val === 75) { badgeText = "75% Satisfactorio"; badgeClass = "bg-blue-100 text-blue-800"; }
-        if (val === 100) { badgeText = "100% Excelente"; badgeClass = "bg-emerald-100 text-emerald-800"; }
 
         const row = document.createElement('div');
         row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
         row.innerHTML = `
-          <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2">
-            <div class="flex items-center gap-2">
-              <span class="font-bold text-slate-800">${def.titulo}</span>
-              <span class="text-[10px] px-2 py-0.5 rounded font-bold ${badgeClass}">${badgeText}</span>
-            </div>
-            <div class="flex items-center gap-2 self-end md:self-auto">
-              <span class="text-[11px] text-slate-500 font-medium">Ajuste Docente:</span>
-              <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs">
-                <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente / Incompleto</option>
-                <option value="35" ${val === 35 ? 'selected' : ''}>35% - Insuficiente / Superficial</option>
-                <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo / Básico</option>
-                <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio / Bueno</option>
-                <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente / Destacado</option>
-              </select>
-              <span class="font-bold text-xs text-blue-900 ml-1">Valoración: ${val}%</span>
-            </div>
+          <div class="flex justify-between items-center">
+            <span class="font-bold text-slate-800">${def.titulo}</span>
+            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs">
+              <option value="0" ${val === 0 ? 'selected' : ''}>0%</option>
+              <option value="35" ${val === 35 ? 'selected' : ''}>35%</option>
+              <option value="55" ${val === 55 ? 'selected' : ''}>55%</option>
+              <option value="75" ${val === 75 ? 'selected' : ''}>75%</option>
+              <option value="100" ${val === 100 ? 'selected' : ''}>100%</option>
+            </select>
           </div>
-          <p class="text-[11px] text-slate-500 italic"><span class="font-semibold text-slate-700">Sugerencia IA:</span> ${sug}</p>
         `;
         cont.appendChild(row);
       });
 
-      const notaProceso = (sumaProceso / 60).toFixed(1);
-      const notaGlobal = (sumaTotal / 100).toFixed(1);
-
-      document.getElementById('nota-proceso-val').innerText = notaProceso;
-      document.getElementById('nota-global-val').innerText = notaGlobal;
+      document.getElementById('nota-proceso-val').innerText = (sumaProceso / 60).toFixed(1);
+      document.getElementById('nota-global-val').innerText = (sumaTotal / 100).toFixed(1);
     }
 
-    function cambiarValor(index, nuevoValor) {
-      if (!proyectoSeleccionado) return;
-      const v = parseInt(nuevoValor, 10);
-      
-      const keyAjuste = `${proyectoSeleccionado.id}_${index}`;
-      ajustesManuales[keyAjuste] = v;
-      
-      valoraciones[index] = v;
-      sugerenciasIA[index] = `Ajustado manualmente por el docente a ${v}%.`;
-      
+    function cambiarValor(index, v) {
+      valoraciones[index] = parseInt(v, 10);
       renderizarRubrica();
       guardarEvaluacionDocente(false);
     }
 
+    async function blanquearVotosProyecto() {
+      if (!proyectoSeleccionado) return;
+      if (confirm(`¿Estás seguro de blanquear todos los votos e inversiones del proyecto "${proyectoSeleccionado.nombreProyecto}"?`)) {
+        await _supabase.from('votos_publico').delete().eq('proyecto_id', proyectoSeleccionado.id);
+        await _supabase.from('inversiones_simuladas').delete().eq('proyecto_id', proyectoSeleccionado.id);
+        alert("¡Votos e inversiones reiniciadas a 0 para este proyecto!");
+      }
+    }
+
     async function guardarEvaluacionDocente(mostrarAlerta = false) {
       if (!proyectoSeleccionado) return;
-
-      const btn = document.getElementById('btn-guardar');
-      if (btn && mostrarAlerta) {
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
-      }
-
       const notaProceso = parseFloat(document.getElementById('nota-proceso-val').innerText) || 0;
       const notaGlobal = parseFloat(document.getElementById('nota-global-val').innerText) || 0;
-      const devolucionText = document.getElementById('eval-devolucion-docente').value;
-
       const payload = {
         proyecto_id: proyectoSeleccionado.id,
         nota_final: notaGlobal,
         nota_etapa1_5: notaProceso,
         nota_etapa6_10: notaGlobal,
-        devolucion_docente: devolucionText || 'Evaluación cualitativa registrada por el cuerpo docente.',
+        devolucion_docente: document.getElementById('eval-devolucion-docente').value,
         estado_revision: notaGlobal >= 6 ? 'Aprobado' : 'En Revisión'
       };
 
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === proyectoSeleccionado.id);
-      let res;
-
       if (evalP) {
-        res = await _supabase.from('evaluaciones').update(payload).eq('id', evalP.id);
+        await _supabase.from('evaluaciones').update(payload).eq('id', evalP.id);
       } else {
-        res = await _supabase.from('evaluaciones').insert([payload]);
+        await _supabase.from('evaluaciones').insert([payload]);
       }
 
-      if (res.error) {
-        console.error("Error al guardar evaluación:", res.error.message);
-      } else {
-        const idx = listaEvaluaciones.findIndex(e => e.proyecto_id === proyectoSeleccionado.id);
-        if (idx !== -1) {
-          listaEvaluaciones[idx] = { ...listaEvaluaciones[idx], ...payload };
-        } else {
-          listaEvaluaciones.push(payload);
-        }
-        if (mostrarAlerta) {
-          alert("¡Evaluación guardada y validada correctamente!");
-        }
-      }
-
-      if (btn && mostrarAlerta) {
-        btn.disabled = false;
-        btn.innerHTML = '<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación';
-      }
+      if (mostrarAlerta) alert("¡Evaluación guardada con éxito!");
     }
 
-    function suscribirRealtime() {
-      _supabase.channel('cambios-docente')
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'proyectos' }, () => cargarDatos())
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'evaluaciones' }, () => cargarDatos())
-        .subscribe((status) => {
-          const badge = document.getElementById('realtime-status');
-          if (status === 'SUBSCRIBED') {
-            badge.className = "text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2";
-            badge.innerHTML = '<i class="fa-solid fa-bolt"></i> Realtime Activo';
-          }
-        });
-    }
-
-    window.onload = () => {
-      cargarDatos();
-      suscribirRealtime();
-    };
+    window.onload = cargarDatos;
   </script>
 </body>
 </html>
