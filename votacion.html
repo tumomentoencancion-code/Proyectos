@@ -1,1 +1,355 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Portal de Votación — E.E.S.T. N°1 Bragado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
+  <header class="bg-slate-900 text-white shadow-lg mb-8">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Emprendimientos</h1>
+        <p class="text-slate-400 text-xs">Portal Público de Evaluación e Inversión Simulada</p>
+      </div>
+      <a href="posiciones.html" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+        <i class="fa-solid fa-trophy"></i> Ver Tabla de Posiciones
+      </a>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto px-6 space-y-8">
+
+    <div id="vista-vacia" class="hidden bg-white p-12 rounded-xl shadow-sm border border-slate-200 text-center">
+      <i class="fa-solid fa-magnifying-glass text-4xl text-slate-300 mb-3"></i>
+      <h3 class="text-slate-600 font-bold">No se especificó ningún proyecto</h3>
+      <p class="text-xs text-slate-400 mt-1">Selecciona un emprendimiento desde la tabla de posiciones.</p>
+      <a href="posiciones.html" class="mt-4 inline-block bg-blue-900 text-white text-xs font-bold px-4 py-2 rounded-lg">Ir a la Tabla de Posiciones</a>
+    </div>
+
+    <div id="vista-proyecto" class="space-y-8">
+
+      <!-- CABECERA PRINCIPAL -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">PROYECTO 7° AÑO • E.E.S.T. N°1</span>
+            <h2 id="p-nombre" class="text-3xl font-black text-slate-900 mt-2">-</h2>
+            <p id="p-slogan" class="text-sm italic text-slate-500 mt-0.5">-</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold text-slate-500">Integrantes:</span>
+            <span id="p-integrantes" class="text-xs bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg font-medium text-slate-700">-</span>
+          </div>
+        </div>
+
+        <div id="p-links" class="flex flex-wrap gap-3 pt-3 border-t"></div>
+      </section>
+
+      <!-- RESUMEN DE PROYECTO -->
+      <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-bullseye text-blue-600"></i> Propuesta y Público Objetivo
+          </h3>
+          <p id="p-publico" class="text-xs text-slate-600 leading-relaxed italic">Sin descripción detallada disponible.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
+          <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b pb-2 flex items-center gap-2">
+            <i class="fa-solid fa-store text-emerald-600"></i> Canales y Estrategia Comercial
+          </h3>
+          <p id="p-canales" class="text-xs text-slate-600 leading-relaxed italic">Sin descripción detallada disponible.</p>
+        </div>
+      </section>
+
+      <!-- INDICADORES EN TIEMPO REAL -->
+      <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center">
+          <span class="text-[11px] font-bold text-amber-800 uppercase block">Promedio del Público</span>
+          <div class="flex justify-center items-baseline gap-1 mt-1">
+            <span id="stat-promedio" class="text-3xl font-black text-amber-600">0.0</span>
+            <span class="text-xs text-slate-500 font-bold">/ 10</span>
+          </div>
+        </div>
+
+        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-center">
+          <span class="text-[11px] font-bold text-blue-800 uppercase block">Total Votos Emitidos</span>
+          <span id="stat-votos" class="text-3xl font-black text-blue-900 block mt-1">0</span>
+        </div>
+
+        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center">
+          <span class="text-[11px] font-bold text-emerald-800 uppercase block">Capital Semilla Atraído</span>
+          <span id="stat-inversion" class="text-2xl font-black text-emerald-700 block mt-1.5">$0</span>
+        </div>
+      </section>
+
+      <!-- FORMULARIO DE VOTACIÓN -->
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+        <div class="border-b pb-3">
+          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+            <i class="fa-solid fa-star text-amber-500"></i> Calificá este Emprendimiento (1 al 10)
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">Tu evaluación suma puntos directos para la tabla de posiciones oficial.</p>
+        </div>
+
+        <form id="form-voto" onsubmit="enviarVoto(event)" class="space-y-6">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700">1. Idea e Innovación</label>
+              <select id="vote-idea" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50">
+                <option value="">Seleccionar nota (1-10)</option>
+                <option value="10">10 - Excelente propuesta</option>
+                <option value="9">9 - Muy Buena</option>
+                <option value="8">8 - Buena</option>
+                <option value="7">7 - Aceptable</option>
+                <option value="6">6 - Regular</option>
+                <option value="5">5 o menos - Necesita mejorar</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700">2. Presentación y Redes / Video</label>
+              <select id="vote-presentacion" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50">
+                <option value="">Seleccionar nota (1-10)</option>
+                <option value="10">10 - Excelente contenido</option>
+                <option value="9">9 - Muy Bueno</option>
+                <option value="8">8 - Bueno</option>
+                <option value="7">7 - Aceptable</option>
+                <option value="6">6 - Regular</option>
+                <option value="5">5 o menos - Incompleto</option>
+              </select>
+            </div>
+
+            <div class="space-y-2">
+              <label class="block text-xs font-bold text-slate-700">3. Viabilidad y Utilidad</label>
+              <select id="vote-viabilidad" required class="w-full border border-slate-300 rounded-lg p-2.5 text-xs font-bold bg-slate-50">
+                <option value="">Seleccionar nota (1-10)</option>
+                <option value="10">10 - Altamente viable</option>
+                <option value="9">9 - Viable</option>
+                <option value="8">8 - Posible</option>
+                <option value="7">7 - Regular</option>
+                <option value="5">5 o menos - Poco claro</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">¿Comprarías o usarías este producto / servicio?</label>
+              <select id="vote-compraria" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50">
+                <option value="Sí">Sí, definitivamente</option>
+                <option value="Tal vez">Tal vez / Depende del precio</option>
+                <option value="No">Por ahora no</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-slate-700 mb-1">Mensaje de Apoyo o Sugerencia (Opcional):</label>
+              <input type="text" id="vote-comentario" placeholder="¡Muchos éxitos chicos! Excelente idea..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+            </div>
+          </div>
+
+          <div class="flex justify-end pt-2">
+            <button type="submit" id="btn-votar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition flex items-center gap-2">
+              <i class="fa-solid fa-paper-plane"></i> Emitir Voto
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- INVERSIÓN SEMILLA -->
+      <section class="bg-emerald-900 text-white p-6 rounded-xl shadow-md border border-emerald-800 space-y-4">
+        <div class="flex justify-between items-center border-b border-emerald-800 pb-3">
+          <h3 class="text-base font-bold flex items-center gap-2 text-emerald-300">
+            <i class="fa-solid fa-hand-holding-dollar"></i> Simulación de Inversor Ángel (Capital Semilla Virtual)
+          </h3>
+          <span class="text-[10px] bg-emerald-800 text-emerald-200 px-2.5 py-1 rounded font-bold uppercase">Bragado Capital</span>
+        </div>
+
+        <p class="text-xs text-emerald-100 leading-relaxed">
+          Simulá ser un inversor y apoyá a este proyecto asignándole un monto ficticio de capital inicial (hasta $100.000 ARS).
+        </p>
+
+        <form id="form-inversion" onsubmit="enviarInversion(event)" class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-2">
+          <div>
+            <label class="block text-xs font-semibold text-emerald-200 mb-1">Tu Nombre u Organización:</label>
+            <input type="text" id="inv-nombre" placeholder="Ej: Juan Pérez / Vecino de Bragado" required class="w-full border border-emerald-700 bg-emerald-950 text-white rounded-lg p-2.5 text-xs">
+          </div>
+          <div>
+            <label class="block text-xs font-semibold text-emerald-200 mb-1">Monto a Invertir ($ ARS Virtuales):</label>
+            <input type="number" id="inv-monto" min="1000" max="100000" step="1000" placeholder="Ej: 50000" required class="w-full border border-emerald-700 bg-emerald-950 text-white rounded-lg p-2.5 text-xs font-bold text-amber-400">
+          </div>
+          <div class="pt-5">
+            <button type="submit" id="btn-invertir" class="w-full bg-emerald-500 hover:bg-emerald-400 text-emerald-950 font-black py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
+              <i class="fa-solid fa-coins"></i> Confirmar Inversión
+            </button>
+          </div>
+        </form>
+      </section>
+
+    </div>
+
+  </main>
+
+  <script>
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let proyectoId = null;
+
+    function obtenerTokenVotante() {
+      let token = localStorage.getItem('eest1_votante_token');
+      if (!token) {
+        token = 'user_' + Math.random().toString(36).substr(2, 9) + '_' + Date.now();
+        localStorage.setItem('eest1_votante_token', token);
+      }
+      return token;
+    }
+
+    async function cargarProyecto() {
+      const urlParams = new URLSearchParams(window.location.search);
+      proyectoId = urlParams.get('id');
+
+      if (!proyectoId) {
+        document.getElementById('vista-vacia').classList.remove('hidden');
+        document.getElementById('vista-proyecto').classList.add('hidden');
+        return;
+      }
+
+      const { data, error } = await _supabase.from('proyectos').select('*').eq('id', proyectoId).single();
+
+      if (error || !data) {
+        document.getElementById('vista-vacia').classList.remove('hidden');
+        document.getElementById('vista-proyecto').classList.add('hidden');
+        return;
+      }
+
+      const nombre = data.nombreProyecto || data.nombre || `Proyecto ID: ${data.id}`;
+      document.getElementById('p-nombre').innerText = nombre;
+      document.getElementById('p-slogan').innerText = data.slogan ? `"${data.slogan}"` : '';
+      document.getElementById('p-integrantes').innerText = data.integrantes || 'Alumnos de 7° Año';
+      document.getElementById('p-publico').innerText = data.publicoObjetivo || 'Propuesta en desarrollo por los alumnos.';
+      document.getElementById('p-canales').innerText = data.canalesVenta || 'Canales comerciales en desarrollo.';
+
+      const containerLinks = document.getElementById('p-links');
+      containerLinks.innerHTML = '';
+
+      if (data.redes_sociales) {
+        containerLinks.innerHTML += `
+          <a href="${data.redes_sociales}" target="_blank" class="bg-pink-50 hover:bg-pink-100 text-pink-700 border border-pink-200 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+            <i class="fa-brands fa-instagram text-pink-600"></i> Ver Red Social del Proyecto
+          </a>
+        `;
+      }
+
+      if (data.video_promo) {
+        containerLinks.innerHTML += `
+          <a href="${data.video_promo}" target="_blank" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+            <i class="fa-solid fa-video text-red-600"></i> Ver Video Promocional
+          </a>
+        `;
+      }
+
+      if (data.encuestaUrl) {
+        containerLinks.innerHTML += `
+          <a href="${data.encuestaUrl}" target="_blank" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
+            <i class="fa-solid fa-poll"></i> Responder Encuesta
+          </a>
+        `;
+      }
+
+      cargarEstadisticas();
+    }
+
+    async function cargarEstadisticas() {
+      const { data: votos } = await _supabase.from('votos_publico').select('puntuacion_promedio').eq('proyecto_id', proyectoId);
+      
+      let totalVotos = 0;
+      let sumaPromedios = 0;
+
+      if (votos && votos.length > 0) {
+        totalVotos = votos.length;
+        sumaPromedios = votos.reduce((acc, curr) => acc + (parseFloat(curr.puntuacion_promedio) || 0), 0);
+      }
+
+      const promedio = totalVotos > 0 ? (sumaPromedios / totalVotos).toFixed(1) : '0.0';
+      document.getElementById('stat-promedio').innerText = promedio;
+      document.getElementById('stat-votos').innerText = totalVotos;
+
+      const { data: inversiones } = await _supabase.from('inversiones_simuladas').select('monto_invertido').eq('proyecto_id', proyectoId);
+      let totalInversion = 0;
+      if (inversiones && inversiones.length > 0) {
+        totalInversion = inversiones.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+      }
+
+      document.getElementById('stat-inversion').innerText = '$' + totalInversion.toLocaleString('es-AR');
+    }
+
+    async function enviarVoto(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-votar');
+      btn.disabled = true;
+
+      const pIdea = parseInt(document.getElementById('vote-idea').value, 10);
+      const pPres = parseInt(document.getElementById('vote-presentacion').value, 10);
+      const pViab = parseInt(document.getElementById('vote-viabilidad').value, 10);
+      const prom = ((pIdea + pPres + pViab) / 3).toFixed(1);
+
+      const payload = {
+        proyecto_id: parseInt(proyectoId, 10),
+        puntuacion_idea: pIdea,
+        puntuacion_presentacion: pPres,
+        puntuacion_viabilidad: pViab,
+        puntuacion_promedio: parseFloat(prom),
+        compraria_producto: document.getElementById('vote-compraria').value,
+        comentario: document.getElementById('vote-comentario').value || '',
+        votante_token: obtenerTokenVotante()
+      };
+
+      const { error } = await _supabase.from('votos_publico').insert([payload]);
+
+      if (error) {
+        alert("Atención: " + error.message);
+      } else {
+        alert("¡Muchas gracias! Tu voto ha sido registrado correctamente.");
+        document.getElementById('form-voto').reset();
+        await cargarEstadisticas();
+      }
+
+      btn.disabled = false;
+    }
+
+    async function enviarInversion(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-invertir');
+      btn.disabled = true;
+
+      const payload = {
+        proyecto_id: parseInt(proyectoId, 10),
+        inversor_nombre: document.getElementById('inv-nombre').value,
+        monto_invertido: parseFloat(document.getElementById('inv-monto').value),
+        inversor_token: obtenerTokenVotante()
+      };
+
+      const { error } = await _supabase.from('inversiones_simuladas').insert([payload]);
+
+      if (error) {
+        alert("Error al registrar inversión: " + error.message);
+      } else {
+        alert("¡Inversión simulada registrada con éxito!");
+        document.getElementById('form-inversion').reset();
+        await cargarEstadisticas();
+      }
+
+      btn.disabled = false;
+    }
+
+    window.onload = cargarProyecto;
+  </script>
+</body>
+</html>
