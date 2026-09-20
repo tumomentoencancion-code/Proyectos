@@ -3,228 +3,135 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Emprendimientos - E.E.S.T. N°1</title>
-  <!-- Tailwind CSS via CDN -->
+  <title>Portal de Emprendimientos — E.E.S.T. N°1 Bragado</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Cargar librería de Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-100 text-slate-800 font-sans min-h-screen flex flex-col">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
 
-  <!-- ENCABEZADO Y PROPUESTA PEDAGÓGICA -->
-  <header class="bg-slate-900 text-white pt-10 pb-16 px-4 shadow-lg border-b border-orange-600">
-    <div class="max-w-6xl mx-auto">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-        <div>
-          <span class="bg-orange-600 text-white text-xs font-semibold px-3 py-1 rounded-full uppercase tracking-wider">
-            Escuela de Educación Técnica N°1-Bragado
-          </span>
-          <h1 class="text-3xl md:text-4xl font-extrabold mt-3">Emprendedorismo y Desarrollo Local</h1>
-          <p class="text-slate-300 text-base max-w-2xl mt-2">
-            Plataforma interactiva de exhibición y validación de Planes de Negocios desarrollados por alumnos de 7° Año. Proyectos con rigor técnico, orientación comercial y sustentable.
-          </p>
+  <!-- ENCABEZADO -->
+  <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
+          T1
         </div>
         <div>
-          <a href="formulario.html" class="inline-flex items-center gap-2 bg-orange-600 hover:bg-orange-700 text-white font-medium px-5 py-3 rounded-xl transition shadow-md">
-            <span>+ Cargar Proyecto</span>
-          </a>
+          <h1 class="text-base font-bold tracking-tight text-white">E.E.S.T. N°1 Bragado</h1>
+          <p class="text-slate-400 text-xs">7° Año • Tecnicatura en Energías Renovables</p>
         </div>
       </div>
-
-      <!-- Tarjetas de Impacto Pedagógico -->
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mt-8 pt-8 border-t border-slate-800 text-sm">
-        <div class="bg-slate-800/60 p-4 rounded-lg border border-slate-700">
-          <strong class="text-orange-400 block mb-1">Formación Técnica</strong>
-          Aplica procesos de diseño, cálculo de materiales, fabricación y control de calidad en taller.
-        </div>
-        <div class="bg-slate-800/60 p-4 rounded-lg border border-slate-700">
-          <strong class="text-orange-400 block mb-1">Validación Financiera</strong>
-          Análisis de costos reales, presupuesto transparente y fórmulas de margen de contribución.
-        </div>
-        <div class="bg-slate-800/60 p-4 rounded-lg border border-slate-700">
-          <strong class="text-orange-400 block mb-1">Vinculación Comunidad</strong>
-          Respuestas concretas a demandas locales mediante innovación y atención personalizada.
-        </div>
-      </div>
+      <a href="posiciones.html" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
+        <i class="fa-solid fa-trophy text-slate-900"></i> Ir a la Tabla de Posiciones
+      </a>
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL / GALERÍA DE PROYECTOS -->
-  <main class="max-w-6xl mx-auto px-4 -mt-6 flex-1 w-full pb-16">
-    
-    <!-- Barra de Búsqueda y Filtros -->
-    <div class="bg-white p-4 rounded-xl shadow-md mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-      <div class="w-full md:w-96">
-        <input type="text" id="searchInput" placeholder="Buscar proyecto, alumnos o palabras clave..." class="w-full border border-slate-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-orange-500 focus:outline-none">
-      </div>
-      <div class="text-xs text-slate-500 font-medium">
-        Mostrando <span id="projectCount" class="font-bold text-slate-800">0</span> proyectos cargados
-      </div>
+  <!-- SECCIÓN HERO PRINCIPAL -->
+  <main class="max-w-6xl mx-auto px-6 py-12 space-y-12 my-auto">
+
+    <div class="text-center max-w-3xl mx-auto space-y-4">
+      <span class="text-xs font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
+        <i class="fa-solid fa-lightbulb mr-1"></i> Espacio de Emprendedorismo & Desarrollo Local
+      </span>
+      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
+        Feria e Incubadora Digital de Emprendimientos
+      </h2>
+      <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
+        Plataforma pedagógica e interactiva de la Escuela Técnica N°1 de Bragado. Conocé los proyectos desarrollados por los alumnos de 7° año, mirá sus propuestas, interactuá con sus redes y participá en la votación e inversión pública.
+      </p>
     </div>
 
-    <!-- Grilla de Tarjetas -->
-    <div id="projectsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-      <!-- Las tarjetas se generan dinámicamente mediante JS -->
+    <!-- TARJETAS DE ACCESO PRINCIPALES -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- TARJETA 1: TABLA DE POSICIONES Y VOTACIÓN PÚBLICA -->
+      <div class="bg-slate-800/80 border border-slate-700/80 hover:border-amber-500/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-amber-500/5 group">
+        <div class="space-y-3">
+          <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Tabla de Posiciones & Votación</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Explorá el ranking en vivo de proyectos. Elegí el emprendimiento que querés evaluar para calificarlo del 1 al 10 y simular una inversión de capital semilla.
+          </p>
+        </div>
+        <a href="posiciones.html" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
+          <span>Ver Ranking y Votar</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- TARJETA 2: PORTAL ALUMNOS -->
+      <div class="bg-slate-800/80 border border-slate-700/80 hover:border-blue-500/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-blue-500/5 group">
+        <div class="space-y-3">
+          <div class="w-12 h-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+            <i class="fa-solid fa-user-graduate"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Portal Alumnos</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Formulación guiada del plan de negocios en 10 etapas, cálculo automático del punto de equilibrio y visor de devoluciones pedagógicas del docente.
+          </p>
+        </div>
+        <a href="alumno.html" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
+          <span>Panel de Alumno</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
+      <!-- TARJETA 3: PANEL DOCENTE -->
+      <div class="bg-slate-800/80 border border-slate-700/80 hover:border-emerald-500/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-emerald-500/5 group">
+        <div class="space-y-3">
+          <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <h3 class="text-lg font-bold text-white">Panel Docente</h3>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            Evaluación cualitativa en tiempo real mediante rúbrica de 10 ítems, asistida con sugerencias heurísticas y control administrativo de votos.
+          </p>
+        </div>
+        <a href="docente.html" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
+          <span>Acceso Docente</span>
+          <i class="fa-solid fa-arrow-right"></i>
+        </a>
+      </div>
+
     </div>
+
+    <!-- PASOS SIMPLES DE PARTICIPACIÓN -->
+    <section class="bg-slate-800/40 border border-slate-800 p-8 rounded-2xl space-y-6">
+      <div class="text-center max-w-xl mx-auto">
+        <h3 class="text-base font-bold text-white">¿Cómo participar en la votación?</h3>
+        <p class="text-xs text-slate-400 mt-1">Es súper fácil apoyar a los estudiantes:</p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+        <div class="space-y-2">
+          <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">1</div>
+          <h4 class="text-xs font-bold text-white">Ingresá a Posiciones</h4>
+          <p class="text-[11px] text-slate-400">Entrá a la tabla general y elegí cualquier emprendimiento de la lista.</p>
+        </div>
+
+        <div class="space-y-2">
+          <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">2</div>
+          <h4 class="text-xs font-bold text-white">Mirá su Propuesta</h4>
+          <p class="text-[11px] text-slate-400">Conocé sus redes sociales, su video promocional y su idea de negocio.</p>
+        </div>
+
+        <div class="space-y-2">
+          <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">3</div>
+          <h4 class="text-xs font-bold text-white">Votá y Simulá Inversión</h4>
+          <p class="text-[11px] text-slate-400">Calificá el proyecto del 1 al 10 y asignales hasta $100.000 ficticios de capital inicial.</p>
+        </div>
+      </div>
+    </section>
 
   </main>
 
-  <footer class="bg-slate-900 text-slate-400 text-xs text-center py-6 border-t border-slate-800">
-    E.E.S.T. N°1 Bragado — Tecnicatura en Energías Renovables & Orientaciones Técnicas
+  <!-- PIE DE PÁGINA -->
+  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+    <p>© 2026 E.E.S.T. N°1 Bragado • Espacio Emprendedorismo y Desarrollo Local</p>
   </footer>
 
-  <!-- Script de lógica e integración con Supabase -->
-  <script>
-    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co"; 
-    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga"; 
-
-    // CONTRASEÑA DE ADMINISTRADOR PARA ELIMINAR Y EDITAR PROYECTOS
-    const ADMIN_PASSWORD = "tecnica1admin";
-
-    const _supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-    let todosLosProyectos = [];
-
-    // Función auxiliar para formatear imágenes de Google Drive
-    function convertirLinkDrive(url) {
-      if (!url) return '';
-      url = url.trim();
-      const regexDrive = /(?:https?:\/\/)?(?:drive|docs)\.google\.com\/(?:(?:file\/d\/|uc\?(?:.*&)?id=)|(?:.*\/d\/))([a-zA-Z0-9_-]+)/;
-      const match = url.match(regexDrive);
-
-      if (match && match[1]) {
-        return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
-      }
-      return url;
-    }
-
-    async function cargarProyectos() {
-      const contenedor = document.getElementById('projectsGrid');
-      if (!contenedor) return;
-
-      contenedor.innerHTML = '<p class="text-slate-500 col-span-3">Cargando proyectos...</p>';
-
-      const { data: proyectos, error } = await _supabase
-        .from('proyectos')
-        .select('*')
-        .order('id', { ascending: false });
-
-      if (error) {
-        console.error('Error al cargar proyectos:', error);
-        contenedor.innerHTML = '<p class="text-red-500 col-span-3">Error al cargar los proyectos desde Supabase.</p>';
-        return;
-      }
-
-      todosLosProyectos = proyectos || [];
-      renderizarProyectos(todosLosProyectos);
-    }
-
-    function renderizarProyectos(lista) {
-      const contenedor = document.getElementById('projectsGrid');
-      const projectCount = document.getElementById('projectCount');
-      
-      if (projectCount) projectCount.innerText = lista.length;
-
-      if (!lista || lista.length === 0) {
-        contenedor.innerHTML = '<p class="text-slate-500 col-span-3">No se encontraron proyectos registrados.</p>';
-        return;
-      }
-
-      contenedor.innerHTML = lista.map(p => {
-        // Seleccionar URL directa o formatear URL común de Drive
-        const rawLogo = p.logoUrlDirecto || p.logoUrl || p.imagen || p.fotoProductoUrl;
-        const logoUrl = convertirLinkDrive(rawLogo);
-
-        return `
-          <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-col justify-between">
-            <div>
-              <div class="flex items-center gap-3 mb-3">
-                ${logoUrl ? `<img src="${logoUrl}" referrerpolicy="no-referrer" class="w-12 h-12 object-contain rounded-lg border border-slate-100 bg-slate-50 p-1" alt="Logo de ${p.nombreProyecto || 'Proyecto'}" />` : ''}
-                <div>
-                  <h3 class="font-bold text-lg text-slate-800">${p.nombreProyecto || 'Sin nombre'}</h3>
-                  <p class="text-xs text-slate-400">${p.slogan || 'Sin slogan'}</p>
-                </div>
-              </div>
-              <p class="text-sm text-slate-600 mb-2"><strong>Integrantes:</strong> ${p.integrantes || '-'}</p>
-              <p class="text-sm text-slate-600 mb-4"><strong>Ubicación:</strong> ${p.ubicacion || '-'}</p>
-            </div>
-
-            <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
-              <a href="ver.html?id=${p.id}" target="_blank" class="bg-emerald-600 hover:bg-emerald-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors flex items-center gap-1">
-                👁️ Ver Ficha
-              </a>
-              <div class="flex gap-1.5">
-                <button onclick="editarProyecto(${p.id})" class="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-2 rounded-lg font-medium transition-colors">
-                  ✏️ Editar
-                </button>
-                <button onclick="eliminarProyecto(${p.id})" class="bg-red-100 hover:bg-red-200 text-red-700 text-xs px-3 py-2 rounded-lg font-medium transition-colors">
-                  🗑️
-                </button>
-              </div>
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // Función protegida para borrar un proyecto por su ID
-    async function eliminarProyecto(id) {
-      const claveIngresada = prompt("Acceso restringido: Ingrese la contraseña de administrador para eliminar:");
-      
-      if (claveIngresada === null) return;
-
-      if (claveIngresada !== ADMIN_PASSWORD) {
-        alert("🔒 Contraseña incorrecta. No tiene permisos para eliminar este proyecto.");
-        return;
-      }
-
-      const confirmar = confirm("Contraseña correcta. ¿Estás seguro de que deseas eliminar permanentemente este proyecto?");
-      if (!confirmar) return;
-
-      const { error } = await _supabase
-        .from('proyectos')
-        .delete()
-        .eq('id', id);
-
-      if (error) {
-        alert("Error al eliminar el proyecto: " + error.message);
-      } else {
-        alert("✅ Proyecto eliminado con éxito.");
-        cargarProyectos();
-      }
-    }
-
-    function editarProyecto(id) {
-  const clave = prompt("Ingresá la contraseña para editar:");
-  if (clave === "2026") {
-    window.location.href = `alumno.html?id=${id}`;
-  } else if (clave !== null) {
-    alert("Contraseña incorrecta. No tenés permisos para editar este proyecto.");
-  }
-}
-
-    // Evento de búsqueda en tiempo real
-    document.addEventListener('DOMContentLoaded', () => {
-      cargarProyectos();
-
-      const searchInput = document.getElementById('searchInput');
-      if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-          const termino = e.target.value.toLowerCase().trim();
-          const filtrados = todosLosProyectos.filter(p => {
-            const nombre = (p.nombreProyecto || p.nombre || '').toLowerCase();
-            const integrantes = (p.integrantes || '').toLowerCase();
-            const ubicacion = (p.ubicacion || '').toLowerCase();
-            const slogan = (p.slogan || '').toLowerCase();
-            
-            return nombre.includes(termino) || 
-                   integrantes.includes(termino) || 
-                   ubicacion.includes(termino) || 
-                   slogan.includes(termino);
-          });
-          renderizarProyectos(filtrados);
-        });
-      }
-    });
-  </script>
 </body>
 </html>
