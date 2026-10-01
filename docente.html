@@ -394,30 +394,6 @@
       verificarLimitePalabras();
     }
 
-    function verificarLimitePalabras() {
-      const texto = document.getElementById('eval-devolucion-docente').value.trim();
-      const palabras = texto === "" ? 0 : texto.split(/\s+/).length;
-      const contador = document.getElementById('contador-palabras');
-      const alerta = document.getElementById('alerta-palabras');
-      const btnGuardar = document.getElementById('btn-guardar');
-
-      contador.innerText = `${palabras} / ${MAX_PALABRAS} palabras`;
-
-      if (palabras > MAX_PALABRAS) {
-        contador.classList.add('text-rose-600', 'font-bold');
-        contador.classList.remove('text-slate-500');
-        alerta.classList.remove('hidden');
-        btnGuardar.disabled = true;
-        btnGuardar.classList.add('opacity-50', 'cursor-not-allowed');
-      } else {
-        contador.classList.remove('text-rose-600', 'font-bold');
-        contador.classList.add('text-slate-500');
-        alerta.classList.add('hidden');
-        btnGuardar.disabled = false;
-        btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed');
-      }
-    }
-
     function renderizarRubrica() {
       const cont = document.getElementById('contenedor-rubrica');
       cont.innerHTML = '';
@@ -428,19 +404,24 @@
         const val = valoraciones[index];
         sumaTotal += val;
         if (index < 6) sumaProceso += val;
+        const sugerencia = sugerenciasIA[index] || "Sin observaciones.";
 
         const row = document.createElement('div');
-        row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
+        row.className = "p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
         row.innerHTML = `
-          <div class="flex justify-between items-center">
+          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <span class="font-bold text-slate-800">${def.titulo}</span>
-            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1 text-xs font-bold">
+            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1.5 text-xs font-bold">
               <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
               <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial</option>
               <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
               <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio</option>
               <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
             </select>
+          </div>
+          <div class="text-[11px] text-blue-700 bg-blue-50/60 border border-blue-100 p-2 rounded flex items-center gap-1.5">
+            <i class="fa-solid fa-wand-magic-sparkles text-blue-600 shrink-0"></i>
+            <span><strong>Análisis IA:</strong> ${sugerencia}</span>
           </div>
         `;
         cont.appendChild(row);
@@ -495,12 +476,10 @@
 
     async function eliminarProyecto(id, nombre) {
       if (confirm(`¿Estás COMPLETAMENTE SEGURO de eliminar el proyecto "${nombre}" (ID: ${id})?\n\nEsta acción eliminará el proyecto y todos sus votos, inversiones y evaluaciones asociadas de forma permanente.`)) {
-        // Borrar dependencias primero para evitar restricciones de clave foránea
         await _supabase.from('votos_publico').delete().eq('proyecto_id', id);
         await _supabase.from('inversiones_simuladas').delete().eq('proyecto_id', id);
         await _supabase.from('evaluaciones').delete().eq('proyecto_id', id);
         
-        // Borrar el proyecto
         const { error } = await _supabase.from('proyectos').delete().eq('id', id);
         if (error) {
           alert("Error al eliminar el proyecto: " + error.message);
