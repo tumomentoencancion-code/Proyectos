@@ -127,6 +127,8 @@
         <!-- DESGLOSE DE RÚBRICA 10 ÍTEMS -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
+          
+          <!-- AQUÍ ESTÁ EL CONTENEDOR RESTAURADO DE LOS 10 ÍTEMS -->
           <div id="contenedor-rubrica" class="space-y-4 text-xs"></div>
 
           <!-- OBSERVACIONES Y CONTROL DE PALABRAS -->
@@ -392,6 +394,30 @@
       });
       document.getElementById('eval-devolucion-docente').value = texto;
       verificarLimitePalabras();
+    }
+
+    function verificarLimitePalabras() {
+      const texto = document.getElementById('eval-devolucion-docente').value.trim();
+      const palabras = texto === "" ? 0 : texto.split(/\s+/).length;
+      const contador = document.getElementById('contador-palabras');
+      const alerta = document.getElementById('alerta-palabras');
+      const btnGuardar = document.getElementById('btn-guardar');
+
+      contador.innerText = `${palabras} / ${MAX_PALABRAS} palabras`;
+
+      if (palabras > MAX_PALABRAS) {
+        contador.classList.add('text-rose-600', 'font-bold');
+        contador.classList.remove('text-slate-500');
+        alerta.classList.remove('hidden');
+        btnGuardar.disabled = true;
+        btnGuardar.classList.add('opacity-50', 'cursor-not-allowed');
+      } else {
+        contador.classList.remove('text-rose-600', 'font-bold');
+        contador.classList.add('text-slate-500');
+        alerta.classList.add('hidden');
+        btnGuardar.disabled = false;
+        btnGuardar.classList.remove('opacity-50', 'cursor-not-allowed');
+      }
     }
 
     function renderizarRubrica() {
