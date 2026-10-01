@@ -57,6 +57,9 @@
             <i class="fa-solid fa-bullseye text-blue-600"></i> Propuesta y Público Objetivo
           </h3>
           <p id="p-publico" class="text-xs text-slate-600 leading-relaxed italic">Sin descripción detallada disponible.</p>
+          <button id="btn-toggle-publico" onclick="toggleTexto('p-publico', 'btn-toggle-publico')" class="hidden text-[11px] font-bold text-blue-600 hover:text-blue-800 focus:outline-none transition mt-1">
+            Ver más
+          </button>
         </div>
 
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
@@ -64,6 +67,9 @@
             <i class="fa-solid fa-store text-emerald-600"></i> Canales y Estrategia Comercial
           </h3>
           <p id="p-canales" class="text-xs text-slate-600 leading-relaxed italic">Sin descripción detallada disponible.</p>
+          <button id="btn-toggle-canales" onclick="toggleTexto('p-canales', 'btn-toggle-canales')" class="hidden text-[11px] font-bold text-blue-600 hover:text-blue-800 focus:outline-none transition mt-1">
+            Ver más
+          </button>
         </div>
       </section>
 
@@ -201,6 +207,7 @@
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let proyectoId = null;
+    const textosCompletos = {};
 
     function obtenerTokenVotante() {
       let token = localStorage.getItem('eest1_votante_token');
@@ -209,6 +216,48 @@
         localStorage.setItem('eest1_votante_token', token);
       }
       return token;
+    }
+
+    function recortarTexto(texto, limite = 140) {
+      if (!texto) return "Sin descripción detallada disponible.";
+      if (texto.length <= limite) return texto;
+      return texto.substring(0, limite) + "...";
+    }
+
+    function configurarTextoExpandible(elemId, btnId, textoOriginal, limite = 140) {
+      const elem = document.getElementById(elemId);
+      const btn = document.getElementById(btnId);
+
+      if (!textoOriginal) {
+        elem.innerText = "Sin descripción detallada disponible.";
+        btn.classList.add('hidden');
+        return;
+      }
+
+      textosCompletos[elemId] = textoOriginal;
+
+      if (textoOriginal.length > limite) {
+        elem.innerText = recortarTexto(textoOriginal, limite);
+        btn.classList.remove('hidden');
+        btn.innerText = "Ver más";
+      } else {
+        elem.innerText = textoOriginal;
+        btn.classList.add('hidden');
+      }
+    }
+
+    function toggleTexto(elemId, btnId) {
+      const elem = document.getElementById(elemId);
+      const btn = document.getElementById(btnId);
+      const textoOriginal = textosCompletos[elemId];
+
+      if (btn.innerText === "Ver más") {
+        elem.innerText = textoOriginal;
+        btn.innerText = "Ver menos";
+      } else {
+        elem.innerText = recortarTexto(textoOriginal, 140);
+        btn.innerText = "Ver más";
+      }
     }
 
     async function cargarProyecto() {
@@ -233,8 +282,10 @@
       document.getElementById('p-nombre').innerText = nombre;
       document.getElementById('p-slogan').innerText = data.slogan ? `"${data.slogan}"` : '';
       document.getElementById('p-integrantes').innerText = data.integrantes || 'Alumnos de 7° Año';
-      document.getElementById('p-publico').innerText = data.publicoObjetivo || 'Propuesta en desarrollo por los alumnos.';
-      document.getElementById('p-canales').innerText = data.canalesVenta || 'Canales comerciales en desarrollo.';
+
+      // Aplicar formateo y recorte en descripciones
+      configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo, 140);
+      configurarTextoExpandible('p-canales', 'btn-toggle-canales', data.canalesVenta, 140);
 
       const containerLinks = document.getElementById('p-links');
       containerLinks.innerHTML = '';
