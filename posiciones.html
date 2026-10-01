@@ -103,7 +103,6 @@
         podioContainer.classList.remove('hidden');
         const top3 = ordenados.slice(0, 3);
         
-        // Reordenar para efecto podio visual: [2do, 1ro, 3ro] si hay al menos 3
         let visualPodio = [];
         if (top3.length === 1) visualPodio = [top3[0]];
         else if (top3.length === 2) visualPodio = [top3[1], top3[0]];
@@ -129,6 +128,9 @@
             icon = "fa-award text-amber-700 text-lg";
           }
 
+          const nombreLimpio = p.nombreProyecto || 'Sin Nombre';
+          const integrantesLimpios = p.integrantes || 'E.E.S.T. N°1';
+
           const card = document.createElement('div');
           card.className = `${bgColor} p-5 rounded-xl border flex flex-col justify-between text-center space-y-3 relative`;
           card.innerHTML = `
@@ -137,17 +139,17 @@
                 <i class="fa-solid ${icon}"></i>
                 <span class="text-[10px] font-black uppercase tracking-wider ${badgeColor} px-2.5 py-0.5 rounded-full">${posReal}° LUGAR</span>
               </div>
-              <h3 class="font-black text-slate-900 text-base leading-tight">${p.nombreProyecto || 'Sin Nombre'}</h3>
-              <p class="text-[11px] text-slate-500">${p.integrantes || 'E.E.S.T. N°1'}</p>
+              <h3 class="font-black text-slate-900 text-sm truncate px-2" title="${nombreLimpio}">${nombreLimpio}</h3>
+              <p class="text-[11px] text-slate-500 truncate px-2" title="${integrantesLimpios}">${integrantesLimpios}</p>
             </div>
             <div class="bg-slate-100/70 p-2.5 rounded-lg grid grid-cols-2 gap-2 text-center border border-slate-200/50">
               <div>
                 <span class="text-[10px] text-slate-500 font-bold block uppercase">Promedio</span>
-                <span class="text-sm font-black text-amber-600">${(parseFloat(p.promedio_publico) || 0).toFixed(1)}</span>
+                <span class="text-xs font-black text-amber-600">${(parseFloat(p.promedio_publico) || 0).toFixed(1)}</span>
               </div>
               <div>
                 <span class="text-[10px] text-slate-500 font-bold block uppercase">Inversión</span>
-                <span class="text-sm font-black text-emerald-700">$${(parseFloat(p.total_inversion_simulada) || 0).toLocaleString('es-AR')}</span>
+                <span class="text-xs font-black text-emerald-700">$${(parseFloat(p.total_inversion_simulada) || 0).toLocaleString('es-AR')}</span>
               </div>
             </div>
             <a href="votacion.html?id=${p.proyecto_id}" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-lg text-xs transition inline-block">
@@ -158,7 +160,7 @@
         });
       }
 
-      // Renderizar Tabla
+      // Renderizar Tabla General
       ordenados.forEach((p, index) => {
         const pos = index + 1;
         let posBadge = `<span class="font-bold text-slate-500">${pos}°</span>`;
