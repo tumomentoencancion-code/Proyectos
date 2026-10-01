@@ -22,8 +22,14 @@
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-6 space-y-6">
+  <main class="max-w-6xl mx-auto px-6 space-y-8">
 
+    <!-- SECCIÓN PODIO / TOP 3 VISUAL -->
+    <section id="podio-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+      <!-- El podio se genera dinámicamente con JS -->
+    </section>
+
+    <!-- TABLA GENERAL -->
     <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
       <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
         <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
@@ -71,14 +77,89 @@
       }
 
       const tbody = document.getElementById('tabla-body');
+      const podioContainer = document.getElementById('podio-container');
       tbody.innerHTML = '';
+      podioContainer.innerHTML = '';
 
       if (!data || data.length === 0) {
         tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No hay emprendimientos registrados.</td></tr>';
+        podioContainer.classList.add('hidden');
         return;
       }
 
-      data.forEach((p, index) => {
+      // Ordenar por inversión simulada y luego por promedio de público
+      const ordenados = [...data].sort((a, b) => {
+        const invA = parseFloat(a.total_inversion_simulada) || 0;
+        const invB = parseFloat(b.total_inversion_simulada) || 0;
+        if (invB !== invA) return invB - invA;
+        
+        const promA = parseFloat(a.promedio_publico) || 0;
+        const promB = parseFloat(b.promedio_publico) || 0;
+        return promB - promA;
+      });
+
+      // Renderizar Podio (Top 3)
+      if (ordenados.length > 0) {
+        podioContainer.classList.remove('hidden');
+        const top3 = ordenados.slice(0, 3);
+        
+        // Reordenar para efecto podio visual: [2do, 1ro, 3ro] si hay al menos 3
+        let visualPodio = [];
+        if (top3.length === 1) visualPodio = [top3[0]];
+        else if (top3.length === 2) visualPodio = [top3[1], top3[0]];
+        else visualPodio = [top3[1], top3[0], top3[2]];
+
+        visualPodio.forEach((p) => {
+          const posReal = ordenados.findIndex(item => item.proyecto_id === p.proyecto_id) + 1;
+          let bgColor = "bg-white border-slate-200";
+          let badgeColor = "bg-slate-100 text-slate-700";
+          let icon = "fa-medal text-slate-400";
+
+          if (posReal === 1) {
+            bgColor = "bg-gradient-to-b from-amber-50 to-white border-amber-300 shadow-md transform md:-translate-y-2";
+            badgeColor = "bg-amber-400 text-slate-900";
+            icon = "fa-crown text-amber-500 text-xl";
+          } else if (posReal === 2) {
+            bgColor = "bg-slate-50 border-slate-300";
+            badgeColor = "bg-slate-300 text-slate-900";
+            icon = "fa-medal text-slate-400 text-lg";
+          } else if (posReal === 3) {
+            bgColor = "bg-orange-50/50 border-orange-200";
+            badgeColor = "bg-amber-700 text-white";
+            icon = "fa-award text-amber-700 text-lg";
+          }
+
+          const card = document.createElement('div');
+          card.className = `${bgColor} p-5 rounded-xl border flex flex-col justify-between text-center space-y-3 relative`;
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex justify-center items-center gap-1 mb-1">
+                <i class="fa-solid ${icon}"></i>
+                <span class="text-[10px] font-black uppercase tracking-wider ${badgeColor} px-2.5 py-0.5 rounded-full">${posReal}° LUGAR</span>
+              </div>
+              <h3 class="font-black text-slate-900 text-base leading-tight">${p.nombreProyecto || 'Sin Nombre'}</h3>
+              <p class="text-[11px] text-slate-500">${p.integrantes || 'E.E.S.T. N°1'}</p>
+            </div>
+            <div class="bg-slate-100/70 p-2.5 rounded-lg grid grid-cols-2 gap-2 text-center border border-slate-200/50">
+              <div>
+                <span class="text-[10px] text-slate-500 font-bold block uppercase">Promedio</span>
+                <span class="text-sm font-black text-amber-600">${(parseFloat(p.promedio_publico) || 0).toFixed(1)}</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-500 font-bold block uppercase">Inversión</span>
+                <span class="text-sm font-black text-emerald-700">$${(parseFloat(p.total_inversion_simulada) || 0).toLocaleString('es-AR')}</span>
+              </div>
+            </div>
+            <a href="votacion.html?id=${p.proyecto_id}" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2 rounded-lg text-xs transition inline-block">
+              Ver / Evaluar
+            </a>
+          `;
+          podioContainer.appendChild(card);
+        });
+      }
+
+      // Renderizar Tabla
+      ordenados.forEach((p, index) => {
         const pos = index + 1;
         let posBadge = `<span class="font-bold text-slate-500">${pos}°</span>`;
         if (pos === 1) posBadge = `<span class="bg-amber-100 text-amber-800 font-black px-2 py-0.5 rounded-full"><i class="fa-solid fa-crown text-amber-500 mr-1"></i>1°</span>`;
@@ -90,12 +171,12 @@
         row.innerHTML = `
           <td class="p-3 text-center">${posBadge}</td>
           <td class="p-3">
-            <span class="font-bold text-slate-900 block">${p.nombreProyecto}</span>
+            <span class="font-bold text-slate-900 block">${p.nombreProyecto || 'Sin Nombre'}</span>
             <span class="text-[10px] text-slate-500">${p.integrantes || 'E.E.S.T. N°1'}</span>
           </td>
           <td class="p-3 text-center font-semibold text-slate-700">${p.total_votos || 0}</td>
-          <td class="p-3 text-center font-bold text-amber-600">${(p.promedio_publico || 0).toFixed(1)} / 10</td>
-          <td class="p-3 text-right font-bold text-emerald-800">$${(p.total_inversion_simulada || 0).toLocaleString('es-AR')}</td>
+          <td class="p-3 text-center font-bold text-amber-600">${(parseFloat(p.promedio_publico) || 0).toFixed(1)} / 10</td>
+          <td class="p-3 text-right font-bold text-emerald-800">$${(parseFloat(p.total_inversion_simulada) || 0).toLocaleString('es-AR')}</td>
           <td class="p-3 text-center">
             <a href="votacion.html?id=${p.proyecto_id}" class="bg-blue-50 hover:bg-blue-100 text-blue-900 font-bold px-3 py-1.5 rounded-lg text-[11px] transition inline-block">
               Votar / Invertir
