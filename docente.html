@@ -56,22 +56,49 @@
 
   <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-    <!-- LISTA DE PROYECTOS -->
-    <section class="lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit print:hidden">
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-base font-bold text-slate-800">Proyectos Registrados</h2>
-        <div class="flex items-center gap-2">
-          <button onclick="abrirModalDuplicados()" class="text-xs text-rose-600 hover:text-rose-800 font-medium flex items-center gap-1 bg-rose-50 px-2 py-1 rounded border border-rose-200 transition" title="Gestionar y eliminar duplicados">
-            <i class="fa-solid fa-clone"></i> Duplicados
-          </button>
-          <button onclick="cargarDatos()" class="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium" title="Recargar lista">
-            <i class="fa-solid fa-rotate"></i>
-          </button>
+    <!-- COLUMNA IZQUIERDA: LISTA Y BARRA DE RESUMEN DEL PROYECTO -->
+    <section class="lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit print:hidden space-y-4">
+      
+      <!-- PESTAÑAS DE NAVEGACIÓN IZQUIERDA -->
+      <div class="flex border-b border-slate-200 pb-2 gap-2">
+        <button onclick="cambiarTabIzquierda('lista')" id="btn-tab-lista" class="flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-blue-900 text-white transition shadow-sm">
+          <i class="fa-solid fa-list mr-1"></i> Proyectos
+        </button>
+        <button onclick="cambiarTabIzquierda('resumen')" id="btn-tab-resumen" class="flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition">
+          <i class="fa-solid fa-file-lines mr-1"></i> Ver Entrega
+        </button>
+      </div>
+
+      <!-- VISTA 1: LISTADO DE PROYECTOS -->
+      <div id="tab-content-lista" class="space-y-3">
+        <div class="flex justify-between items-center">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Seleccionar Emprendimiento</h2>
+          <div class="flex items-center gap-2">
+            <button onclick="abrirModalDuplicados()" class="text-xs text-rose-600 hover:text-rose-800 font-medium flex items-center gap-1 bg-rose-50 px-2 py-1 rounded border border-rose-200 transition" title="Gestionar y eliminar duplicados">
+              <i class="fa-solid fa-clone"></i> Duplicados
+            </button>
+            <button onclick="cargarDatos()" class="text-xs text-blue-600 hover:text-blue-800 flex items-center gap-1 font-medium" title="Recargar lista">
+              <i class="fa-solid fa-rotate"></i>
+            </button>
+          </div>
+        </div>
+        <div id="lista-proyectos" class="space-y-2 max-h-[65vh] overflow-y-auto pr-1">
+          <p class="text-xs text-slate-400 italic">Cargando proyectos...</p>
         </div>
       </div>
-      <div id="lista-proyectos" class="space-y-3 max-h-[75vh] overflow-y-auto pr-1">
-        <p class="text-xs text-slate-400 italic">Cargando proyectos...</p>
+
+      <!-- VISTA 2: RESUMEN / CONTENIDO EN TIEMPO REAL DEL PROYECTO -->
+      <div id="tab-content-resumen" class="hidden space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+        <div class="flex justify-between items-center border-b pb-2">
+          <h2 class="text-xs font-bold uppercase tracking-wider text-blue-800"><i class="fa-solid fa-eye mr-1"></i> Contenido del Alumno</h2>
+          <span id="resumen-id-badge" class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">ID: -</span>
+        </div>
+
+        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700">
+          <p class="text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>
+        </div>
       </div>
+
     </section>
 
     <!-- DETALLE Y RÚBRICA HEURÍSTICA COMPLETA -->
@@ -128,7 +155,6 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
           
-          <!-- AQUÍ ESTÁ EL CONTENEDOR RESTAURADO DE LOS 10 ÍTEMS -->
           <div id="contenedor-rubrica" class="space-y-4 text-xs"></div>
 
           <!-- OBSERVACIONES Y CONTROL DE PALABRAS -->
@@ -354,6 +380,25 @@
       });
     }
 
+    function cambiarTabIzquierda(tab) {
+      const btnLista = document.getElementById('btn-tab-lista');
+      const btnResumen = document.getElementById('btn-tab-resumen');
+      const contentLista = document.getElementById('tab-content-lista');
+      const contentResumen = document.getElementById('tab-content-resumen');
+
+      if (tab === 'lista') {
+        btnLista.className = "flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-blue-900 text-white transition shadow-sm";
+        btnResumen.className = "flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+        contentLista.classList.remove('hidden');
+        contentResumen.classList.add('hidden');
+      } else {
+        btnResumen.className = "flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-blue-900 text-white transition shadow-sm";
+        btnLista.className = "flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
+        contentResumen.classList.remove('hidden');
+        contentLista.classList.add('hidden');
+      }
+    }
+
     function seleccionarProyecto(id) {
       proyectoSeleccionado = listaProyectos.find(p => p.id === id);
       if (!proyectoSeleccionado) return;
@@ -362,6 +407,33 @@
       document.getElementById('vista-detalle').classList.remove('hidden');
       document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre;
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
+
+      // Llenar barra lateral de resumen del alumno
+      document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
+      const contResumen = document.getElementById('resumen-contenido');
+      
+      const campoDato = (titulo, valor, link = false) => {
+        if (!valor) return `<div class="p-2 bg-slate-50 rounded border border-slate-100"><span class="font-bold text-slate-500 block">${titulo}</span><span class="italic text-slate-400">No especificado</span></div>`;
+        if (link) {
+          return `<div class="p-2 bg-slate-50 rounded border border-slate-100"><span class="font-bold text-slate-500 block">${titulo}</span><a href="${valor}" target="_blank" class="text-blue-600 underline font-medium truncate block">${valor} <i class="fa-solid fa-external-link text-[10px]"></i></a></div>`;
+        }
+        return `<div class="p-2 bg-slate-50 rounded border border-slate-100"><span class="font-bold text-slate-800 block">${titulo}</span><p class="text-slate-600 mt-0.5 leading-relaxed">${valor}</p></div>`;
+      };
+
+      contResumen.innerHTML = `
+        ${campoDato('Nombre del Proyecto', proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre)}
+        ${campoDato('Eslogan', proyectoSeleccionado.slogan)}
+        ${campoDato('Integrantes', proyectoSeleccionado.integrantes)}
+        ${campoDato('Público Objetivo', proyectoSeleccionado.publicoObjetivo)}
+        ${campoDato('Canales de Venta', proyectoSeleccionado.canalesVenta)}
+        ${campoDato('Competidores / Operativa', proyectoSeleccionado.competidores)}
+        ${campoDato('Plan de Implementación', proyectoSeleccionado.plan_implementacion)}
+        ${campoDato('Crecimiento y Escalabilidad', proyectoSeleccionado.estrategias_crecimiento || proyectoSeleccionado.estrategia_crecimiento)}
+        ${campoDato('Conclusiones', proyectoSeleccionado.conclusiones)}
+        ${campoDato('Encuesta URL', proyectoSeleccionado.encuestaUrl, true)}
+        ${campoDato('Redes Sociales', proyectoSeleccionado.redes_sociales, true)}
+        ${campoDato('Video Promocional', proyectoSeleccionado.video_promo, true)}
+      `;
 
       itemsDefinicion.forEach((def, idx) => {
         let txt = '';
@@ -515,6 +587,8 @@
             proyectoSeleccionado = null;
             document.getElementById('vista-vacia').classList.remove('hidden');
             document.getElementById('vista-detalle').classList.add('hidden');
+            document.getElementById('resumen-contenido').innerHTML = '<p class="text-xs text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>';
+            document.getElementById('resumen-id-badge').innerText = 'ID: -';
           }
           cerrarModalDuplicados();
           cargarDatos();
