@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
@@ -17,13 +17,18 @@
           T1
         </div>
         <div>
-          <h1 class="text-base font-bold tracking-tight text-white">E.E.S.T. N°1 Bragado</h1>
-          <p class="text-slate-400 text-xs">7° Año • Tecnicatura en Energías Renovables</p>
+          <h1 id="header-institucion" class="text-base font-bold tracking-tight text-white">E.E.S.T. N°1 Bragado</h1>
+          <p id="header-curso" class="text-slate-400 text-xs">7° Año • Tecnicatura en Energías Renovables</p>
         </div>
       </div>
-      <a href="posiciones.html" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
-        <i class="fa-solid fa-trophy text-slate-900"></i> Ir a la Tabla de Posiciones
-      </a>
+      <div class="flex items-center gap-3">
+        <button onclick="abrirModalConfig()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-gear text-amber-400"></i> Cambiar Escuela / Curso
+        </button>
+        <a href="posiciones.html" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
+          <i class="fa-solid fa-trophy text-slate-900"></i> Ir a Posiciones
+        </a>
+      </div>
     </div>
   </header>
 
@@ -32,13 +37,13 @@
 
     <div class="text-center max-w-3xl mx-auto space-y-4">
       <span class="text-xs font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
-        <i class="fa-solid fa-lightbulb mr-1"></i> Espacio de Emprendedorismo & Desarrollo Local
+        <i class="fa-solid fa-lightbulb mr-1"></i> Espacio Multicurso de Emprendedorismo & Desarrollo Local
       </span>
       <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
         Feria e Incubadora Digital de Emprendimientos
       </h2>
       <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-        Plataforma pedagógica e interactiva de la Escuela Técnica N°1 de Bragado. Conocé los proyectos desarrollados por los alumnos de 7° año, mirá sus propuestas, interactuá con sus redes y participá en la votación e inversión pública.
+        Plataforma pedagógica interactiva multi-institución. Gestioná proyectos de cualquier escuela o tecnicatura, evaluá propuestas, interactuá con redes y participá en la votación e inversión pública.
       </p>
     </div>
 
@@ -53,7 +58,7 @@
           </div>
           <h3 class="text-lg font-bold text-white">Tabla de Posiciones & Votación</h3>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Explorá el ranking en vivo de proyectos. Elegí el emprendimiento que querés evaluar para calificarlo del 1 al 10 y simular una inversión de capital semilla.
+            Explorá el ranking en vivo del curso activo. Elegí el emprendimiento que querés evaluar para calificarlo del 1 al 10 y simular una inversión de capital semilla.
           </p>
         </div>
         <a href="posiciones.html" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
@@ -87,7 +92,7 @@
           </div>
           <h3 class="text-lg font-bold text-white">Panel Docente</h3>
           <p class="text-xs text-slate-400 leading-relaxed">
-            Evaluación cualitativa en tiempo real mediante rúbrica de 10 ítems, asistida con sugerencias heurísticas y control administrativo de votos.
+            Evaluación cualitativa en tiempo real mediante rúbrica de 10 ítems para el curso seleccionado, asistida con sugerencias heurísticas y control de votos.
           </p>
         </div>
         <a href="docente.html" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
@@ -109,7 +114,7 @@
         <div class="space-y-2">
           <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">1</div>
           <h4 class="text-xs font-bold text-white">Ingresá a Posiciones</h4>
-          <p class="text-[11px] text-slate-400">Entrá a la tabla general y elegí cualquier emprendimiento de la lista.</p>
+          <p class="text-[11px] text-slate-400">Entrá a la tabla general y elegí cualquier emprendimiento del curso.</p>
         </div>
 
         <div class="space-y-2">
@@ -128,10 +133,80 @@
 
   </main>
 
+  <!-- MODAL DE SELECCIÓN DE INSTITUCIÓN Y CURSO (MULTICURSO) -->
+  <div id="modal-config" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6">
+      <div class="text-center space-y-2">
+        <div class="w-12 h-12 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-2xl flex items-center justify-center mx-auto text-xl">
+          <i class="fa-solid fa-school"></i>
+        </div>
+        <h2 class="text-lg font-bold text-white">Configurar Institución y Curso</h2>
+        <p class="text-xs text-slate-400">Seleccioná o escribí la escuela y materia/curso para filtrar los proyectos.</p>
+      </div>
+
+      <form onsubmit="guardarConfiguracion(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Institución Educativa:</label>
+          <input type="text" id="input-institucion" required placeholder="Ej: E.E.S.T. N°1 Bragado" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-blue-500">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Curso / Año / Especialidad:</label>
+          <input type="text" id="input-curso" required placeholder="Ej: 7° Año • Energías Renovables" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-blue-500">
+        </div>
+        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl text-xs transition shadow-lg">
+          Ingresar al Portal
+        </button>
+      </form>
+    </div>
+  </div>
+
   <!-- PIE DE PÁGINA -->
   <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-    <p>© 2026 E.E.S.T. N°1 Bragado • Espacio Emprendedorismo y Desarrollo Local</p>
+    <p id="footer-copy">© 2026 E.E.S.T. N°1 Bragado • Espacio Emprendedorismo y Desarrollo Local</p>
   </footer>
+
+  <script>
+    function cargarConfiguracionInicial() {
+      const institucion = localStorage.getItem('multicurso_institucion');
+      const curso = localStorage.getItem('multicurso_curso');
+
+      if (!institucion || !curso) {
+        // Valores por defecto iniciales
+        document.getElementById('input-institucion').value = "E.E.S.T. N°1 Bragado";
+        document.getElementById('input-curso').value = "7° Año • Energías Renovables";
+        document.getElementById('modal-config').classList.remove('hidden');
+      } else {
+        document.getElementById('modal-config').classList.add('hidden');
+        actualizarTextosUI(institucion, curso);
+      }
+    }
+
+    function abrirModalConfig() {
+      document.getElementById('input-institucion').value = localStorage.getItem('multicurso_institucion') || "E.E.S.T. N°1 Bragado";
+      document.getElementById('input-curso').value = localStorage.getItem('multicurso_curso') || "7° Año • Energías Renovables";
+      document.getElementById('modal-config').classList.remove('hidden');
+    }
+
+    function guardarConfiguracion(e) {
+      e.preventDefault();
+      const institucion = document.getElementById('input-institucion').value.trim();
+      const curso = document.getElementById('input-curso').value.trim();
+
+      localStorage.setItem('multicurso_institucion', institucion);
+      localStorage.setItem('multicurso_curso', curso);
+
+      document.getElementById('modal-config').classList.add('hidden');
+      actualizarTextosUI(institucion, curso);
+    }
+
+    function actualizarTextosUI(institucion, curso) {
+      document.getElementById('header-institucion').innerText = institucion;
+      document.getElementById('header-curso').innerText = curso;
+      document.getElementById('footer-copy').innerText = `© 2026 ${institucion} • ${curso}`;
+    }
+
+    window.onload = cargarConfiguracionInicial;
+  </script>
 
 </body>
 </html>
