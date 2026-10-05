@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Docente — E.E.S.T. N°1 Bragado</title>
+  <title>Panel Docente Multi-Institución</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
-  <!-- MODAL DE ACCESO DOCENTE CON CLAVE -->
+  <!-- MODAL DE ACCESO DOCENTE CON CLAVE DINÁMICA -->
   <div id="modal-auth" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
     <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200">
       <div class="text-center space-y-2">
@@ -18,7 +18,7 @@
           <i class="fa-solid fa-lock"></i>
         </div>
         <h2 class="text-lg font-bold text-slate-900">Acceso Panel Docente</h2>
-        <p class="text-xs text-slate-500">Ingresá tu clave docente para evaluar y administrar proyectos.</p>
+        <p class="text-xs text-slate-500">Ingresá tu clave docente para acceder a tu curso asignado.</p>
       </div>
 
       <form onsubmit="validarClaveDocente(event)" class="space-y-4">
@@ -26,8 +26,8 @@
           <label class="block text-xs font-bold text-slate-700 mb-1">Contraseña Docente:</label>
           <input type="password" id="input-clave" required placeholder="••••••••" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-center font-bold tracking-widest focus:ring-2 focus:ring-amber-500">
         </div>
-        <p id="auth-error" class="text-xs text-red-600 font-bold text-center hidden"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Clave incorrecta.</p>
-        <button type="submit" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
+        <p id="auth-error" class="text-xs text-red-600 font-bold text-center hidden"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Clave incorrecta o docente no registrado.</p>
+        <button type="submit" id="btn-login" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
           Ingresar al Panel
         </button>
       </form>
@@ -38,12 +38,15 @@
   </div>
 
   <header class="bg-slate-900 text-white shadow-lg print:hidden">
-    <div class="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Panel Docente</h1>
-        <p class="text-slate-400 text-xs">Evaluación Heurística e Inspección Cualitativa (10 Ítems) • 7° Año</p>
+        <h1 id="header-docente-titulo" class="text-xl font-bold tracking-tight">Panel Docente — E.E.S.T. N°1 Bragado</h1>
+        <p id="header-docente-sub" class="text-slate-400 text-xs">Curso: 7° Año • Tecnicatura en Energías Renovables</p>
       </div>
       <div class="flex items-center gap-3">
+        <button onclick="abrirModalAltaDocente()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow">
+          <i class="fa-solid fa-user-plus"></i> Habilitar Docente
+        </button>
         <a href="posiciones.html" target="_blank" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
           <i class="fa-solid fa-trophy"></i> Ver Posiciones
         </a>
@@ -72,7 +75,7 @@
       <!-- VISTA 1: LISTADO DE PROYECTOS -->
       <div id="tab-content-lista" class="space-y-3">
         <div class="flex justify-between items-center">
-          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Seleccionar Emprendimiento</h2>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-slate-500">Proyectos de mi Curso</h2>
           <div class="flex items-center gap-2">
             <button onclick="abrirModalDuplicados()" class="text-xs text-rose-600 hover:text-rose-800 font-medium flex items-center gap-1 bg-rose-50 px-2 py-1 rounded border border-rose-200 transition" title="Gestionar y eliminar duplicados">
               <i class="fa-solid fa-clone"></i> Duplicados
@@ -184,6 +187,38 @@
 
   </main>
 
+  <!-- MODAL PARA DAR DE ALTA UN NUEVO DOCENTE (SUPER ADMIN) -->
+  <div id="modal-alta-docente" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-900 text-base"><i class="fa-solid fa-user-plus text-blue-600 mr-2"></i>Habilitar Nuevo Docente</h3>
+        <button onclick="cerrarModalAltaDocente()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <form onsubmit="guardarNuevoDocente(event)" class="space-y-3 text-xs">
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Nombre y Apellido del Docente:</label>
+          <input type="text" id="nuevo-docente-nombre" required placeholder="Ej: Prof. María González" class="w-full border border-slate-300 rounded-lg p-2">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Escuela / Institución:</label>
+          <input type="text" id="nuevo-docente-institucion" required placeholder="Ej: E.E.S.T. N°1 Bragado" class="w-full border border-slate-300 rounded-lg p-2">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Curso / Año / Especialidad:</label>
+          <input type="text" id="nuevo-docente-curso" required placeholder="Ej: 6°1° Informática" class="w-full border border-slate-300 rounded-lg p-2">
+        </div>
+        <div>
+          <label class="block font-bold text-slate-700 mb-1">Contraseña de Acceso:</label>
+          <input type="text" id="nuevo-docente-clave" required placeholder="Ej: mgonzalez2026" class="w-full border border-slate-300 rounded-lg p-2 font-mono font-bold bg-slate-50">
+        </div>
+        <div class="border-t pt-3 flex justify-end gap-2">
+          <button type="button" onclick="cerrarModalAltaDocente()" class="bg-slate-200 text-slate-700 font-bold px-4 py-2 rounded-lg">Cancelar</button>
+          <button type="submit" class="bg-blue-600 hover:bg-blue-500 text-white font-bold px-4 py-2 rounded-lg">Guardar Docente</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <!-- MODAL GESTIÓN DE DUPLICADOS -->
   <div id="modal-duplicados" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 border border-slate-200 max-h-[80vh] flex flex-col">
@@ -204,37 +239,85 @@
   </div>
 
   <script>
-    const CLAVE_DOCENTE = "eest1docente";
     const MAX_PALABRAS = 300;
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    function verificarAutenticacionDocente() {
-      const auth = localStorage.getItem('auth_docente');
-      if (auth === 'true') {
+    let docenteLogueado = null;
+
+    async function verificarAutenticacionDocente() {
+      const authData = localStorage.getItem('auth_docente_data');
+      if (authData) {
+        docenteLogueado = JSON.parse(authData);
         document.getElementById('modal-auth').classList.add('hidden');
+        actualizarHeaderDocente();
+        cargarDatos();
       } else {
         document.getElementById('modal-auth').classList.remove('hidden');
       }
     }
 
-    function validarClaveDocente(e) {
+    async function validarClaveDocente(e) {
       e.preventDefault();
-      const clave = document.getElementById('input-clave').value;
-      if (clave === CLAVE_DOCENTE) {
-        localStorage.setItem('auth_docente', 'true');
-        document.getElementById('modal-auth').classList.add('hidden');
-      } else {
+      const clave = document.getElementById('input-clave').value.trim();
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true;
+
+      const { data, error } = await _supabase
+        .from('docentes')
+        .select('*')
+        .eq('clave_acceso', clave)
+        .single();
+
+      if (error || !data) {
         document.getElementById('auth-error').classList.remove('hidden');
+      } else {
+        docenteLogueado = data;
+        localStorage.setItem('auth_docente_data', JSON.stringify(data));
+        document.getElementById('modal-auth').classList.add('hidden');
+        actualizarHeaderDocente();
+        cargarDatos();
       }
+      btn.disabled = false;
+    }
+
+    function actualizarHeaderDocente() {
+      if (!docenteLogueado) return;
+      document.getElementById('header-docente-titulo').innerText = `Panel Docente — ${docenteLogueado.institucion}`;
+      document.getElementById('header-docente-sub').innerText = `Docente: ${docenteLogueado.nombre_docente} • Curso: ${docenteLogueado.curso}`;
     }
 
     function cerrarSesionDocente() {
-      localStorage.removeItem('auth_docente');
+      localStorage.removeItem('auth_docente_data');
       location.reload();
     }
 
-    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
-    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
-    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    function abrirModalAltaDocente() {
+      document.getElementById('modal-alta-docente').classList.remove('hidden');
+    }
+
+    function cerrarModalAltaDocente() {
+      document.getElementById('modal-alta-docente').classList.add('hidden');
+    }
+
+    async function guardarNuevoDocente(e) {
+      e.preventDefault();
+      const payload = {
+        nombre_docente: document.getElementById('nuevo-docente-nombre').value.trim(),
+        institucion: document.getElementById('nuevo-docente-institucion').value.trim(),
+        curso: document.getElementById('nuevo-docente-curso').value.trim(),
+        clave_acceso: document.getElementById('nuevo-docente-clave').value.trim()
+      };
+
+      const { error } = await _supabase.from('docentes').insert([payload]);
+      if (error) {
+        alert("Error al registrar docente: " + error.message);
+      } else {
+        alert("¡Docente habilitado con éxito!");
+        cerrarModalAltaDocente();
+      }
+    }
 
     const itemsDefinicion = [
       { 
@@ -348,8 +431,19 @@
     let sugerenciasIA = Array(10).fill("");
 
     async function cargarDatos() {
-      const { data: pData } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-      listaProyectos = pData || [];
+      if (!docenteLogueado) return;
+
+      const { data: pData } = await _supabase
+        .from('proyectos')
+        .select('*')
+        .order('id', { ascending: false });
+
+      // Filtrar proyectos según la institución y curso del docente logueado
+      listaProyectos = (pData || []).filter(p => {
+        if (!p.institucion && !p.curso) return true; // Mantener proyectos históricos
+        return p.institucion === docenteLogueado.institucion && p.curso === docenteLogueado.curso;
+      });
+
       renderizarLista();
 
       const { data: eData } = await _supabase.from('evaluaciones').select('*');
@@ -362,7 +456,7 @@
       const cont = document.getElementById('lista-proyectos');
       cont.innerHTML = '';
       if (listaProyectos.length === 0) {
-        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos registrados.</p>';
+        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos registrados para este curso.</p>';
         return;
       }
       listaProyectos.forEach(p => {
@@ -408,7 +502,6 @@
       document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre;
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
 
-      // Llenar barra lateral de resumen del alumno
       document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
       const contResumen = document.getElementById('resumen-contenido');
       
@@ -621,7 +714,6 @@
 
     window.onload = () => {
       verificarAutenticacionDocente();
-      cargarDatos();
     };
   </script>
 </body>
