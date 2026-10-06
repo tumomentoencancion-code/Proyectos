@@ -17,8 +17,11 @@
         <p id="header-curso" class="text-slate-400 text-xs">Tabla General de Posiciones • Popularidad e Inversión Semilla</p>
       </div>
 
-      <!-- SELECTOR FILTRO MULTICURSO -->
-      <div class="flex items-center gap-3 w-full sm:w-auto">
+      <!-- SELECTOR FILTRO MULTICURSO Y ACCESOS -->
+      <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap justify-end">
+        <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
+          <i class="fa-solid fa-house"></i> Volver al Portal
+        </a>
         <select id="select-curso-filtro" onchange="cambiarFiltroCurso(this.value)" class="bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 w-full sm:w-auto">
           <option value="TODOS">🌐 Ver Todos los Cursos</option>
         </select>
@@ -87,7 +90,6 @@
     async function cargarCursosEnSelector() {
       const select = document.getElementById('select-curso-filtro');
       
-      // Consultar cursos habilitados desde la tabla docentes
       const { data: docentes } = await _supabase.from('docentes').select('institucion, curso');
       
       if (docentes && docentes.length > 0) {
@@ -131,7 +133,6 @@
         return;
       }
 
-      // Mapear los datos de institución y curso a los proyectos
       const proyectosMap = {};
       (proyData || []).forEach(p => {
         proyectosMap[p.id] = {
@@ -149,7 +150,6 @@
         };
       });
 
-      // Filtrar según el curso activo
       if (cursoActivo !== "TODOS") {
         dataFiltrada = dataFiltrada.filter(p => p.institucion === institucionActiva && p.curso === cursoActivo);
       }
@@ -165,7 +165,6 @@
         return;
       }
 
-      // Ordenar por inversión simulada y luego por promedio de público
       const ordenados = [...dataFiltrada].sort((a, b) => {
         const invA = parseFloat(a.total_inversion_simulada) || 0;
         const invB = parseFloat(b.total_inversion_simulada) || 0;
@@ -176,7 +175,6 @@
         return promB - promA;
       });
 
-      // Renderizar Podio (Top 3)
       if (ordenados.length > 0) {
         podioContainer.classList.remove('hidden');
         const top3 = ordenados.slice(0, 3);
@@ -238,7 +236,6 @@
         });
       }
 
-      // Renderizar Tabla General
       ordenados.forEach((p, index) => {
         const pos = index + 1;
         let posBadge = `<span class="font-bold text-slate-500">${pos}°</span>`;
