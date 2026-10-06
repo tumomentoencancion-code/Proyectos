@@ -10,17 +10,24 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
   <!-- HEADER CON BOTÓN DE RETORNO AL INDEX -->
+<!-- HEADER UNIFICADO -->
   <header class="bg-slate-900 text-white shadow-lg mb-8">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">Panel Docente — Gestión</h1>
-        <p id="info-sesion" class="text-slate-400 text-xs">Cargando datos de sesión...</p>
+        <h1 id="header-titulo" class="text-xl font-bold tracking-tight">Panel Docente — E.E.S.T. N°1 Bragado</h1>
+        <p id="info-sesion" class="text-slate-400 text-xs">Docente: Profesor Administrador • Curso: 7° Año • Energías Renovables</p>
       </div>
-      <div class="flex items-center gap-3">
-        <a href="index.html" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
-  <i class="fa-solid fa-house"></i> Volver al Portal
-</a>
-        <button onclick="cerrarSesion()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
+      <div class="flex items-center gap-2 flex-wrap">
+        <a href="index.html" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-house"></i> Volver al Portal
+        </a>
+        <button onclick="abrirModalHabilitar()" class="bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-user-plus"></i> Habilitar Docente
+        </button>
+        <a href="posiciones.html" target="_blank" rel="noopener noreferrer" class="bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
+          <i class="fa-solid fa-trophy"></i> Ver Posiciones
+        </a>
+        <button onclick="cerrarSesion()" class="bg-slate-800 hover:bg-rose-900/50 text-rose-300 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-1.5 transition">
           <i class="fa-solid fa-right-from-bracket"></i> Salir
         </button>
       </div>
