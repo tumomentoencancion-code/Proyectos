@@ -3,430 +3,283 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Formulación de Proyecto - E.E.S.T. N°1 Bragado</title>
+  <title>Carga de Proyecto — Alumno</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <!-- MODAL DE ACCESO CON CLAVE -->
-  <div id="modal-auth" class="fixed inset-0 bg-slate-900/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-2xl p-6 sm:p-8 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200">
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto text-xl">
-          <i class="fa-solid fa-user-lock"></i>
-        </div>
-        <h2 class="text-lg font-bold text-slate-900">Acceso Estudiantes</h2>
-        <p class="text-xs text-slate-500">Ingresá la clave de acceso del curso para acceder a la formulación de proyectos.</p>
-      </div>
-
-      <form onsubmit="validarClave(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-700 mb-1">Contraseña de Alumno:</label>
-          <input type="password" id="input-clave" required placeholder="••••••••" class="w-full border border-slate-300 rounded-lg p-2.5 text-sm text-center font-bold tracking-widest focus:ring-2 focus:ring-blue-500">
-        </div>
-        <p id="auth-error" class="text-xs text-red-600 font-bold text-center hidden"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Clave incorrecta.</p>
-        <button type="submit" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
-          Ingresar al Portal
-        </button>
-      </form>
-      <div class="text-center">
-        <a href="index.html" class="text-xs text-slate-400 hover:text-slate-600"><i class="fa-solid fa-arrow-left mr-1"></i> Volver a la portada</a>
-      </div>
-    </div>
-  </div>
-
   <header class="bg-slate-900 text-white shadow-lg mb-8">
-    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Portal de Proyectos</h1>
-        <p class="text-slate-400 text-xs">Formulación por Etapas e Integración Heurística • 7° Año</p>
+        <h1 id="header-institucion" class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado</h1>
+        <p id="header-curso" class="text-slate-400 text-xs">Formulación de Proyecto de Emprendimiento</p>
       </div>
-      <div class="flex items-center gap-3">
-        <a href="posiciones.html" target="_blank" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-          <i class="fa-solid fa-trophy"></i> Ver Tabla Posiciones
-        </a>
-        <button onclick="cerrarSesion()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 px-3 py-1.5 rounded-lg transition border border-slate-700">
-          <i class="fa-solid fa-right-from-bracket"></i> Salir
-        </button>
-      </div>
+      <a href="index.html" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
+        <i class="fa-solid fa-house"></i> Volver al Portal
+      </a>
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto px-6 space-y-8">
-
-    <section class="bg-gradient-to-r from-blue-900 via-indigo-900 to-slate-900 text-white p-6 rounded-xl shadow-md border border-blue-800 space-y-4">
-      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-        <div class="space-y-1">
-          <span class="text-[10px] font-bold uppercase tracking-wider bg-amber-500 text-slate-900 px-2.5 py-0.5 rounded-md">
-            <i class="fa-solid fa-rocket mr-1"></i> Módulo de Validación de Mercado
-          </span>
-          <h2 class="text-lg font-black text-white">Competencia de Emprendimientos & Capital Semilla Simulado</h2>
-          <p class="text-xs text-blue-200 leading-relaxed max-w-2xl">
-            ¡Compartí tu emprendimiento con la comunidad de Bragado! La gente podrá ver tu propuesta, mirar tu video promocional, ingresar a tus redes sociales, **calificar tu proyecto de 1 a 10** y **simular una inversión inicial** en tu empresa.
-          </p>
-        </div>
-        <div class="flex flex-col sm:flex-row gap-2 w-full md:w-auto">
-          <button type="button" onclick="irAVotacionPropia()" class="bg-amber-400 hover:bg-amber-300 text-slate-950 font-black px-4 py-2.5 rounded-lg text-xs shadow transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-check-to-slot"></i> Ir a Votar Mi Proyecto
-          </button>
-          <a href="posiciones.html" target="_blank" class="bg-white/10 hover:bg-white/20 text-white font-bold px-4 py-2.5 rounded-lg text-xs border border-white/20 transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-chart-line"></i> Tabla General
-          </a>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-      <h2 class="text-base font-bold text-slate-800 mb-3">1. Gestión de Proyecto</h2>
-      <div class="flex flex-col sm:flex-row gap-4 items-center">
-        <div class="w-full sm:w-2/3">
-          <label class="block text-xs font-semibold text-slate-500 mb-1">Cargar Proyecto Existente:</label>
-          <select id="select-proyectos" onchange="cargarProyectoSeleccionado(this.value)" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs bg-slate-50 font-medium">
-            <option value="">-- Seleccionar Emprendimiento --</option>
-          </select>
-        </div>
-        <div class="w-full sm:w-1/3 pt-5">
-          <button onclick="limpiarFormulario()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 px-4 rounded-lg text-xs transition flex items-center justify-center gap-2">
-            <i class="fa-solid fa-plus"></i> Registrar Nuevo Proyecto
-          </button>
-        </div>
-      </div>
-    </section>
-
-    <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-      <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="text-sm font-bold flex items-center gap-2 text-slate-800">
-          <i class="fa-solid fa-graduation-cap text-blue-600"></i> Estado de Evaluación Docente
-        </h3>
-        <span id="eval-estado" class="text-[10px] bg-slate-100 text-slate-700 px-2.5 py-1 rounded-md font-bold uppercase border border-slate-200">En Revisión</span>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
-          <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO</span>
-          <div class="flex items-baseline gap-2">
-            <span id="eval-nota-proceso" class="text-3xl font-black text-emerald-700">0.0</span>
-            <span class="text-slate-500 text-sm font-bold">/ 10</span>
-          </div>
-        </div>
-
-        <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl">
-          <span class="text-xs font-bold text-blue-800 uppercase block mb-1">NOTA GLOBAL (PLAN COMPLETO)</span>
-          <div class="flex items-baseline gap-2">
-            <span id="eval-nota-global" class="text-3xl font-black text-blue-900">0.0</span>
-            <span class="text-slate-500 text-sm font-bold">/ 10</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl pt-3">
-        <span class="text-[11px] font-bold text-slate-600 uppercase block mb-1">Devolución del Docente:</span>
-        <p id="eval-devolucion" class="text-xs text-slate-700 italic">Aún no hay observaciones registradas.</p>
-      </div>
-    </section>
-
-    <form id="form-proyecto" onsubmit="guardarProyecto(event)" class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+  <main class="max-w-4xl mx-auto px-6">
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8 space-y-6">
       
-      <div class="flex justify-between items-center border-b pb-3">
-        <h2 class="text-base font-bold text-slate-800">2. Formulación por Etapas</h2>
-        <span id="modo-form" class="text-xs font-bold text-slate-400">Modo: Nuevo Registro</span>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 1: Diagnóstico e Idea de Negocio</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre del Proyecto *</label>
-            <input type="text" id="nombreProyecto" required placeholder="Ej: ECO-LUZ" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Slogan</label>
-            <input type="text" id="slogan" placeholder="Ej: Cuidando el planeta" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 2: Equipo y Estructura Humana</h3>
+      <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-2">
         <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Integrantes y Roles *</label>
-          <textarea id="integrantes" rows="2" required placeholder="Ej: Johana Garcia (Coordinación)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+          <h2 class="text-lg font-black text-slate-900">Formulario de Carga / Edición de Emprendimiento</h2>
+          <p class="text-xs text-slate-500">Completá los datos requeridos por las 10 etapas del plan de negocios.</p>
         </div>
+        <span id="badge-modo" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Nuevo Proyecto</span>
       </div>
 
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 3: Estudio de Mercado</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">URL de Encuesta</label>
-          <input type="url" id="encuestaUrl" placeholder="https://forms.google.com/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 4: Público Target</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Cliente Ideal</label>
-          <textarea id="publicoObjetivo" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 5: Marketing y Redes</h3>
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1">Estrategia Comercial</label>
-          <textarea id="canalesVenta" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1"><i class="fa-brands fa-instagram text-pink-600 mr-1"></i> Link Red Social</label>
-            <input type="url" id="redes_sociales" placeholder="https://instagram.com/tu_proyecto" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+      <form onsubmit="guardarProyectoAlumno(event)" class="space-y-6 text-xs">
+        
+        <!-- ETAPA 1: DIAGNÓSTICO E IDEA -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 1: DIAGNÓSTICO E IDEA DE NEGOCIO
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Nombre del Proyecto / Emprendimiento *</label>
+              <input type="text" id="nombreProyecto" required placeholder="Ej: LUMENEX Light" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Eslogan / Pitch Corto</label>
+              <input type="text" id="slogan" placeholder="Ej: Innovación en iluminación flotante sustentable" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
           </div>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1"><i class="fa-solid fa-video text-red-600 mr-1"></i> Link Video Promocional</label>
-            <input type="url" id="video_promo" placeholder="https://youtube.com/watch?v=..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 6: Operativa y Competencia</h3>
-        <div>
-          <textarea id="competidores" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-        </div>
-      </div>
-
-      <div class="space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 7: Estructura Financiera</h3>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Inversión Inicial Total ($)</label>
-            <input type="number" id="inversionInicial" oninput="calcularPuntoEquilibrio()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Gastos Mensuales Totales ($)</label>
-            <input type="number" id="gastos_mensuales" oninput="calcularPuntoEquilibrio()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
+            <label class="block font-bold text-slate-700 mb-1">URL de Logo / Imagen Representativa (Opcional)</label>
+            <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 pt-2">
+        <!-- ETAPA 2: EQUIPO -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 2: EQUIPO Y ESTRUCTURA HUMANA
+          </h3>
           <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Costo Unitario ($)</label>
-            <input type="number" id="costo_unitario" oninput="calcularPuntoEquilibrio()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Precio Venta Dado ($)</label>
-            <input type="number" id="precio_venta" oninput="calcularPuntoEquilibrio()" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs">
-          </div>
-          <div>
-            <label class="block text-xs font-semibold text-slate-700 mb-1">Ganancia Unid. ($)</label>
-            <input type="number" id="ganancia_unitaria" readonly class="w-full border border-slate-200 bg-slate-100 rounded-lg p-2.5 text-xs font-bold text-emerald-700">
+            <label class="block font-bold text-slate-700 mb-1">Integrantes del Equipo y Roles *</label>
+            <textarea id="integrantes" rows="3" required placeholder="Ej: Juan Pérez (Diseño), María Gómez (Marketing)..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
-        <div class="bg-blue-900 text-white p-3.5 rounded-lg flex flex-col sm:flex-row justify-between items-center gap-2 mt-2">
-          <span class="text-xs font-bold text-blue-200">Punto de Equilibrio:</span>
-          <span id="punto_equilibrio_val" class="text-2xl font-black text-amber-400">0</span>
+        <!-- ETAPA 3: ESTUDIO DE MERCADO Y ENCUESTAS -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 3: ESTUDIO DE MERCADO Y ENCUESTAS
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">URL de Encuesta / Formulario de Investigación *</label>
+            <input type="url" id="encuestaUrl" required placeholder="https://docs.google.com/forms/d/e/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+          </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Análisis e Interpretación de Resultados del Estudio de Mercado *</label>
+            <textarea id="analisis_mercado" rows="4" required placeholder="Describe las respuestas obtenidas, hábitos de consumo detectados y las decisiones estratégicas tomadas a partir del estudio..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
         </div>
 
-        <div>
-          <label class="block text-xs font-semibold text-slate-700 mb-1 mt-2">Detalle de Gastos</label>
-          <textarea id="desglose_inversion_inicial" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
+        <!-- ETAPA 4: PÚBLICO TARGET -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 4: PÚBLICO TARGET / CLIENTE IDEAL
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Descripción del Cliente Ideal *</label>
+            <textarea id="publicoObjetivo" rows="3" required placeholder="Segmentación demográfica, necesidades principales y comportamiento de compra..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
         </div>
-      </div>
 
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 8: Implementación</h3>
-        <textarea id="plan_implementacion" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-      </div>
+        <!-- ETAPA 5: MARKETING Y REDES -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 5: MARKETING Y ESTRATEGIA COMERCIAL (4 Ps)
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Estrategia Comercial y Canales de Venta *</label>
+            <textarea id="canalesVenta" rows="3" required placeholder="Detalla precio, promociones, distribución y canales de venta..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1"><i class="fa-brands fa-instagram text-rose-500 mr-1"></i> Link Red Social</label>
+              <input type="url" id="redes_sociales" placeholder="https://instagram.com/mi_proyecto" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1"><i class="fa-brands fa-youtube text-red-600 mr-1"></i> Link Video Promocional / Pitch</label>
+              <input type="url" id="video_promo" placeholder="https://youtube.com/watch?v=..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </div>
 
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 9: Escalabilidad</h3>
-        <textarea id="estrategias_crecimiento" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-      </div>
+        <!-- ETAPA 6: OPERATIVA Y COMPETENCIA -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 6: OPERATIVA, PROCESO Y COMPETENCIA
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Análisis de Competidores y Proceso de Producción *</label>
+            <textarea id="competidores" rows="3" required placeholder="Competencia directa/indirecta, insumos necesarios y ventaja competitiva..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
 
-      <div class="space-y-4">
-        <h3 class="text-xs font-bold text-blue-900 uppercase tracking-wider border-b pb-1">Etapa 10: Conclusiones</h3>
-        <textarea id="conclusiones" rows="2" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs"></textarea>
-      </div>
+        <!-- ETAPA 7: FINANZAS -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 7: ESTRUCTURA FINANCIERA Y COSTOS
+          </h3>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Inversión Inicial Estimada ($ ARS) *</label>
+              <input type="number" id="inversionInicial" required placeholder="Ej: 250000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
+            <div>
+              <label class="block font-bold text-slate-700 mb-1">Gastos Mensuales Proyectados ($ ARS) *</label>
+              <input type="number" id="gastos_mensuales" required placeholder="Ej: 80000" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
+            </div>
+          </div>
+        </div>
 
-      <div class="pt-4 border-t flex justify-end gap-3">
-        <button type="button" onclick="limpiarFormulario()" class="bg-slate-200 text-slate-700 font-bold py-2.5 px-5 rounded-lg text-xs">Limpiar</button>
-        <button type="submit" id="btn-guardar" class="bg-blue-900 text-white font-bold py-2.5 px-6 rounded-lg text-xs shadow"><i class="fa-solid fa-floppy-disk"></i> Guardar Proyecto</button>
-      </div>
+        <!-- ETAPA 8: IMPLEMENTACIÓN -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 8: PLAN DE IMPLEMENTACIÓN Y CRONOGRAMA
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Cronograma de Tareas e Hitos Principal *</label>
+            <textarea id="plan_implementacion" rows="3" required placeholder="Fases de desarrollo, tiempos asignados y responsables..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
 
-    </form>
+        <!-- ETAPA 9: ESCALABILIDAD -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 9: ESTRATEGIAS DE CRECIMIENTO Y ESCALABILIDAD
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Plan de Expansión o Diversificación *</label>
+            <textarea id="estrategias_crecimiento" rows="3" required placeholder="Proyección a mediano/largo plazo, incorporación de nuevos mercados..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
 
+        <!-- ETAPA 10: CONCLUSIONES -->
+        <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
+          <h3 class="font-bold text-slate-900 text-sm border-b pb-2 text-blue-900 uppercase tracking-wider">
+            ETAPA 10: CONCLUSIONES Y VIABILIDAD
+          </h3>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">Síntesis Final de Viabilidad *</label>
+            <textarea id="conclusiones" rows="3" required placeholder="Conclusión sobre la factibilidad técnica, económica y comercial del proyecto..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+          </div>
+        </div>
+
+        <div class="pt-4 flex justify-end gap-3">
+          <button type="submit" id="btn-guardar-proyecto" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
+            <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Proyecto
+          </button>
+        </div>
+
+      </form>
+
+    </div>
   </main>
 
   <script>
-    const CLAVE_ALUMNO = "alumnos2026"; // Contraseña predeterminada
-
-    function verificarAutenticacion() {
-      const auth = localStorage.getItem('auth_alumno');
-      if (auth === 'true') {
-        document.getElementById('modal-auth').classList.add('hidden');
-      } else {
-        document.getElementById('modal-auth').classList.remove('hidden');
-      }
-    }
-
-    function validarClave(e) {
-      e.preventDefault();
-      const clave = document.getElementById('input-clave').value;
-      if (clave === CLAVE_ALUMNO) {
-        localStorage.setItem('auth_alumno', 'true');
-        document.getElementById('modal-auth').classList.add('hidden');
-      } else {
-        document.getElementById('auth-error').classList.remove('hidden');
-      }
-    }
-
-    function cerrarSesion() {
-      localStorage.removeItem('auth_alumno');
-      location.reload();
-    }
-
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let proyectoActualId = null;
-    let listaProyectos = [];
+    let institucion = localStorage.getItem('multicurso_institucion') || 'E.E.S.T. N°1 Bragado';
+    let curso = localStorage.getItem('multicurso_curso') || '7° Año • Energías Renovables';
+    let proyectoExistenteId = null;
 
-    function irAVotacionPropia() {
-      if (!proyectoActualId) {
-        alert("Por favor, selecciona primero tu emprendimiento del listado.");
-        return;
-      }
-      window.open(`votacion.html?id=${proyectoActualId}`, '_blank');
-    }
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('header-institucion').innerText = institucion;
+      document.getElementById('header-curso').innerText = `Curso: ${curso} • Formulación de Proyecto`;
+      cargarProyectoPrevio();
+    });
 
-    function calcularPuntoEquilibrio() {
-      const gastosMensuales = parseFloat(document.getElementById('gastos_mensuales').value) || 0;
-      const costoUnitario = parseFloat(document.getElementById('costo_unitario').value) || 0;
-      const precioVenta = parseFloat(document.getElementById('precio_venta').value) || 0;
+    async function cargarProyectoPrevio() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const idParam = urlParams.get('id');
 
-      const ganancia = precioVenta - costoUnitario;
-      document.getElementById('ganancia_unitaria').value = ganancia > 0 ? ganancia : 0;
-
-      if (gastosMensuales > 0 && ganancia > 0) {
-        const unidadesEq = Math.ceil(gastosMensuales / ganancia);
-        document.getElementById('punto_equilibrio_val').innerText = unidadesEq.toLocaleString('es-AR');
-      } else {
-        document.getElementById('punto_equilibrio_val').innerText = '0';
+      if (idParam) {
+        const { data } = await _supabase.from('proyectos').select('*').eq('id', idParam).single();
+        if (data) poblarFormulario(data);
       }
     }
 
-    async function cargarProyectos() {
-      const { data } = await _supabase.from('proyectos').select('*').order('id', { ascending: false });
-      listaProyectos = data || [];
-      const select = document.getElementById('select-proyectos');
-      select.innerHTML = '<option value="">-- Seleccionar Emprendimiento --</option>';
+    function poblarFormulario(p) {
+      proyectoExistenteId = p.id;
+      document.getElementById('badge-modo').innerText = `Editando Proyecto #${p.id}`;
+      document.getElementById('badge-modo').className = "text-xs font-bold bg-amber-100 text-amber-800 px-3 py-1 rounded-full";
 
-      listaProyectos.forEach(p => {
-        const option = document.createElement('option');
-        option.value = p.id;
-        option.textContent = p.nombreProyecto || p.nombre || `Proyecto ID: ${p.id}`;
-        select.appendChild(option);
-      });
-    }
-
-    function cargarProyectoSeleccionado(id) {
-      if (!id) {
-        limpiarFormulario();
-        return;
-      }
-
-      proyectoActualId = parseInt(id, 10);
-      const p = listaProyectos.find(item => item.id === proyectoActualId);
-      if (!p) return;
-
-      document.getElementById('modo-form').innerText = `Modo: Editando ID ${p.id}`;
       document.getElementById('nombreProyecto').value = p.nombreProyecto || p.nombre || '';
       document.getElementById('slogan').value = p.slogan || '';
+      document.getElementById('logoUrl').value = p.logoUrl || '';
       document.getElementById('integrantes').value = p.integrantes || '';
       document.getElementById('encuestaUrl').value = p.encuestaUrl || '';
+      document.getElementById('analisis_mercado').value = p.analisis_mercado || p.analisisMercado || '';
       document.getElementById('publicoObjetivo').value = p.publicoObjetivo || '';
       document.getElementById('canalesVenta').value = p.canalesVenta || '';
       document.getElementById('redes_sociales').value = p.redes_sociales || '';
       document.getElementById('video_promo').value = p.video_promo || '';
       document.getElementById('competidores').value = p.competidores || '';
-
       document.getElementById('inversionInicial').value = p.inversionInicial || p.inversion_inicial || '';
       document.getElementById('gastos_mensuales').value = p.gastos_mensuales || '';
-      document.getElementById('costo_unitario').value = p.costo_unitario || '';
-      document.getElementById('precio_venta').value = p.precio_venta || '';
-      document.getElementById('desglose_inversion_inicial').value = p.desglose_inversion_inicial || '';
-
-      calcularPuntoEquilibrio();
-
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
       document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || p.estrategia_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
-
-      cargarEvaluacion(proyectoActualId);
     }
 
-    async function cargarEvaluacion(id) {
-      const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', id).single();
-      if (data) {
-        document.getElementById('eval-nota-proceso').innerText = (data.nota_etapa1_5 || 0).toFixed(1);
-        document.getElementById('eval-nota-global').innerText = (data.nota_final || 0).toFixed(1);
-        document.getElementById('eval-devolucion').innerText = data.devolucion_docente || 'Sin observaciones registradas.';
-        document.getElementById('eval-estado').innerText = data.estado_revision || 'En Revisión';
-      }
-    }
-
-    async function guardarProyecto(e) {
+    async function guardarProyectoAlumno(e) {
       e.preventDefault();
+      const btn = document.getElementById('btn-guardar-proyecto');
+      btn.disabled = true;
+      btn.innerText = "Guardando...";
+
       const payload = {
-        nombreProyecto: document.getElementById('nombreProyecto').value,
-        slogan: document.getElementById('slogan').value,
-        integrantes: document.getElementById('integrantes').value,
-        encuestaUrl: document.getElementById('encuestaUrl').value,
-        publicoObjetivo: document.getElementById('publicoObjetivo').value,
-        canalesVenta: document.getElementById('canalesVenta').value,
-        redes_sociales: document.getElementById('redes_sociales').value,
-        video_promo: document.getElementById('video_promo').value,
-        competidores: document.getElementById('competidores').value,
-
-        inversionInicial: document.getElementById('inversionInicial').value,
-        inversion_inicial: document.getElementById('inversionInicial').value,
-        gastos_mensuales: document.getElementById('gastos_mensuales').value,
-        costo_unitario: document.getElementById('costo_unitario').value,
-        precio_venta: document.getElementById('precio_venta').value,
-        ganancia_unitaria: document.getElementById('ganancia_unitaria').value,
-        desglose_inversion_inicial: document.getElementById('desglose_inversion_inicial').value,
-        punto_equilibrio: document.getElementById('punto_equilibrio_val').innerText,
-
-        plan_implementacion: document.getElementById('plan_implementacion').value,
-        estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value,
-        conclusiones: document.getElementById('conclusiones').value
+        institucion: institucion,
+        curso: curso,
+        nombreProyecto: document.getElementById('nombreProyecto').value.trim(),
+        slogan: document.getElementById('slogan').value.trim(),
+        logoUrl: document.getElementById('logoUrl').value.trim(),
+        integrantes: document.getElementById('integrantes').value.trim(),
+        encuestaUrl: document.getElementById('encuestaUrl').value.trim(),
+        analisis_mercado: document.getElementById('analisis_mercado').value.trim(),
+        publicoObjetivo: document.getElementById('publicoObjetivo').value.trim(),
+        canalesVenta: document.getElementById('canalesVenta').value.trim(),
+        redes_sociales: document.getElementById('redes_sociales').value.trim(),
+        video_promo: document.getElementById('video_promo').value.trim(),
+        competidores: document.getElementById('competidores').value.trim(),
+        inversionInicial: parseFloat(document.getElementById('inversionInicial').value) || 0,
+        gastos_mensuales: parseFloat(document.getElementById('gastos_mensuales').value) || 0,
+        plan_implementacion: document.getElementById('plan_implementacion').value.trim(),
+        estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value.trim(),
+        conclusiones: document.getElementById('conclusiones').value.trim()
       };
 
-      if (proyectoActualId) {
-        await _supabase.from('proyectos').update(payload).eq('id', proyectoActualId);
-      } else {
-        const res = await _supabase.from('proyectos').insert([payload]).select();
-        if (res.data && res.data[0]) proyectoActualId = res.data[0].id;
+      try {
+        let res;
+        if (proyectoExistenteId) {
+          res = await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId);
+        } else {
+          res = await _supabase.from('proyectos').insert([payload]);
+        }
+
+        if (res.error) throw res.error;
+
+        alert("¡Proyecto guardado con éxito!");
+        window.location.href = "index.html";
+      } catch (err) {
+        alert("Error al guardar el proyecto: " + err.message);
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Guardar Proyecto";
       }
-
-      alert("¡Proyecto guardado correctamente!");
-      await cargarProyectos();
     }
-
-    function limpiarFormulario() {
-      proyectoActualId = null;
-      document.getElementById('form-proyecto').reset();
-      document.getElementById('modo-form').innerText = "Modo: Nuevo Registro";
-    }
-
-    window.onload = () => {
-      verificarAutenticacion();
-      cargarProyectos();
-    };
   </script>
 </body>
 </html>
