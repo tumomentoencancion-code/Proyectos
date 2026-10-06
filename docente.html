@@ -597,104 +597,148 @@
         row.innerHTML = `
           <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
             <span class="font-bold text-slate-800">${def.titulo}</span>
-            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1.5 text-xs font-bold focus:ring-2 focus:ring-blue-500">
-              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
-              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial</option>
-              <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
-              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio</option>
-              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
+            <select onchange="cambiarValor(${index}, this.value)" class="border border-slate-300 rounded p-1 text-xs font-bold bg-white">
+              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente / Sin datos</option>
+              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial / Elemental</option>
+              <option value="55" ${val === 55 ? 'selected' : ''}>55% - Aceptable / En desarrollo</option>
+              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio / Sólido</option>
+              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente / Óptimo</option>
             </select>
           </div>
-          <p class="text-[11px] text-blue-700 bg-blue-50/60 border border-blue-100 p-2 rounded">
-            <strong>Análisis IA:</strong> ${sugerenciasIA[index]}
-          </p>
+          <p class="text-[11px] text-slate-500 italic">Sugerencia IA: ${sugerenciasIA[index]}</p>
         `;
         cont.appendChild(row);
       });
 
-      document.getElementById('nota-proceso-val').innerText = (sumaProceso / 60).toFixed(1);
-      document.getElementById('nota-global-val').innerText = (sumaTotal / 100).toFixed(1);
+      const notaGlobal = ((sumaTotal / 1000) * 10).toFixed(1);
+      const notaProceso = ((sumaProceso / 600) * 10).toFixed(1);
+
+      document.getElementById('nota-global-val').innerText = notaGlobal;
+      document.getElementById('nota-proceso-val').innerText = notaProceso;
     }
 
-    function cambiarValor(index, v) {
-      valoraciones[index] = parseInt(v, 10);
+    function cambiarValor(index, nuevoVal) {
+      valoraciones[index] = parseInt(nuevoVal);
       renderizarRubrica();
     }
 
-    async function guardarEvaluacionDocente(alerta = false) {
-      if (!proyectoSeleccionado) return;
-      const dev = document.getElementById('eval-devolucion-docente').value;
-      const notaGlobal = parseFloat(document.getElementById('nota-global-val').innerText);
-      const notaProceso = parseFloat(document.getElementById('nota-proceso-val').innerText);
+    async function guardarEvaluacionDocente(notificar = true) {
+      if (!proyectoSeleccionado || !docenteLogueado) return;
+
+      const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
+      const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
+      const notaGlobal = parseFloat(((sumaTotal / 1000) * 10).toFixed(1));
+      const notaProceso = parseFloat(((sumaProceso / 600) * 10).toFixed(1));
+      const devolucion = document.getElementById('eval-devolucion-docente').value.trim();
 
       const payload = {
         proyecto_id: proyectoSeleccionado.id,
-        devolucion_docente: dev,
-        nota_final: notaGlobal,
-        nota_etapa1_5: notaProceso,
-        nota_etapa6_10: notaGlobal
+        docente_id: docenteLogueado.id,
+        nota_global: notaGlobal,
+        nota_proceso: notaProceso,
+        devolucion_docente: devolucion,
+        actualizado_en: new Date().toISOString()
       };
 
-      const { error } = await _supabase.from('evaluaciones').upsert([payload], { onConflict: 'proyecto_id' });
+      const { data: existente } = await _supabase
+        .from('evaluaciones')
+        .select('id')
+        .eq('proyecto_id', proyectoSeleccionado.id);
+
+      let error = null;
+      if (existente && existente.length > 0) {
+        const res = await _supabase.from('evaluaciones').update(payload).eq('proyecto_id', proyectoSeleccionado.id);
+        error = res.error;
+      } else {
+        const res = await _supabase.from('evaluaciones').insert([payload]);
+        error = res.error;
+      }
 
       if (error) {
-        alert("Error al guardar la evaluación: " + error.message);
+        if (notificar) alert("Error al guardar evaluación: " + error.message);
       } else {
-        if (alerta) alert("¡Evaluación guardada con éxito!");
-        cargarDatos();
-      }
-    }
-
-    function abrirModalDuplicados() {
-      const cont = document.getElementById('lista-duplicados-container');
-      cont.innerHTML = '';
-      if (listaProyectos.length === 0) {
-        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos.</p>';
-      } else {
-        listaProyectos.forEach(p => {
-          const div = document.createElement('div');
-          div.className = "flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs gap-3";
-          div.innerHTML = `
-            <div class="min-w-0 flex-1">
-              <span class="font-bold block text-slate-900 truncate">${p.nombreProyecto || p.nombre || 'Sin Nombre'} (ID: ${p.id})</span>
-              <span class="text-[10px] text-slate-500 block truncate">${p.integrantes || 'Sin integrantes'}</span>
-            </div>
-            <button onclick="eliminarProyecto(${p.id}, '${(p.nombreProyecto || 'Proyecto').replace(/'/g, "\\'")}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1.5 rounded transition border border-rose-200 shrink-0">
-              <i class="fa-solid fa-trash-can mr-1"></i> Eliminar
-            </button>
-          `;
-          cont.appendChild(div);
-        });
-      }
-      document.getElementById('modal-duplicados').classList.remove('hidden');
-    }
-
-    function cerrarModalDuplicados() {
-      document.getElementById('modal-duplicados').classList.add('hidden');
-    }
-
-    async function eliminarProyecto(id, nombre) {
-      if (confirm(`¿Estás seguro de eliminar el proyecto "${nombre}" (ID: ${id})?`)) {
-        await _supabase.from('votos_publico').delete().eq('proyecto_id', id);
-        await _supabase.from('inversiones_simuladas').delete().eq('proyecto_id', id);
-        await _supabase.from('evaluaciones').delete().eq('proyecto_id', id);
-        const { error } = await _supabase.from('proyectos').delete().eq('id', id);
-        if (error) {
-          alert("Error al eliminar: " + error.message);
-        } else {
-          alert("¡Proyecto eliminado!");
-          cerrarModalDuplicados();
-          cargarDatos();
-        }
+        if (notificar) alert("¡Evaluación guardada y validada correctamente!");
+        const { data: eData } = await _supabase.from('evaluaciones').select('*');
+        listaEvaluaciones = eData || [];
       }
     }
 
     async function blanquearVotosProyecto() {
       if (!proyectoSeleccionado) return;
-      if (confirm(`¿Reiniciar votos del proyecto "${proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre}"?`)) {
-        await _supabase.from('votos_publico').delete().eq('proyecto_id', proyectoSeleccionado.id);
-        await _supabase.from('inversiones_simuladas').delete().eq('proyecto_id', proyectoSeleccionado.id);
-        alert("¡Votos restablecidos a 0!");
+      if (!confirm("¿Estás seguro de blanquear/eliminar las valoraciones y la devolución de este proyecto?")) return;
+
+      const { error } = await _supabase.from('evaluaciones').delete().eq('proyecto_id', proyectoSeleccionado.id);
+      if (error) {
+        alert("Error al blanquear: " + error.message);
+      } else {
+        alert("Evaluación restablecida.");
+        valoraciones = Array(10).fill(0);
+        document.getElementById('eval-devolucion-docente').value = "";
+        cargarDatos();
+      }
+    }
+
+    async function abrirModalDuplicados() {
+      if (!docenteLogueado) return;
+      document.getElementById('modal-duplicados').classList.remove('hidden');
+      const cont = document.getElementById('lista-duplicados-container');
+      cont.innerHTML = '<p class="text-xs text-slate-400 italic">Buscando duplicados...</p>';
+
+      const { data } = await _supabase.from('proyectos').select('*');
+      if (!data) {
+        cont.innerHTML = '<p class="text-xs text-slate-400">Sin registros.</p>';
+        return;
+      }
+
+      // Agrupar por nombre normalizado
+      const grupos = {};
+      data.forEach(p => {
+        const key = (p.nombreProyecto || p.nombre || '').trim().toLowerCase();
+        if (!key) return;
+        if (!grupos[key]) grupos[key] = [];
+        grupos[key].push(p);
+      });
+
+      cont.innerHTML = '';
+      let hayDuplicados = false;
+
+      Object.keys(grupos).forEach(key => {
+        if (grupos[key].length > 1) {
+          hayDuplicados = true;
+          const div = document.createElement('div');
+          div.className = "p-3 bg-rose-50 border border-rose-200 rounded-lg space-y-2";
+          
+          let htmlItems = `<p class="font-bold text-xs text-rose-900">Proyecto: "${key}" (${grupos[key].length} registros)</p><div class="space-y-1">`;
+          grupos[key].forEach(p => {
+            htmlItems += `
+              <div class="flex justify-between items-center bg-white p-2 rounded border text-xs">
+                <span>ID: ${p.id} — Creado: ${p.created_at ? new Date(p.created_at).toLocaleDateString() : 'N/D'}</span>
+                <button onclick="eliminarProyectoDuplicado(${p.id})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-2 py-1 rounded">Eliminar este</button>
+              </div>`;
+          });
+          htmlItems += `</div>`;
+          div.innerHTML = htmlItems;
+          cont.appendChild(div);
+        }
+      });
+
+      if (!hayDuplicados) {
+        cont.innerHTML = '<p class="text-xs text-slate-500 italic">No se encontraron proyectos duplicados en la base de datos.</p>';
+      }
+    }
+
+    function cerrarModalDuplicados() {
+      document.getElementById('modal-duplicados').classList.add('hidden');
+      cargarDatos();
+    }
+
+    async function eliminarProyectoDuplicado(id) {
+      if (!confirm(`¿Eliminar permanentemente el registro ID ${id}?`)) return;
+      const { error } = await _supabase.from('proyectos').delete().eq('id', id);
+      if (error) {
+        alert("Error al eliminar: " + error.message);
+      } else {
+        abrirModalDuplicados();
       }
     }
   </script>
