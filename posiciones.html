@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tabla de Posiciones — E.E.S.T. N°1 Bragado</title>
+  <title>Tabla de Posiciones — Liga de Emprendimientos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,14 +11,21 @@
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
   <header class="bg-slate-900 text-white shadow-lg mb-8">
-    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga de Emprendimientos</h1>
-        <p class="text-slate-400 text-xs">Tabla General de Posiciones • Popularidad e Inversión Semilla</p>
+        <h1 id="header-institucion" class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga de Emprendimientos</h1>
+        <p id="header-curso" class="text-slate-400 text-xs">Tabla General de Posiciones • Popularidad e Inversión Semilla</p>
       </div>
-      <span id="realtime-status" class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-1 rounded-full flex items-center gap-2">
-        <i class="fa-solid fa-bolt"></i> En Vivo
-      </span>
+
+      <!-- SELECTOR FILTRO MULTICURSO -->
+      <div class="flex items-center gap-3 w-full sm:w-auto">
+        <select id="select-curso-filtro" onchange="cambiarFiltroCurso(this.value)" class="bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 w-full sm:w-auto">
+          <option value="TODOS">🌐 Ver Todos los Cursos</option>
+        </select>
+        <span id="realtime-status" class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-2 rounded-lg flex items-center gap-2 shrink-0">
+          <i class="fa-solid fa-bolt"></i> En Vivo
+        </span>
+      </div>
     </div>
   </header>
 
@@ -35,9 +42,14 @@
         <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
           <i class="fa-solid fa-trophy text-amber-500"></i> Tabla General de Posiciones
         </h2>
-        <button onclick="cargarTabla()" class="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
-          <i class="fa-solid fa-rotate"></i> Actualizar
-        </button>
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="text-xs text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1">
+            <i class="fa-solid fa-house"></i> Portada
+          </a>
+          <button onclick="cargarTabla()" class="text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1">
+            <i class="fa-solid fa-rotate"></i> Actualizar
+          </button>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
@@ -46,6 +58,7 @@
             <tr>
               <th class="p-3 text-center">Pos</th>
               <th class="p-3">Emprendimiento</th>
+              <th class="p-3 text-center">Curso / Escuela</th>
               <th class="p-3 text-center">Votos Público</th>
               <th class="p-3 text-center">Promedio Público</th>
               <th class="p-3 text-right">Inversión Semilla</th>
@@ -54,7 +67,7 @@
           </thead>
           <tbody id="tabla-body" class="divide-y divide-slate-200">
             <tr>
-              <td colspan="6" class="p-6 text-center text-slate-400 italic">Cargando tabla de posiciones...</td>
+              <td colspan="7" class="p-6 text-center text-slate-400 italic">Cargando tabla de posiciones...</td>
             </tr>
           </tbody>
         </table>
@@ -68,12 +81,77 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let cursoActivo = localStorage.getItem('multicurso_curso') || "TODOS";
+    let institucionActiva = localStorage.getItem('multicurso_institucion') || "";
+
+    async function cargarCursosEnSelector() {
+      const select = document.getElementById('select-curso-filtro');
+      
+      // Consultar cursos habilitados desde la tabla docentes
+      const { data: docentes } = await _supabase.from('docentes').select('institucion, curso');
+      
+      if (docentes && docentes.length > 0) {
+        select.innerHTML = '<option value="TODOS">🌐 Ver Todos los Cursos</option>';
+        docentes.forEach(d => {
+          const val = `${d.institucion} - ${d.curso}`;
+          const option = document.createElement('option');
+          option.value = val;
+          option.innerText = `🏫 ${d.institucion} (${d.curso})`;
+          if (cursoActivo !== "TODOS" && institucionActiva && d.institucion === institucionActiva && d.curso === cursoActivo) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function cambiarFiltroCurso(valor) {
+      if (valor === "TODOS") {
+        cursoActivo = "TODOS";
+        document.getElementById('header-institucion').innerText = "Liga Global de Emprendimientos";
+        document.getElementById('header-curso').innerText = "Todos los cursos e instituciones participantes";
+      } else {
+        const partes = valor.split(' - ');
+        institucionActiva = partes[0];
+        cursoActivo = partes[1];
+        localStorage.setItem('multicurso_institucion', institucionActiva);
+        localStorage.setItem('multicurso_curso', cursoActivo);
+        document.getElementById('header-institucion').innerText = `${institucionActiva} — Liga de Emprendimientos`;
+        document.getElementById('header-curso').innerText = `Curso: ${cursoActivo}`;
+      }
+      cargarTabla();
+    }
+
     async function cargarTabla() {
-      const { data, error } = await _supabase.from('tabla_posiciones').select('*');
+      const { data: posData, error } = await _supabase.from('tabla_posiciones').select('*');
+      const { data: proyData } = await _supabase.from('proyectos').select('id, institucion, curso');
 
       if (error) {
         console.error("Error al cargar posiciones:", error);
         return;
+      }
+
+      // Mapear los datos de institución y curso a los proyectos
+      const proyectosMap = {};
+      (proyData || []).forEach(p => {
+        proyectosMap[p.id] = {
+          institucion: p.institucion || 'E.E.S.T. N°1 Bragado',
+          curso: p.curso || '7° Año • Energías Renovables'
+        };
+      });
+
+      let dataFiltrada = (posData || []).map(p => {
+        const meta = proyectosMap[p.proyecto_id] || { institucion: 'E.E.S.T. N°1 Bragado', curso: '7° Año • Energías Renovables' };
+        return {
+          ...p,
+          institucion: meta.institucion,
+          curso: meta.curso
+        };
+      });
+
+      // Filtrar según el curso activo
+      if (cursoActivo !== "TODOS") {
+        dataFiltrada = dataFiltrada.filter(p => p.institucion === institucionActiva && p.curso === cursoActivo);
       }
 
       const tbody = document.getElementById('tabla-body');
@@ -81,14 +159,14 @@
       tbody.innerHTML = '';
       podioContainer.innerHTML = '';
 
-      if (!data || data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="6" class="p-6 text-center text-slate-400 italic">No hay emprendimientos registrados.</td></tr>';
+      if (!dataFiltrada || dataFiltrada.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400 italic">No hay emprendimientos registrados para esta selección.</td></tr>';
         podioContainer.classList.add('hidden');
         return;
       }
 
       // Ordenar por inversión simulada y luego por promedio de público
-      const ordenados = [...data].sort((a, b) => {
+      const ordenados = [...dataFiltrada].sort((a, b) => {
         const invA = parseFloat(a.total_inversion_simulada) || 0;
         const invB = parseFloat(b.total_inversion_simulada) || 0;
         if (invB !== invA) return invB - invA;
@@ -129,7 +207,7 @@
           }
 
           const nombreLimpio = p.nombreProyecto || 'Sin Nombre';
-          const integrantesLimpios = p.integrantes || 'E.E.S.T. N°1';
+          const integrantesLimpios = p.integrantes || p.institucion;
 
           const card = document.createElement('div');
           card.className = `${bgColor} p-5 rounded-xl border flex flex-col justify-between text-center space-y-3 relative`;
@@ -160,7 +238,7 @@
         });
       }
 
-      // Renderizar Tabla General con acotación de texto limpia
+      // Renderizar Tabla General
       ordenados.forEach((p, index) => {
         const pos = index + 1;
         let posBadge = `<span class="font-bold text-slate-500">${pos}°</span>`;
@@ -169,7 +247,7 @@
         if (pos === 3) posBadge = `<span class="bg-amber-900/10 text-amber-900 font-black px-2 py-0.5 rounded-full">3°</span>`;
 
         const nombreLimpio = p.nombreProyecto || 'Sin Nombre';
-        const integrantesLimpios = p.integrantes || 'E.E.S.T. N°1';
+        const integrantesLimpios = p.integrantes || '-';
 
         const row = document.createElement('tr');
         row.className = "hover:bg-slate-50 transition";
@@ -178,6 +256,10 @@
           <td class="p-3 max-w-xs align-middle">
             <span class="font-bold text-slate-900 block truncate" title="${nombreLimpio}">${nombreLimpio}</span>
             <span class="text-[10px] text-slate-500 block truncate" title="${integrantesLimpios}">${integrantesLimpios}</span>
+          </td>
+          <td class="p-3 text-center text-slate-600 align-middle">
+            <span class="font-bold block text-[11px]">${p.institucion}</span>
+            <span class="text-[10px] text-slate-400 block">${p.curso}</span>
           </td>
           <td class="p-3 text-center font-semibold text-slate-700 align-middle">${p.total_votos || 0}</td>
           <td class="p-3 text-center font-bold text-amber-600 align-middle">${(parseFloat(p.promedio_publico) || 0).toFixed(1)} / 10</td>
@@ -192,7 +274,14 @@
       });
     }
 
-    window.onload = cargarTabla;
+    window.onload = () => {
+      cargarCursosEnSelector();
+      if (cursoActivo !== "TODOS" && institucionActiva) {
+        document.getElementById('header-institucion').innerText = `${institucionActiva} — Liga de Emprendimientos`;
+        document.getElementById('header-curso').innerText = `Curso: ${cursoActivo}`;
+      }
+      cargarTabla();
+    };
   </script>
 </body>
 </html>
