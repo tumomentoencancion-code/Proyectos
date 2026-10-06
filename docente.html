@@ -43,12 +43,15 @@
         <h1 id="header-docente-titulo" class="text-xl font-bold tracking-tight">Panel Docente</h1>
         <p id="header-docente-sub" class="text-slate-400 text-xs">Cargando sesión...</p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 flex-wrap">
         <a href="index.html" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-lg transition border border-slate-700 flex items-center gap-1 shadow-sm">
           <i class="fa-solid fa-globe"></i> Volver al Portal
         </a>
         <button onclick="abrirModalAltaDocente()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow">
           <i class="fa-solid fa-user-plus"></i> Habilitar Docente
+        </button>
+        <button onclick="abrirModalGestionDocentes()" class="text-xs bg-rose-900 hover:bg-rose-800 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow">
+          <i class="fa-solid fa-users-gear"></i> Gestionar Docentes
         </button>
         <a href="posiciones.html" target="_blank" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
           <i class="fa-solid fa-trophy"></i> Ver Posiciones
@@ -201,11 +204,27 @@
     </div>
   </div>
 
-  <!-- MODAL DUPLICADOS -->
+  <!-- MODAL GESTIÓN / ELIMINACIÓN DE DOCENTES -->
+  <div id="modal-gestion-docentes" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 border border-slate-200 max-h-[85vh] flex flex-col">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h3 class="font-bold text-slate-900 text-base"><i class="fa-solid fa-users-gear text-rose-600 mr-2"></i>Gestionar y Eliminar Docentes</h3>
+        <button onclick="cerrarModalGestionDocentes()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+      <div id="lista-docentes-gestion" class="space-y-2 overflow-y-auto flex-1 pr-1 text-xs">
+        <p class="text-slate-400 italic">Cargando docentes...</p>
+      </div>
+      <div class="border-t pt-3 text-right">
+        <button onclick="cerrarModalGestionDocentes()" class="bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs px-4 py-2 rounded-lg transition">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DUPLICADOS PROYECTOS -->
   <div id="modal-duplicados" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 border border-slate-200 max-h-[80vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-3">
-        <h3 class="font-bold text-slate-900 text-base"><i class="fa-solid fa-clone text-rose-600 mr-2"></i>Duplicados</h3>
+        <h3 class="font-bold text-slate-900 text-base"><i class="fa-solid fa-clone text-rose-600 mr-2"></i>Duplicados de Proyectos</h3>
         <button onclick="cerrarModalDuplicados()" class="text-slate-400"><i class="fa-solid fa-xmark text-lg"></i></button>
       </div>
       <div id="lista-duplicados-container" class="space-y-2 overflow-y-auto flex-1 pr-1"></div>
@@ -312,6 +331,52 @@
       }
     }
 
+    // Funciones para gestionar y eliminar docentes
+    async function abrirModalGestionDocentes() {
+      document.getElementById('modal-gestion-docentes').classList.remove('hidden');
+      const cont = document.getElementById('lista-docentes-gestion');
+      cont.innerHTML = '<p class="text-xs text-slate-400 italic">Cargando lista de docentes...</p>';
+
+      const { data, error } = await _supabase.from('docentes').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        cont.innerHTML = '<p class="text-xs text-slate-500 italic">No hay docentes registrados o error al cargar.</p>';
+        return;
+      }
+
+      cont.innerHTML = '';
+      data.forEach(d => {
+        const item = document.createElement('div');
+        item.className = "flex justify-between items-center bg-slate-50 border border-slate-200 p-3 rounded-lg";
+        item.innerHTML = `
+          <div>
+            <strong class="text-slate-900 block">${d.nombre_docente || 'Sin Nombre'}</strong>
+            <span class="text-slate-500">🏫 ${d.institucion} — 📖 ${d.curso}</span><br>
+            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">Clave: ${d.clave_acceso}</span>
+          </div>
+          <button onclick="eliminarDocente(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1.5 rounded transition">
+            Eliminar
+          </button>
+        `;
+        cont.appendChild(item);
+      });
+    }
+
+    function cerrarModalGestionDocentes() {
+      document.getElementById('modal-gestion-docentes').classList.add('hidden');
+      cargarDatos();
+    }
+
+    async function eliminarDocente(id) {
+      if (!confirm(`¿Eliminar permanentemente al docente ID ${id}?`)) return;
+      const { error } = await _supabase.from('docentes').delete().eq('id', id);
+      if (error) {
+        alert("Error al eliminar docente: " + error.message);
+      } else {
+        alert("Docente eliminado.");
+        abrirModalGestionDocentes();
+      }
+    }
+
     const itemsDefinicion = [
       { titulo: "1. Diagnóstico e Idea", campos: ["nombreProyecto", "nombre", "slogan"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Idea inicial." }) },
       { titulo: "2. Equipo Humano", campos: ["integrantes"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Equipo." }) },
@@ -343,7 +408,7 @@
         const instProy = (p.institucion || "").trim().toLowerCase();
         const cursoProy = (p.curso || "").trim().toLowerCase();
 
-        if (!instProy && !cursoProy) {
+        if (!p.institucion && !p.curso) {
           return instDocente.includes("bragado") && cursoDocente.includes("renovables");
         }
 
@@ -407,14 +472,11 @@
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
       document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
 
-      // BUSCAR EVALUACIÓN DOCENTE GUARDADA EN LA BD
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
 
       if (evalP && evalP.valoraciones && Array.isArray(evalP.valoraciones) && evalP.valoraciones.length === 10) {
-        // Cargar exactamente los porcentajes guardados manualmente por el docente
         valoraciones = [...evalP.valoraciones];
       } else {
-        // Si no hay evaluación docente previa, calcular valores iniciales heurísticos
         itemsDefinicion.forEach((def, idx) => {
           let txt = '';
           for (let campo of def.campos) {
@@ -497,7 +559,6 @@
       const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
       const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
 
-      // Guardamos el arreglo de valoraciones completo
       const payload = {
         proyecto_id: proyectoSeleccionado.id,
         docente_id: docenteLogueado.id,
@@ -528,7 +589,7 @@
 
     async function blanquearVotosProyecto() {
       if (!proyectoSeleccionado) return;
-      if (!confirm("¿Reiniciar evaluaciones de este proyecto a la sugerencia inicial?")) return;
+      if (!confirm("¿Reiniciar evaluaciones de este proyecto?")) return;
       await _supabase.from('evaluaciones').delete().eq('proyecto_id', proyectoSeleccionado.id);
       alert("Evaluación restablecida.");
       cargarDatos();
