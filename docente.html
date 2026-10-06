@@ -3,11 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Panel Docente Multi-Institución</title>
+  <title>Panel Docente — Gestión de Proyectos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
+
+  <!-- HEADER CON BOTÓN DE RETORNO AL INDEX -->
+  <header class="bg-slate-900 text-white shadow-lg mb-8">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+      <div>
+        <h1 class="text-xl font-bold tracking-tight">Panel Docente — Gestión</h1>
+        <p id="info-sesion" class="text-slate-400 text-xs">Cargando datos de sesión...</p>
+      </div>
+      <div class="flex items-center gap-3">
+        <a href="index.html" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
+          <i class="fa-solid fa-house"></i> Volver al Portal
+        </a>
+        <button onclick="cerrarSesion()" class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
+          <i class="fa-solid fa-right-from-bracket"></i> Salir
+        </button>
+      </div>
+    </div>
+  </header>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
   <!-- MODAL DE ACCESO DOCENTE CON CLAVE DINÁMICA -->
