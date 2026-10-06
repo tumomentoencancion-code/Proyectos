@@ -3,210 +3,185 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Portal de Emprendimientos — E.E.S.T. N°1 Bragado</title>
+  <title>Portal de Emprendimientos — Liga Multicurso</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between">
+<body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <!-- ENCABEZADO -->
-  <header class="border-b border-slate-800 bg-slate-950/50 backdrop-blur">
+  <!-- HEADER CON SELECCIÓN DE ESCUELA / CURSO -->
+  <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-black text-lg shadow-lg">
-          T1
-        </div>
-        <div>
-          <h1 id="header-institucion" class="text-base font-bold tracking-tight text-white">E.E.S.T. N°1 Bragado</h1>
-          <p id="header-curso" class="text-slate-400 text-xs">7° Año • Tecnicatura en Energías Renovables</p>
-        </div>
+      <div>
+        <h1 id="portal-institucion" class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga de Emprendimientos</h1>
+        <p id="portal-curso" class="text-slate-400 text-xs">Curso: 7° Año • Tecnicatura en Energías Renovables</p>
       </div>
-      <div class="flex items-center gap-3">
-        <button onclick="abrirModalConfig()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
-          <i class="fa-solid fa-gear text-amber-400"></i> Cambiar Escuela / Curso
-        </button>
-        <a href="posiciones.html" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2 rounded-lg shadow-md transition flex items-center gap-2">
-          <i class="fa-solid fa-trophy text-slate-900"></i> Ir a Posiciones
-        </a>
+
+      <div class="flex items-center gap-2 w-full sm:w-auto">
+        <!-- SELECTOR DINÁMICO DE ESCUELA / CURSO -->
+        <select id="select-escuela-curso" onchange="seleccionarEscuelaCurso(this.value)" class="bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 w-full sm:w-auto">
+          <option value="">🔄 Cargando instituciones y cursos...</option>
+        </select>
       </div>
     </div>
   </header>
 
-  <!-- SECCIÓN HERO PRINCIPAL -->
-  <main class="max-w-6xl mx-auto px-6 py-12 space-y-12 my-auto">
+  <main class="max-w-6xl mx-auto px-6 space-y-8">
 
-    <div class="text-center max-w-3xl mx-auto space-y-4">
-      <span class="text-xs font-bold uppercase tracking-widest bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full">
-        <i class="fa-solid fa-lightbulb mr-1"></i> Espacio Multicurso de Emprendedorismo & Desarrollo Local
-      </span>
-      <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-        Feria e Incubadora Digital de Emprendimientos
-      </h2>
-      <p class="text-slate-400 text-sm sm:text-base leading-relaxed">
-        Plataforma pedagógica interactiva multi-institución. Gestioná proyectos de cualquier escuela o tecnicatura, evaluá propuestas, interactuá con redes y participá en la votación e inversión pública.
-      </p>
+    <!-- SECCIÓN DE ACCESOS Y ACCIONES -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <a href="alumno.html" class="bg-blue-900 hover:bg-blue-800 text-white p-5 rounded-2xl shadow-sm border border-blue-800 flex items-center justify-between group transition">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-blue-300 block">Zona Alumnos</span>
+          <h3 class="text-base font-bold">Cargar / Editar Proyecto</h3>
+        </div>
+        <i class="fa-solid fa-plus-circle text-2xl text-blue-300 group-hover:scale-110 transition"></i>
+      </a>
+
+      <a href="posiciones.html" class="bg-amber-500 hover:bg-amber-400 text-slate-950 p-5 rounded-2xl shadow-sm border border-amber-400 flex items-center justify-between group transition">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-900 block">Ranking & Posiciones</span>
+          <h3 class="text-base font-bold">Ver Tabla General</h3>
+        </div>
+        <i class="fa-solid fa-trophy text-2xl text-slate-900 group-hover:scale-110 transition"></i>
+      </a>
+
+      <a href="docente.html" class="bg-slate-800 hover:bg-slate-700 text-white p-5 rounded-2xl shadow-sm border border-slate-700 flex items-center justify-between group transition">
+        <div>
+          <span class="text-[10px] uppercase font-bold text-slate-400 block">Docentes</span>
+          <h3 class="text-base font-bold">Panel de Evaluación</h3>
+        </div>
+        <i class="fa-solid fa-chalkboard-user text-2xl text-slate-400 group-hover:scale-110 transition"></i>
+      </a>
     </div>
 
-    <!-- TARJETAS DE ACCESO PRINCIPALES -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-      <!-- TARJETA 1: TABLA DE POSICIONES Y VOTACIÓN PÚBLICA -->
-      <div class="bg-slate-800/80 border border-slate-700/80 hover:border-amber-500/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-amber-500/5 group">
-        <div class="space-y-3">
-          <div class="w-12 h-12 bg-amber-500/10 border border-amber-500/20 text-amber-400 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-            <i class="fa-solid fa-trophy"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white">Tabla de Posiciones & Votación</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Explorá el ranking en vivo del curso activo. Elegí el emprendimiento que querés evaluar para calificarlo del 1 al 10 y simular una inversión de capital semilla.
-          </p>
-        </div>
-        <a href="posiciones.html" class="w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
-          <span>Ver Ranking y Votar</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </a>
+    <!-- LISTADO DE PROYECTOS DEL CURSO -->
+    <section class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 space-y-4">
+      <div class="flex justify-between items-center border-b pb-3">
+        <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
+          <i class="fa-solid fa-rocket text-blue-600"></i> Proyectos Participantes del Curso
+        </h2>
+        <button onclick="cargarProyectosIndex()" class="text-xs text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1">
+          <i class="fa-solid fa-rotate"></i> Actualizar Lista
+        </button>
       </div>
 
-      <!-- TARJETA 2: PORTAL ALUMNOS -->
-      <div class="bg-slate-800/80 border border-slate-700/80 hover:border-blue-500/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-blue-500/5 group">
-        <div class="space-y-3">
-          <div class="w-12 h-12 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-            <i class="fa-solid fa-user-graduate"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white">Portal Alumnos</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Formulación guiada del plan de negocios en 10 etapas, cálculo automático del punto de equilibrio y visor de devoluciones pedagógicas del docente.
-          </p>
-        </div>
-        <a href="alumno.html" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
-          <span>Panel de Alumno</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-
-      <!-- TARJETA 3: PANEL DOCENTE -->
-      <div class="bg-slate-800/80 border border-slate-700/80 hover:border-emerald-500/50 rounded-2xl p-6 transition duration-300 flex flex-col justify-between space-y-4 shadow-xl hover:shadow-emerald-500/5 group">
-        <div class="space-y-3">
-          <div class="w-12 h-12 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl flex items-center justify-center text-xl group-hover:scale-110 transition duration-300">
-            <i class="fa-solid fa-chalkboard-user"></i>
-          </div>
-          <h3 class="text-lg font-bold text-white">Panel Docente</h3>
-          <p class="text-xs text-slate-400 leading-relaxed">
-            Evaluación cualitativa en tiempo real mediante rúbrica de 10 ítems para el curso seleccionado, asistida con sugerencias heurísticas y control de votos.
-          </p>
-        </div>
-        <a href="docente.html" class="w-full bg-slate-700 hover:bg-slate-600 text-white font-bold py-2.5 rounded-xl text-xs text-center transition flex items-center justify-center gap-2">
-          <span>Acceso Docente</span>
-          <i class="fa-solid fa-arrow-right"></i>
-        </a>
-      </div>
-
-    </div>
-
-    <!-- PASOS SIMPLES DE PARTICIPACIÓN -->
-    <section class="bg-slate-800/40 border border-slate-800 p-8 rounded-2xl space-y-6">
-      <div class="text-center max-w-xl mx-auto">
-        <h3 class="text-base font-bold text-white">¿Cómo participar en la votación?</h3>
-        <p class="text-xs text-slate-400 mt-1">Es súper fácil apoyar a los estudiantes:</p>
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-        <div class="space-y-2">
-          <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">1</div>
-          <h4 class="text-xs font-bold text-white">Ingresá a Posiciones</h4>
-          <p class="text-[11px] text-slate-400">Entrá a la tabla general y elegí cualquier emprendimiento del curso.</p>
-        </div>
-
-        <div class="space-y-2">
-          <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">2</div>
-          <h4 class="text-xs font-bold text-white">Mirá su Propuesta</h4>
-          <p class="text-[11px] text-slate-400">Conocé sus redes sociales, su video promocional y su idea de negocio.</p>
-        </div>
-
-        <div class="space-y-2">
-          <div class="w-8 h-8 bg-amber-500 text-slate-950 font-black rounded-full flex items-center justify-center mx-auto text-xs">3</div>
-          <h4 class="text-xs font-bold text-white">Votá y Simulá Inversión</h4>
-          <p class="text-[11px] text-slate-400">Calificá el proyecto del 1 al 10 y asignales hasta $100.000 ficticios de capital inicial.</p>
-        </div>
+      <div id="grid-proyectos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <p class="text-xs text-slate-400 italic col-span-3 text-center py-8">Cargando emprendimientos...</p>
       </div>
     </section>
 
   </main>
 
-  <!-- MODAL DE SELECCIÓN DE INSTITUCIÓN Y CURSO (MULTICURSO) -->
-  <div id="modal-config" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-900 border border-slate-700 rounded-2xl p-6 sm:p-8 max-w-md w-full shadow-2xl space-y-6">
-      <div class="text-center space-y-2">
-        <div class="w-12 h-12 bg-blue-600/20 text-blue-400 border border-blue-500/30 rounded-2xl flex items-center justify-center mx-auto text-xl">
-          <i class="fa-solid fa-school"></i>
-        </div>
-        <h2 class="text-lg font-bold text-white">Configurar Institución y Curso</h2>
-        <p class="text-xs text-slate-400">Seleccioná o escribí la escuela y materia/curso para filtrar los proyectos.</p>
-      </div>
-
-      <form onsubmit="guardarConfiguracion(event)" class="space-y-4">
-        <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Institución Educativa:</label>
-          <input type="text" id="input-institucion" required placeholder="Ej: E.E.S.T. N°1 Bragado" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-blue-500">
-        </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-300 mb-1">Curso / Año / Especialidad:</label>
-          <input type="text" id="input-curso" required placeholder="Ej: 7° Año • Energías Renovables" class="w-full bg-slate-950 border border-slate-700 rounded-lg p-2.5 text-xs text-white focus:ring-2 focus:ring-blue-500">
-        </div>
-        <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-black py-3 rounded-xl text-xs transition shadow-lg">
-          Ingresar al Portal
-        </button>
-      </form>
-    </div>
-  </div>
-
-  <!-- PIE DE PÁGINA -->
-  <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
-    <p id="footer-copy">© 2026 E.E.S.T. N°1 Bragado • Espacio Emprendedorismo y Desarrollo Local</p>
-  </footer>
-
   <script>
-    function cargarConfiguracionInicial() {
-      const institucion = localStorage.getItem('multicurso_institucion');
-      const curso = localStorage.getItem('multicurso_curso');
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      if (!institucion || !curso) {
-        // Valores por defecto iniciales
-        document.getElementById('input-institucion').value = "E.E.S.T. N°1 Bragado";
-        document.getElementById('input-curso').value = "7° Año • Energías Renovables";
-        document.getElementById('modal-config').classList.remove('hidden');
+    let institucionActiva = localStorage.getItem('multicurso_institucion') || 'E.E.S.T. N°1 Bragado';
+    let cursoActivo = localStorage.getItem('multicurso_curso') || '7° Año • Energías Renovables';
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarCursosEnSelector();
+      actualizarEncabezado();
+      cargarProyectosIndex();
+    });
+
+    // Carga dinámica desde la tabla docentes de Supabase
+    async function cargarCursosEnSelector() {
+      const select = document.getElementById('select-escuela-curso');
+      const { data: docentes, error } = await _supabase.from('docentes').select('institucion, curso');
+
+      if (error) {
+        console.error("Error al cargar docentes/cursos:", error);
+        return;
+      }
+
+      select.innerHTML = '';
+
+      if (docentes && docentes.length > 0) {
+        docentes.forEach(d => {
+          const option = document.createElement('option');
+          const val = `${d.institucion} - ${d.curso}`;
+          option.value = val;
+          option.innerText = `🏫 ${d.institucion} (${d.curso})`;
+          if (d.institucion === institucionActiva && d.curso === cursoActivo) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
       } else {
-        document.getElementById('modal-config').classList.add('hidden');
-        actualizarTextosUI(institucion, curso);
+        select.innerHTML = '<option value="E.E.S.T. N°1 Bragado - 7° Año • Energías Renovables">🏫 E.E.S.T. N°1 Bragado (7° Año • Energías Renovables)</option>';
       }
     }
 
-    function abrirModalConfig() {
-      document.getElementById('input-institucion').value = localStorage.getItem('multicurso_institucion') || "E.E.S.T. N°1 Bragado";
-      document.getElementById('input-curso').value = localStorage.getItem('multicurso_curso') || "7° Año • Energías Renovables";
-      document.getElementById('modal-config').classList.remove('hidden');
+    function seleccionarEscuelaCurso(valor) {
+      if (!valor) return;
+      const partes = valor.split(' - ');
+      institucionActiva = partes[0];
+      cursoActivo = partes[1];
+
+      localStorage.setItem('multicurso_institucion', institucionActiva);
+      localStorage.setItem('multicurso_curso', cursoActivo);
+
+      actualizarEncabezado();
+      cargarProyectosIndex();
     }
 
-    function guardarConfiguracion(e) {
-      e.preventDefault();
-      const institucion = document.getElementById('input-institucion').value.trim();
-      const curso = document.getElementById('input-curso').value.trim();
-
-      localStorage.setItem('multicurso_institucion', institucion);
-      localStorage.setItem('multicurso_curso', curso);
-
-      document.getElementById('modal-config').classList.add('hidden');
-      actualizarTextosUI(institucion, curso);
+    function actualizarEncabezado() {
+      document.getElementById('portal-institucion').innerText = `${institucionActiva} — Liga de Emprendimientos`;
+      document.getElementById('portal-curso').innerText = `Curso Activo: ${cursoActivo}`;
     }
 
-    function actualizarTextosUI(institucion, curso) {
-      document.getElementById('header-institucion').innerText = institucion;
-      document.getElementById('header-curso').innerText = curso;
-      document.getElementById('footer-copy').innerText = `© 2026 ${institucion} • ${curso}`;
-    }
+    async function cargarProyectosIndex() {
+      const grid = document.getElementById('grid-proyectos');
+      grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3 text-center py-8">Cargando emprendimientos...</p>';
 
-    window.onload = cargarConfiguracionInicial;
+      const { data, error } = await _supabase
+        .from('proyectos')
+        .select('*')
+        .eq('institucion', institucionActiva)
+        .eq('curso', cursoActivo)
+        .order('id', { ascending: false });
+
+      if (error) {
+        grid.innerHTML = '<p class="text-xs text-red-500 italic col-span-3 text-center py-8">Error al cargar proyectos de la base de datos.</p>';
+        return;
+      }
+
+      grid.innerHTML = '';
+
+      if (!data || data.length === 0) {
+        grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3 text-center py-8">No hay proyectos registrados para este curso todavía.</p>';
+        return;
+      }
+
+      data.forEach(p => {
+        const nombre = p.nombreProyecto || p.nombre || 'Sin Nombre';
+        const slogan = p.slogan || 'Proyecto de Emprendimiento';
+        const integrantes = p.integrantes || 'Alumnos del curso';
+
+        const card = document.createElement('div');
+        card.className = "bg-slate-50 border border-slate-200 rounded-xl p-4 flex flex-col justify-between space-y-3 hover:border-blue-300 transition";
+        card.innerHTML = `
+          <div class="space-y-1">
+            <h3 class="font-bold text-slate-900 text-sm truncate" title="${nombre}">${nombre}</h3>
+            <p class="text-[11px] text-blue-700 font-medium truncate">${slogan}</p>
+            <p class="text-[10px] text-slate-500 truncate"><i class="fa-solid fa-users mr-1"></i>${integrantes}</p>
+          </div>
+          <div class="flex gap-2 pt-2 border-t">
+            <a href="votacion.html?id=${p.id}" class="flex-1 bg-blue-900 hover:bg-blue-800 text-white font-bold py-1.5 rounded-lg text-[11px] text-center transition">
+              Votar / Invertir
+            </a>
+            <a href="alumno.html?id=${p.id}" class="bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-3 py-1.5 rounded-lg text-[11px] transition">
+              Editar
+            </a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
   </script>
-
 </body>
 </html>
