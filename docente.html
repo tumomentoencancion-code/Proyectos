@@ -44,6 +44,10 @@
         <p id="header-docente-sub" class="text-slate-400 text-xs">Curso: 7° Año • Tecnicatura en Energías Renovables</p>
       </div>
       <div class="flex items-center gap-3">
+        <!-- BOTÓN NUEVO: VOLVER AL PORTAL (VENTANA NUEVA) -->
+        <a href="index.html" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-lg transition border border-slate-700 flex items-center gap-1 shadow-sm" title="Abrir el portal de alumnos en una pestaña nueva">
+          <i class="fa-solid fa-globe"></i> Volver al Portal <i class="fa-solid fa-up-right-from-square text-[10px] ml-0.5 opacity-70"></i>
+        </a>
         <button onclick="abrirModalAltaDocente()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow">
           <i class="fa-solid fa-user-plus"></i> Habilitar Docente
         </button>
@@ -246,6 +250,10 @@
 
     let docenteLogueado = null;
 
+    document.addEventListener("DOMContentLoaded", () => {
+      verificarAutenticacionDocente();
+    });
+
     async function verificarAutenticacionDocente() {
       const authData = localStorage.getItem('auth_docente_data');
       if (authData) {
@@ -260,26 +268,43 @@
 
     async function validarClaveDocente(e) {
       e.preventDefault();
-      const clave = document.getElementById('input-clave').value.trim();
+      const claveInput = document.getElementById('input-clave');
+      const clave = claveInput.value.trim();
       const btn = document.getElementById('btn-login');
+      const errorMsg = document.getElementById('auth-error');
+
+      if (!clave) return;
+
       btn.disabled = true;
+      btn.innerText = "Verificando...";
+      errorMsg.classList.add('hidden');
 
-      // Consulta flexible a Supabase
-      const { data, error } = await _supabase
-        .from('docentes')
-        .select('*')
-        .eq('clave_acceso', clave);
+      try {
+        const { data, error } = await _supabase
+          .from('docentes')
+          .select('*')
+          .eq('clave_acceso', clave);
 
-      if (error || !data || data.length === 0) {
-        document.getElementById('auth-error').classList.remove('hidden');
-      } else {
-        docenteLogueado = data[0];
-        localStorage.setItem('auth_docente_data', JSON.stringify(docenteLogueado));
-        document.getElementById('modal-auth').classList.add('hidden');
-        actualizarHeaderDocente();
-        cargarDatos();
+        if (error) throw error;
+
+        if (data && data.length > 0) {
+          docenteLogueado = data[0];
+          localStorage.setItem('auth_docente_data', JSON.stringify(docenteLogueado));
+          document.getElementById('modal-auth').classList.add('hidden');
+          actualizarHeaderDocente();
+          cargarDatos();
+        } else {
+          errorMsg.innerText = "⚠️ Clave incorrecta o docente no registrado.";
+          errorMsg.classList.remove('hidden');
+        }
+      } catch (err) {
+        console.error("Error al validar clave:", err);
+        errorMsg.innerText = "⚠️ Error de conexión con la base de datos.";
+        errorMsg.classList.remove('hidden');
+      } finally {
+        btn.disabled = false;
+        btn.innerText = "Ingresar al Panel";
       }
-      btn.disabled = false;
     }
 
     function actualizarHeaderDocente() {
@@ -438,9 +463,8 @@
         .select('*')
         .order('id', { ascending: false });
 
-      // Filtrar proyectos según la institución y curso del docente logueado
       listaProyectos = (pData || []).filter(p => {
-        if (!p.institucion && !p.curso) return true; // Mantener proyectos históricos
+        if (!p.institucion && !p.curso) return true;
         return p.institucion === docenteLogueado.institucion && p.curso === docenteLogueado.curso;
       });
 
@@ -588,76 +612,82 @@
     function renderizarRubrica() {
       const cont = document.getElementById('contenedor-rubrica');
       cont.innerHTML = '';
-      let sumaTotal = 0;
-      let sumaProceso = 0;
 
-      itemsDefinicion.forEach((def, index) => {
-        const val = valoraciones[index];
+      let sumaTotal = 0;
+
+      itemsDefinicion.forEach((def, idx) => {
+        const val = valoraciones[idx];
         sumaTotal += val;
-        if (index < 6) sumaProceso += val;
-        const sugerencia = sugerenciasIA[index] || "Sin observaciones.";
 
         const row = document.createElement('div');
-        row.className = "p-3.5 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
+        row.className = "p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2";
         row.innerHTML = `
-          <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div class="flex justify-between items-center">
             <span class="font-bold text-slate-800">${def.titulo}</span>
-            <select onchange="cambiarValor(${index}, this.value)" class="bg-white border border-slate-300 rounded p-1.5 text-xs font-bold">
-              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
-              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial</option>
-              <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
-              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio</option>
-              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
-            </select>
+            <span class="font-bold text-blue-900 bg-blue-100 px-2 py-0.5 rounded text-[11px]">${val}%</span>
           </div>
-          <div class="text-[11px] text-blue-700 bg-blue-50/60 border border-blue-100 p-2 rounded flex items-center gap-1.5">
-            <i class="fa-solid fa-wand-magic-sparkles text-blue-600 shrink-0"></i>
-            <span><strong>Análisis IA:</strong> ${sugerencia}</span>
+          <div class="w-full bg-slate-200 rounded-full h-1.5">
+            <div class="bg-blue-600 h-1.5 rounded-full" style="width: ${val}%"></div>
           </div>
+          <p class="text-[11px] text-slate-500 italic">${sugerenciasIA[idx]}</p>
         `;
         cont.appendChild(row);
       });
 
-      document.getElementById('nota-proceso-val').innerText = (sumaProceso / 60).toFixed(1);
-      document.getElementById('nota-global-val').innerText = (sumaTotal / 100).toFixed(1);
+      const notaGlobal = (sumaTotal / 100).toFixed(1);
+      const notaProceso = (notaGlobal * 1.0).toFixed(1);
+
+      document.getElementById('nota-proceso-val').innerText = notaProceso;
+      document.getElementById('nota-global-val').innerText = notaGlobal;
     }
 
-    function cambiarValor(index, v) {
-      valoraciones[index] = parseInt(v, 10);
-      renderizarRubrica();
-      guardarEvaluacionDocente(false);
-    }
-
-    async function blanquearVotosProyecto() {
+    async function guardarEvaluacionDocente(alerta = false) {
       if (!proyectoSeleccionado) return;
-      if (confirm(`¿Estás seguro de blanquear todos los votos e inversiones del proyecto "${proyectoSeleccionado.nombreProyecto}"?`)) {
-        await _supabase.from('votos_publico').delete().eq('proyecto_id', proyectoSeleccionado.id);
-        await _supabase.from('inversiones_simuladas').delete().eq('proyecto_id', proyectoSeleccionado.id);
-        alert("¡Votos e inversiones reiniciadas a 0 para este proyecto!");
+
+      const dev = document.getElementById('eval-devolucion-docente').value;
+      const notaGlobal = parseFloat(document.getElementById('nota-global-val').innerText);
+
+      const payload = {
+        proyecto_id: proyectoSeleccionado.id,
+        devolucion_docente: dev,
+        nota_final: notaGlobal,
+        fecha_evaluacion: new Date().toISOString()
+      };
+
+      const { error } = await _supabase.from('evaluaciones').upsert([payload], { onConflict: 'proyecto_id' });
+
+      if (error) {
+        alert("Error al guardar la evaluación: " + error.message);
+      } else {
+        if (alerta) alert("¡Evaluación guardada y validada correctamente!");
+        cargarDatos();
       }
     }
 
     function abrirModalDuplicados() {
       const cont = document.getElementById('lista-duplicados-container');
       cont.innerHTML = '';
+
       if (listaProyectos.length === 0) {
-        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos cargados.</p>';
+        cont.innerHTML = '<p class="text-xs text-slate-400 italic">No hay proyectos para revisar.</p>';
       } else {
         listaProyectos.forEach(p => {
-          const div = document.createElement('div');
-          div.className = "flex justify-between items-center p-2.5 bg-slate-50 border border-slate-200 rounded-lg text-xs gap-3";
-          div.innerHTML = `
-            <div class="min-w-0 flex-1">
-              <span class="font-bold block text-slate-900 truncate">${p.nombreProyecto || p.nombre || 'Sin Nombre'} (ID: ${p.id})</span>
-              <span class="text-[10px] text-slate-500 block truncate">${p.integrantes || 'Sin integrantes'}</span>
+          const nombre = p.nombreProyecto || p.nombre || 'Sin nombre';
+          const row = document.createElement('div');
+          row.className = "flex justify-between items-center p-2.5 bg-slate-50 border rounded-lg text-xs";
+          row.innerHTML = `
+            <div>
+              <p class="font-bold text-slate-800">${nombre} <span class="text-slate-400 font-normal">(ID: ${p.id})</span></p>
+              <p class="text-[10px] text-slate-500">${p.integrantes || 'Sin integrantes'}</p>
             </div>
-            <button onclick="eliminarProyecto(${p.id}, '${(p.nombreProyecto || 'Proyecto').replace(/'/g, "\\'")}')" class="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold px-3 py-1.5 rounded transition border border-rose-200 shrink-0">
+            <button onclick="eliminarProyectoDuplicado(${p.id})" class="bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold px-2.5 py-1 rounded text-[11px] transition">
               <i class="fa-solid fa-trash-can mr-1"></i> Eliminar
             </button>
           `;
-          cont.appendChild(div);
+          cont.appendChild(row);
         });
       }
+
       document.getElementById('modal-duplicados').classList.remove('hidden');
     }
 
@@ -665,56 +695,40 @@
       document.getElementById('modal-duplicados').classList.add('hidden');
     }
 
-    async function eliminarProyecto(id, nombre) {
-      if (confirm(`¿Estás COMPLETAMENTE SEGURO de eliminar el proyecto "${nombre}" (ID: ${id})?\n\nEsta acción eliminará el proyecto y todos sus votos, inversiones y evaluaciones asociadas de forma permanente.`)) {
-        await _supabase.from('votos_publico').delete().eq('proyecto_id', id);
-        await _supabase.from('inversiones_simuladas').delete().eq('proyecto_id', id);
-        await _supabase.from('evaluaciones').delete().eq('proyecto_id', id);
-        
-        const { error } = await _supabase.from('proyectos').delete().eq('id', id);
-        if (error) {
-          alert("Error al eliminar el proyecto: " + error.message);
-        } else {
-          alert("¡Proyecto eliminado correctamente!");
-          if (proyectoSeleccionado && proyectoSeleccionado.id === id) {
-            proyectoSeleccionado = null;
-            document.getElementById('vista-vacia').classList.remove('hidden');
-            document.getElementById('vista-detalle').classList.add('hidden');
-            document.getElementById('resumen-contenido').innerHTML = '<p class="text-xs text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>';
-            document.getElementById('resumen-id-badge').innerText = 'ID: -';
-          }
-          cerrarModalDuplicados();
-          cargarDatos();
-        }
-      }
-    }
+    async function eliminarProyectoDuplicado(id) {
+      if (!confirm(`¿Estás seguro de eliminar permanentemente el proyecto ID ${id}?`)) return;
 
-    async function guardarEvaluacionDocente(mostrarAlerta = false) {
-      if (!proyectoSeleccionado) return;
-      const notaProceso = parseFloat(document.getElementById('nota-proceso-val').innerText) || 0;
-      const notaGlobal = parseFloat(document.getElementById('nota-global-val').innerText) || 0;
-      const payload = {
-        proyecto_id: proyectoSeleccionado.id,
-        nota_final: notaGlobal,
-        nota_etapa1_5: notaProceso,
-        nota_etapa6_10: notaGlobal,
-        devolucion_docente: document.getElementById('eval-devolucion-docente').value,
-        estado_revision: notaGlobal >= 6 ? 'Aprobado' : 'En Revisión'
-      };
-
-      const evalP = listaEvaluaciones.find(e => e.proyecto_id === proyectoSeleccionado.id);
-      if (evalP) {
-        await _supabase.from('evaluaciones').update(payload).eq('id', evalP.id);
+      const { error } = await _supabase.from('proyectos').delete().eq('id', id);
+      if (error) {
+        alert("Error al eliminar: " + error.message);
       } else {
-        await _supabase.from('evaluaciones').insert([payload]);
+        alert("Proyecto eliminado correctamente.");
+        if (proyectoSeleccionado && proyectoSeleccionado.id === id) {
+          proyectoSeleccionado = null;
+          document.getElementById('vista-detalle').classList.add('hidden');
+          document.getElementById('vista-vacia').classList.remove('hidden');
+        }
+        cargarDatos();
+        abrirModalDuplicados();
       }
-
-      if (mostrarAlerta) alert("¡Evaluación guardada con éxito!");
     }
 
-    window.onload = () => {
-      verificarAutenticacionDocente();
-    };
+    async function blanquearVotosProyecto() {
+      if (!proyectoSeleccionado) return;
+      if (!confirm(`¿Deseas reiniciar y blanquear los votos del proyecto "${proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre}"?`)) return;
+
+      const { error } = await _supabase
+        .from('proyectos')
+        .update({ votos: 0 })
+        .eq('id', proyectoSeleccionado.id);
+
+      if (error) {
+        alert("Error al blanquear votos: " + error.message);
+      } else {
+        alert("Votos restablecidos a 0 con éxito.");
+        cargarDatos();
+      }
+    }
   </script>
 </body>
 </html>
