@@ -264,17 +264,17 @@
       const btn = document.getElementById('btn-login');
       btn.disabled = true;
 
+      // Consulta flexible a Supabase
       const { data, error } = await _supabase
         .from('docentes')
         .select('*')
-        .eq('clave_acceso', clave)
-        .single();
+        .eq('clave_acceso', clave);
 
-      if (error || !data) {
+      if (error || !data || data.length === 0) {
         document.getElementById('auth-error').classList.remove('hidden');
       } else {
-        docenteLogueado = data;
-        localStorage.setItem('auth_docente_data', JSON.stringify(data));
+        docenteLogueado = data[0];
+        localStorage.setItem('auth_docente_data', JSON.stringify(docenteLogueado));
         document.getElementById('modal-auth').classList.add('hidden');
         actualizarHeaderDocente();
         cargarDatos();
