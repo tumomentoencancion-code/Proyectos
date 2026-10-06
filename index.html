@@ -15,7 +15,7 @@
     <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
         <h1 id="portal-institucion" class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga de Emprendimientos</h1>
-        <p id="portal-curso" class="text-slate-400 text-xs">Curso: 7° Año • Tecnicatura en Energías Renovables</p>
+        <p id="portal-curso" class="text-slate-400 text-xs">Curso Activo: 7° Año • Tecnicatura en Energías Renovables</p>
       </div>
 
       <div class="flex items-center gap-2 w-full sm:w-auto">
@@ -79,8 +79,12 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    let institucionActiva = localStorage.getItem('multicurso_institucion') || 'E.E.S.T. N°1 Bragado';
-    let cursoActivo = localStorage.getItem('multicurso_curso') || '7° Año • Energías Renovables';
+    // Valores predeterminados del curso inicial
+    const DEFAULT_INST = 'E.E.S.T. N°1 Bragado';
+    const DEFAULT_CURSO = '7° Año • Energías Renovables';
+
+    let institucionActiva = localStorage.getItem('multicurso_institucion') || DEFAULT_INST;
+    let cursoActivo = localStorage.getItem('multicurso_curso') || DEFAULT_CURSO;
 
     document.addEventListener("DOMContentLoaded", () => {
       cargarCursosEnSelector();
@@ -105,13 +109,13 @@
           const val = `${d.institucion} - ${d.curso}`;
           option.value = val;
           option.innerText = `🏫 ${d.institucion} (${d.curso})`;
-          if (d.institucion === institucionActiva && d.curso === cursoActivo) {
+          if (d.institucion.trim() === institucionActiva.trim() && d.curso.trim() === cursoActivo.trim()) {
             option.selected = true;
           }
           select.appendChild(option);
         });
       } else {
-        select.innerHTML = '<option value="E.E.S.T. N°1 Bragado - 7° Año • Energías Renovables">🏫 E.E.S.T. N°1 Bragado (7° Año • Energías Renovables)</option>';
+        select.innerHTML = `<option value="${DEFAULT_INST} - ${DEFAULT_CURSO}">🏫 ${DEFAULT_INST} (${DEFAULT_CURSO})</option>`;
       }
     }
 
@@ -133,7 +137,6 @@
       document.getElementById('portal-curso').innerText = `Curso Activo: ${cursoActivo}`;
     }
 
-    // Consulta general y filtrado en memoria para evitar errores 400 por caracteres especiales en URL
     async function cargarProyectosIndex() {
       const grid = document.getElementById('grid-proyectos');
       grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3 text-center py-8">Cargando emprendimientos...</p>';
@@ -150,14 +153,24 @@
 
       grid.innerHTML = '';
 
-      // Filtrar proyectos correspondientes a la institución y curso activos
+      const instActivaNorm = institucionActiva.toLowerCase().trim();
+      const cursoActivoNorm = cursoActivo.toLowerCase().trim();
+
+      // Filtrado estricto por institución y curso
       const proyectosFiltrados = (data || []).filter(p => {
-        if (!p.institucion && !p.curso) return true; // Mantener registros históricos
-        return p.institucion === institucionActiva && p.curso === cursoActivo;
+        const instProy = (p.institucion || "").toLowerCase().trim();
+        const cursoProy = (p.curso || "").toLowerCase().trim();
+
+        // Si el proyecto carece de campos, asignar únicamente al curso por defecto de Energías Renovables
+        if (!p.institucion && !p.curso) {
+          return instActivaNorm.includes("bragado") && (cursoActivoNorm.includes("renovables") || cursoActivoNorm.includes("7°"));
+        }
+
+        return instProy === instActivaNorm && cursoProy === cursoActivoNorm;
       });
 
       if (proyectosFiltrados.length === 0) {
-        grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3 text-center py-8">No hay proyectos registrados para este curso todavía.</p>';
+        grid.innerHTML = '<p class="text-xs text-slate-400 italic col-span-3 text-center py-8"><i class="fa-solid fa-folder-open text-2xl block mb-2 text-slate-300"></i>No hay proyectos registrados para este curso todavía.</p>';
         return;
       }
 
