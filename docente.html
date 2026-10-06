@@ -113,13 +113,13 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-start">
             <div>
-              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">RÚBRICA CUALITATIVA DE 5 NIVELES E INSPECCIÓN</span>
+              <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">RÚBRICA CUALITATIVA EVALUADA</span>
               <h2 id="det-nombre" class="text-2xl font-bold text-slate-900 mt-1">-</h2>
               <p id="det-integrantes" class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-users mr-1"></i> -</p>
             </div>
             <div class="flex gap-2 print:hidden">
               <button onclick="blanquearVotosProyecto()" class="bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs px-3 py-2 rounded-lg font-bold border border-rose-200 transition flex items-center gap-1">
-                <i class="fa-solid fa-trash-can"></i> Blanquear Votos
+                <i class="fa-solid fa-trash-can"></i> Reiniciar Evaluación
               </button>
               <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition">
                 <i class="fa-solid fa-print mr-1"></i> Imprimir Informe
@@ -161,7 +161,7 @@
 
           <div class="pt-4 border-t flex justify-end print:hidden">
             <button onclick="guardarEvaluacionDocente(true)" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
-              <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar / Validar Evaluación
+              <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación Docente
             </button>
           </div>
         </div>
@@ -331,7 +331,6 @@
     let valoraciones = Array(10).fill(0);
     let sugerenciasIA = Array(10).fill("");
 
-    // Filtrado estricto por institución y curso para evitar que un docente vea proyectos ajenos
     async function cargarDatos() {
       if (!docenteLogueado) return;
 
@@ -344,7 +343,6 @@
         const instProy = (p.institucion || "").trim().toLowerCase();
         const cursoProy = (p.curso || "").trim().toLowerCase();
 
-        // Si el proyecto no tiene institución cargada, se asume histórico del primer curso por defecto
         if (!instProy && !cursoProy) {
           return instDocente.includes("bragado") && cursoDocente.includes("renovables");
         }
@@ -409,20 +407,28 @@
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
       document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
 
-      itemsDefinicion.forEach((def, idx) => {
-        let txt = '';
-        for (let campo of def.campos) {
-          if (proyectoSeleccionado[campo]) {
-            txt = proyectoSeleccionado[campo].toString();
-            break;
-          }
-        }
-        const res = def.analizar(txt);
-        valoraciones[idx] = res.val;
-        sugerenciasIA[idx] = res.sug;
-      });
-
+      // BUSCAR EVALUACIÓN DOCENTE GUARDADA EN LA BD
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
+
+      if (evalP && evalP.valoraciones && Array.isArray(evalP.valoraciones) && evalP.valoraciones.length === 10) {
+        // Cargar exactamente los porcentajes guardados manualmente por el docente
+        valoraciones = [...evalP.valoraciones];
+      } else {
+        // Si no hay evaluación docente previa, calcular valores iniciales heurísticos
+        itemsDefinicion.forEach((def, idx) => {
+          let txt = '';
+          for (let campo of def.campos) {
+            if (proyectoSeleccionado[campo]) {
+              txt = proyectoSeleccionado[campo].toString();
+              break;
+            }
+          }
+          const res = def.analizar(txt);
+          valoraciones[idx] = res.val;
+          sugerenciasIA[idx] = res.sug;
+        });
+      }
+
       if (evalP && evalP.devolucion_docente) {
         document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente;
       } else {
@@ -434,9 +440,9 @@
     }
 
     function generarSintesisHeuristica() {
-      let texto = "ANÁLISIS CUALITATIVO:\n";
+      let texto = "ANÁLISIS CUALITATIVO Y RECOMENDACIONES:\n";
       itemsDefinicion.forEach((def, idx) => {
-        texto += `• ${def.titulo} (${valoraciones[idx]}%)\n`;
+        texto += `• ${def.titulo}: Estado (${valoraciones[idx]}%)\n`;
       });
       document.getElementById('eval-devolucion-docente').value = texto;
       verificarLimitePalabras();
@@ -490,12 +496,15 @@
 
       const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
       const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
+
+      // Guardamos el arreglo de valoraciones completo
       const payload = {
         proyecto_id: proyectoSeleccionado.id,
         docente_id: docenteLogueado.id,
         nota_global: parseFloat(((sumaTotal / 1000) * 10).toFixed(1)),
         nota_proceso: parseFloat(((sumaProceso / 600) * 10).toFixed(1)),
-        devolucion_docente: document.getElementById('eval-devolucion-docente').value.trim()
+        devolucion_docente: document.getElementById('eval-devolucion-docente').value.trim(),
+        valoraciones: valoraciones
       };
 
       const { data: existente } = await _supabase.from('evaluaciones').select('id').eq('proyecto_id', proyectoSeleccionado.id);
@@ -511,13 +520,15 @@
       if (error) {
         if (notificar) alert("Error al guardar: " + error.message);
       } else {
-        if (notificar) alert("¡Evaluación guardada con éxito!");
+        if (notificar) alert("¡Evaluación docente guardada correctamente!");
+        const { data: eData } = await _supabase.from('evaluaciones').select('*');
+        listaEvaluaciones = eData || [];
       }
     }
 
     async function blanquearVotosProyecto() {
       if (!proyectoSeleccionado) return;
-      if (!confirm("¿Reiniciar evaluaciones de este proyecto?")) return;
+      if (!confirm("¿Reiniciar evaluaciones de este proyecto a la sugerencia inicial?")) return;
       await _supabase.from('evaluaciones').delete().eq('proyecto_id', proyectoSeleccionado.id);
       alert("Evaluación restablecida.");
       cargarDatos();
