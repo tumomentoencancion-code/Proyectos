@@ -598,39 +598,74 @@
     }
 
     async function guardarEvaluacionDocente(notificar = true) {
-      if (!proyectoSeleccionado || !docenteLogueado) return;
+  if (!proyectoSeleccionado || !docenteLogueado) {
+    alert("No hay proyecto seleccionado o no has iniciado sesión.");
+    return;
+  }
 
-      const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
-      const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
+  const btn = document.getElementById('btn-guardar');
+  if (btn) {
+    btn.disabled = true;
+    btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Guardando...`;
+  }
 
-      const payload = {
-        proyecto_id: proyectoSeleccionado.id,
-        docente_id: docenteLogueado.id,
-        nota_global: parseFloat(((sumaTotal / 1000) * 10).toFixed(1)),
-        nota_proceso: parseFloat(((sumaProceso / 600) * 10).toFixed(1)),
-        devolucion_docente: document.getElementById('eval-devolucion-docente').value.trim(),
-        valoraciones: valoraciones
-      };
+  try {
+    const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
+    const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
 
-      const { data: existente } = await _supabase.from('evaluaciones').select('id').eq('proyecto_id', proyectoSeleccionado.id);
-      let error = null;
-      if (existente && existente.length > 0) {
-        const res = await _supabase.from('evaluaciones').update(payload).eq('proyecto_id', proyectoSeleccionado.id);
-        error = res.error;
-      } else {
-        const res = await _supabase.from('evaluaciones').insert([payload]);
-        error = res.error;
-      }
+    // Formateamos correctamente los tipos de datos
+    const payload = {
+      proyecto_id: parseInt(proyectoSeleccionado.id),
+      docente_id: docenteLogueado.id ? parseInt(docenteLogueado.id) : null,
+      nota_global: parseFloat(((sumaTotal / 1000) * 10).toFixed(1)),
+      nota_proceso: parseFloat(((sumaProceso / 600) * 10).toFixed(1)),
+      devolucion_docente: document.getElementById('eval-devolucion-docente').value.trim(),
+      valoraciones: valoraciones // Se guardará correctamente en la columna JSONB/Array
+    };
 
-      if (error) {
-        if (notificar) alert("Error al guardar: " + error.message);
-      } else {
-        if (notificar) alert("¡Evaluación docente guardada correctamente!");
-        const { data: eData } = await _supabase.from('evaluaciones').select('*');
-        listaEvaluaciones = eData || [];
-        calcularAprendizajeIA();
-      }
+    // Verificar si ya existe evaluación previa para este proyecto
+    const { data: existente, error: errSelect } = await _supabase
+      .from('evaluaciones')
+      .select('id')
+      .eq('proyecto_id', payload.proyecto_id);
+
+    if (errSelect) throw errSelect;
+
+    let error = null;
+    if (existente && existente.length > 0) {
+      // Actualización
+      const res = await _supabase
+        .from('evaluaciones')
+        .update(payload)
+        .eq('proyecto_id', payload.proyecto_id);
+      error = res.error;
+    } else {
+      // Inserción
+      const res = await _supabase
+        .from('evaluaciones')
+        .insert([payload]);
+      error = res.error;
     }
+
+    if (error) {
+      console.error("Error al guardar en Supabase:", error);
+      if (notificar) alert("Error al guardar la evaluación: " + error.message);
+    } else {
+      if (notificar) alert("¡Evaluación docente guardada correctamente!");
+      const { data: eData } = await _supabase.from('evaluaciones').select('*');
+      listaEvaluaciones = eData || [];
+      calcularAprendizajeIA();
+    }
+  } catch (err) {
+    console.error("Excepción al guardar:", err);
+    alert("Ocurrió un error inesperado al guardar: " + (err.message || err));
+  } finally {
+    if (btn) {
+      btn.disabled = false;
+      btn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación Docente`;
+    }
+  }
+}
 
     async function blanquearVotosProyecto() {
       if (!proyectoSeleccionado) return;
