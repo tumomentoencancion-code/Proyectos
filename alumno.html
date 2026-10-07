@@ -126,77 +126,77 @@
         </div>
 
         <!-- ETAPA 7: ESTRUCTURA FINANCIERA Y COSTOS DETALLADOS -->
-<div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
-  <div class="border-b pb-3">
-    <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">
-      <i class="fa-solid fa-calculator text-emerald-600 mr-2"></i>ETAPA 7: Estructura Financiera y Costos
-    </h3>
-    <p class="text-xs text-slate-500 mt-1">Completa los rubros de tu simulación financiera. Los totales y el punto de equilibrio se calculan automáticamente.</p>
-  </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+          <div class="border-b pb-3">
+            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">
+              <i class="fa-solid fa-calculator text-emerald-600 mr-2"></i>ETAPA 7: Estructura Financiera y Costos
+            </h3>
+            <p class="text-xs text-slate-500 mt-1">Completa los rubros de tu simulación financiera. Los totales y el punto de equilibrio se calculan automáticamente.</p>
+          </div>
 
-  <!-- A. INVERSIÓN INICIAL -->
-  <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-    <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-coins mr-1 text-amber-500"></i> 1. Inversión Inicial</h4>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-      <div><label class="block font-medium text-slate-600">Maquinaria ($)</label><input type="number" id="fin-inv-maquinaria" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Inmueble (Alquiler/Compra) ($)</label><input type="number" id="fin-inv-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Mano de Obra Directa/Indirecta ($)</label><input type="number" id="fin-inv-mo" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Mobiliario ($)</label><input type="number" id="fin-inv-mobiliario" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Materia Prima e Insumos ($)</label><input type="number" id="fin-inv-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Servicios e Impuestos Iniciales ($)</label><input type="number" id="fin-inv-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-    </div>
-    <div class="flex justify-between items-center bg-amber-100 p-2.5 rounded-lg border border-amber-300 text-xs font-bold text-amber-900">
-      <span>TOTAL INVERSIÓN INICIAL:</span>
-      <span id="txt-total-inversion" class="text-sm font-mono">$ 0.00</span>
-    </div>
-  </div>
+          <!-- A. INVERSIÓN INICIAL -->
+          <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-coins mr-1 text-amber-500"></i> 1. Inversión Inicial</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
+              <div><label class="block font-medium text-slate-600">Maquinaria ($)</label><input type="number" id="fin-inv-maquinaria" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Inmueble (Alquiler/Compra) ($)</label><input type="number" id="fin-inv-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mano de Obra Directa/Indirecta ($)</label><input type="number" id="fin-inv-mo" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mobiliario ($)</label><input type="number" id="fin-inv-mobiliario" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Materia Prima e Insumos ($)</label><input type="number" id="fin-inv-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Servicios e Impuestos Iniciales ($)</label><input type="number" id="fin-inv-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+            </div>
+            <div class="flex justify-between items-center bg-amber-100 p-2.5 rounded-lg border border-amber-300 text-xs font-bold text-amber-900">
+              <span>TOTAL INVERSIÓN INICIAL:</span>
+              <span id="txt-total-inversion" class="text-sm font-mono">$ 0.00</span>
+            </div>
+          </div>
 
-  <!-- B. SIMULACIÓN PRÉSTAMO -->
-  <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-    <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-building-columns mr-1 text-blue-600"></i> 2. Simulación Préstamo Inversión Inicial</h4>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-      <div><label class="block font-medium text-slate-600">Cantidad de Cuotas</label><input type="number" id="fin-pres-cuotas" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-center font-bold" value="12"></div>
-      <div><label class="block font-medium text-slate-600">Monto por Cuota ($)</label><input type="number" id="fin-pres-monto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Importe Total a Devolver ($)</label><input type="text" id="fin-pres-total" readonly class="w-full border rounded p-2 text-right font-mono font-bold bg-slate-100" value="$ 0.00"></div>
-    </div>
-  </div>
+          <!-- B. SIMULACIÓN PRÉSTAMO -->
+          <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-building-columns mr-1 text-blue-600"></i> 2. Simulación Préstamo Inversión Inicial</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
+              <div><label class="block font-medium text-slate-600">Cantidad de Cuotas</label><input type="number" id="fin-pres-cuotas" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-center font-bold" value="12"></div>
+              <div><label class="block font-medium text-slate-600">Monto por Cuota ($)</label><input type="number" id="fin-pres-monto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Importe Total a Devolver ($)</label><input type="text" id="fin-pres-total" readonly class="w-full border rounded p-2 text-right font-mono font-bold bg-slate-100" value="$ 0.00"></div>
+            </div>
+          </div>
 
-  <!-- C. GASTOS MENSUALES -->
-  <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-    <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-calendar-days mr-1 text-rose-600"></i> 3. Gastos Mensuales Fijos</h4>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-      <div><label class="block font-medium text-slate-600">Inmueble / Leasing ($)</label><input type="number" id="fin-gasto-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Mano de Obra Indirecta ($)</label><input type="number" id="fin-gasto-moi" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Servicios (EDEN, ABSA, Gas, Net) ($)</label><input type="number" id="fin-gasto-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Cuota Crédito Mensual ($)</label><input type="number" id="fin-gasto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-    </div>
-    <div class="flex justify-between items-center bg-rose-100 p-2.5 rounded-lg border border-rose-300 text-xs font-bold text-rose-900">
-      <span>TOTAL GASTO MENSUAL (Fijo):</span>
-      <span id="txt-total-gastos" class="text-sm font-mono">$ 0.00</span>
-    </div>
-  </div>
+          <!-- C. GASTOS MENSUALES -->
+          <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-calendar-days mr-1 text-rose-600"></i> 3. Gastos Mensuales Fijos</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div><label class="block font-medium text-slate-600">Inmueble / Leasing ($)</label><input type="number" id="fin-gasto-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mano de Obra Indirecta ($)</label><input type="number" id="fin-gasto-moi" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Servicios (EDEN, ABSA, Gas, Net) ($)</label><input type="number" id="fin-gasto-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Cuota Crédito Mensual ($)</label><input type="number" id="fin-gasto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+            </div>
+            <div class="flex justify-between items-center bg-rose-100 p-2.5 rounded-lg border border-rose-300 text-xs font-bold text-rose-900">
+              <span>TOTAL GASTO MENSUAL (Fijo):</span>
+              <span id="txt-total-gastos" class="text-sm font-mono">$ 0.00</span>
+            </div>
+          </div>
 
-  <!-- D. COSTO POR PRODUCTO Y PUNTO DE EQUILIBRIO -->
-  <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-    <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-chart-line mr-1 text-emerald-600"></i> 4. Costo Unitario, Precio y Punto de Equilibrio</h4>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-      <div><label class="block font-medium text-slate-600">Costo Mat. Prima e Insumos / Un. ($)</label><input type="number" id="fin-prod-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Mano de Obra Directa / Un. ($)</label><input type="number" id="fin-prod-mod" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Ganancia Pretendida / Un. ($)</label><input type="number" id="fin-prod-ganancia" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-      <div><label class="block font-medium text-slate-600">Precio de Venta Final ($)</label><input type="text" id="fin-prod-precio" readonly class="w-full border rounded p-2 text-right font-mono font-bold bg-emerald-100 text-emerald-900" value="$ 0.00"></div>
-    </div>
+          <!-- D. COSTO POR PRODUCTO Y PUNTO DE EQUILIBRIO -->
+          <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+            <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-chart-line mr-1 text-emerald-600"></i> 4. Costo Unitario, Precio y Punto de Equilibrio</h4>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+              <div><label class="block font-medium text-slate-600">Costo Mat. Prima e Insumos / Un. ($)</label><input type="number" id="fin-prod-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mano de Obra Directa / Un. ($)</label><input type="number" id="fin-prod-mod" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Ganancia Pretendida / Un. ($)</label><input type="number" id="fin-prod-ganancia" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Precio de Venta Final ($)</label><input type="text" id="fin-prod-precio" readonly class="w-full border rounded p-2 text-right font-mono font-bold bg-emerald-100 text-emerald-900" value="$ 0.00"></div>
+            </div>
 
-    <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">
-      <div>
-        <strong class="text-emerald-900 block font-bold"><i class="fa-solid fa-scale-balanced mr-1"></i> Punto de Equilibrio:</strong>
-        <span class="text-slate-600">Unidades mensuales necesarias a vender para cubrir los costos fijos (Gastos Mensuales / Ganancia por Producto).</span>
-      </div>
-      <div class="text-right min-w-max">
-        <span id="txt-punto-equilibrio" class="text-base font-black text-emerald-800">0 Unidades/mes</span>
-      </div>
-    </div>
-  </div>
-</div>
+            <div class="p-3 bg-emerald-50 rounded-lg border border-emerald-200 flex flex-col sm:flex-row justify-between items-center gap-2 text-xs">
+              <div>
+                <strong class="text-emerald-900 block font-bold"><i class="fa-solid fa-scale-balanced mr-1"></i> Punto de Equilibrio:</strong>
+                <span class="text-slate-600">Unidades mensuales necesarias a vender para cubrir los costos fijos (Gastos Mensuales / Ganancia por Producto).</span>
+              </div>
+              <div class="text-right min-w-max">
+                <span id="txt-punto-equilibrio" class="text-base font-black text-emerald-800">0 Unidades/mes</span>
+              </div>
+            </div>
+          </div>
+        </div>
 
         <!-- ETAPA 8: IMPLEMENTACIÓN -->
         <div class="space-y-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
@@ -257,6 +257,51 @@
       cargarProyectoPrevio();
     });
 
+    function calcularFinanzas() {
+      // 1. Inversión Inicial
+      const invMaq = parseFloat(document.getElementById('fin-inv-maquinaria').value) || 0;
+      const invInm = parseFloat(document.getElementById('fin-inv-inmueble').value) || 0;
+      const invMO = parseFloat(document.getElementById('fin-inv-mo').value) || 0;
+      const invMob = parseFloat(document.getElementById('fin-inv-mobiliario').value) || 0;
+      const invMP = parseFloat(document.getElementById('fin-inv-mp').value) || 0;
+      const invServ = parseFloat(document.getElementById('fin-inv-servicios').value) || 0;
+
+      const totalInversion = invMaq + invInm + invMO + invMob + invMP + invServ;
+      document.getElementById('txt-total-inversion').innerText = `$ ${totalInversion.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+
+      // 2. Préstamo
+      const cuotas = parseInt(document.getElementById('fin-pres-cuotas').value) || 0;
+      const montoCuota = parseFloat(document.getElementById('fin-pres-monto-cuota').value) || 0;
+      const totalDevolver = cuotas * montoCuota;
+      document.getElementById('fin-pres-total').value = `$ ${totalDevolver.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+
+      // 3. Gastos Mensuales Fijos
+      const gInm = parseFloat(document.getElementById('fin-gasto-inmueble').value) || 0;
+      const gMOI = parseFloat(document.getElementById('fin-gasto-moi').value) || 0;
+      const gServ = parseFloat(document.getElementById('fin-gasto-servicios').value) || 0;
+      const gCuota = parseFloat(document.getElementById('fin-gasto-cuota').value) || 0;
+
+      const totalGastosMensuales = gInm + gMOI + gServ + gCuota;
+      document.getElementById('txt-total-gastos').innerText = `$ ${totalGastosMensuales.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+
+      // 4. Costo por Producto, Precio y Punto de Equilibrio
+      const prodMP = parseFloat(document.getElementById('fin-prod-mp').value) || 0;
+      const prodMOD = parseFloat(document.getElementById('fin-prod-mod').value) || 0;
+      const ganancia = parseFloat(document.getElementById('fin-prod-ganancia').value) || 0;
+
+      const costoTotalProducto = prodMP + prodMOD;
+      const precioVenta = costoTotalProducto + ganancia;
+      document.getElementById('fin-prod-precio').value = `$ ${precioVenta.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
+
+      let unidadesEquilibrio = 0;
+      if (ganancia > 0) {
+        unidadesEquilibrio = Math.ceil(totalGastosMensuales / ganancia);
+      }
+      document.getElementById('txt-punto-equilibrio').innerText = `${unidadesEquilibrio} Unidades/mes`;
+      
+      return { totalInversion, totalGastosMensuales };
+    }
+
     async function cargarProyectoPrevio() {
       const urlParams = new URLSearchParams(window.location.search);
       const idParam = urlParams.get('id');
@@ -283,8 +328,37 @@
       document.getElementById('redes_sociales').value = p.redes_sociales || '';
       document.getElementById('video_promo').value = p.video_promo || '';
       document.getElementById('competidores').value = p.competidores || '';
-      document.getElementById('inversionInicial').value = p.inversionInicial || p.inversion_inicial || '';
-      document.getElementById('gastos_mensuales').value = p.gastos_mensuales || '';
+      
+      // Población del desglose financiero JSON si existe
+      if (p.finanzas_json) {
+        const f = p.finanzas_json;
+        if (f.inversion) {
+          document.getElementById('fin-inv-maquinaria').value = f.inversion.maquinaria || 0;
+          document.getElementById('fin-inv-inmueble').value = f.inversion.inmueble || 0;
+          document.getElementById('fin-inv-mo').value = f.inversion.mano_de_obra || 0;
+          document.getElementById('fin-inv-mobiliario').value = f.inversion.mobiliario || 0;
+          document.getElementById('fin-inv-mp').value = f.inversion.materia_prima || 0;
+          document.getElementById('fin-inv-servicios').value = f.inversion.servicios || 0;
+        }
+        if (f.prestamo) {
+          document.getElementById('fin-pres-cuotas').value = f.prestamo.cuotas || 12;
+          document.getElementById('fin-pres-monto-cuota').value = f.prestamo.monto_cuota || 0;
+        }
+        if (f.gastos_mensuales) {
+          document.getElementById('fin-gasto-inmueble').value = f.gastos_mensuales.inmueble || 0;
+          document.getElementById('fin-gasto-moi').value = f.gastos_mensuales.mano_de_obra_ind || 0;
+          document.getElementById('fin-gasto-servicios').value = f.gastos_mensuales.servicios || 0;
+          document.getElementById('fin-gasto-cuota').value = f.gastos_mensuales.cuota_credito || 0;
+        }
+        if (f.costo_producto) {
+          document.getElementById('fin-prod-mp').value = f.costo_producto.materia_prima || 0;
+          document.getElementById('fin-prod-mod').value = f.costo_producto.mano_de_obra_dir || 0;
+          document.getElementById('fin-prod-ganancia').value = f.costo_producto.ganancia || 0;
+        }
+      }
+
+      calcularFinanzas();
+
       document.getElementById('plan_implementacion').value = p.plan_implementacion || '';
       document.getElementById('estrategias_crecimiento').value = p.estrategias_crecimiento || p.estrategia_crecimiento || '';
       document.getElementById('conclusiones').value = p.conclusiones || '';
@@ -295,6 +369,39 @@
       const btn = document.getElementById('btn-guardar-proyecto');
       btn.disabled = true;
       btn.innerText = "Guardando...";
+
+      const calc = calcularFinanzas();
+
+      const finanzasJson = {
+        inversion: {
+          maquinaria: parseFloat(document.getElementById('fin-inv-maquinaria').value) || 0,
+          inmueble: parseFloat(document.getElementById('fin-inv-inmueble').value) || 0,
+          mano_de_obra: parseFloat(document.getElementById('fin-inv-mo').value) || 0,
+          mobiliario: parseFloat(document.getElementById('fin-inv-mobiliario').value) || 0,
+          materia_prima: parseFloat(document.getElementById('fin-inv-mp').value) || 0,
+          servicios: parseFloat(document.getElementById('fin-inv-servicios').value) || 0,
+          total: document.getElementById('txt-total-inversion').innerText
+        },
+        prestamo: {
+          cuotas: parseInt(document.getElementById('fin-pres-cuotas').value) || 0,
+          monto_cuota: parseFloat(document.getElementById('fin-pres-monto-cuota').value) || 0,
+          total_devolver: document.getElementById('fin-pres-total').value
+        },
+        gastos_mensuales: {
+          inmueble: parseFloat(document.getElementById('fin-gasto-inmueble').value) || 0,
+          mano_de_obra_ind: parseFloat(document.getElementById('fin-gasto-moi').value) || 0,
+          servicios: parseFloat(document.getElementById('fin-gasto-servicios').value) || 0,
+          cuota_credito: parseFloat(document.getElementById('fin-gasto-cuota').value) || 0,
+          total: document.getElementById('txt-total-gastos').innerText
+        },
+        costo_producto: {
+          materia_prima: parseFloat(document.getElementById('fin-prod-mp').value) || 0,
+          mano_de_obra_dir: parseFloat(document.getElementById('fin-prod-mod').value) || 0,
+          ganancia: parseFloat(document.getElementById('fin-prod-ganancia').value) || 0,
+          precio_venta: document.getElementById('fin-prod-precio').value,
+          punto_equilibrio: document.getElementById('txt-punto-equilibrio').innerText
+        }
+      };
 
       const payload = {
         institucion: institucion,
@@ -310,8 +417,9 @@
         redes_sociales: document.getElementById('redes_sociales').value.trim(),
         video_promo: document.getElementById('video_promo').value.trim(),
         competidores: document.getElementById('competidores').value.trim(),
-        inversionInicial: parseFloat(document.getElementById('inversionInicial').value) || 0,
-        gastos_mensuales: parseFloat(document.getElementById('gastos_mensuales').value) || 0,
+        inversionInicial: calc.totalInversion,
+        gastos_mensuales: calc.totalGastosMensuales,
+        finanzas_json: finanzasJson,
         plan_implementacion: document.getElementById('plan_implementacion').value.trim(),
         estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value.trim(),
         conclusiones: document.getElementById('conclusiones').value.trim()
