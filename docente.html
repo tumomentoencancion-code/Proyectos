@@ -47,6 +47,9 @@
         <a href="index.html" target="_blank" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-1.5 rounded-lg transition border border-slate-700 flex items-center gap-1 shadow-sm">
           <i class="fa-solid fa-globe"></i> Volver al Portal
         </a>
+        <button onclick="blanquearVotosPublicoGeneral()" class="text-xs bg-rose-800 hover:bg-rose-700 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm" title="Resetear contador de votos del público antes de lanzar">
+          <i class="fa-solid fa-broom"></i> Blanquear Votos Público
+        </button>
         <button id="btn-admin-alta" onclick="abrirModalAltaDocente()" class="text-xs bg-blue-600 hover:bg-blue-500 text-white font-bold px-3 py-1.5 rounded-lg transition hidden items-center gap-1 shadow">
           <i class="fa-solid fa-user-plus"></i> Habilitar Docente
         </button>
@@ -114,29 +117,31 @@
       </div>
 
       <div id="vista-detalle" class="hidden space-y-6">
+        <!-- ENCABEZADO COMPACTO DE EVALUACIÓN -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-          <div class="flex justify-between items-start">
+          <div class="flex justify-between items-start flex-wrap gap-3">
             <div>
-              <div class="flex items-center gap-2">
+              <div class="flex items-center gap-2 mb-1">
                 <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">RÚBRICA CUALITATIVA EVALUADA</span>
                 <span id="badge-ia-status" class="text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded flex items-center gap-1">
                   <i class="fa-solid fa-brain"></i> IA Calibrada
                 </span>
               </div>
-              <h2 id="det-nombre" class="text-2xl font-bold text-slate-900 mt-1">-</h2>
-              <p id="det-integrantes" class="text-xs text-slate-500 mt-1"><i class="fa-solid fa-users mr-1"></i> -</p>
+              <h2 id="det-nombre" class="text-xl font-bold text-slate-900">-</h2>
+              <p id="det-integrantes" class="text-xs text-slate-500 mt-0.5"><i class="fa-solid fa-users mr-1"></i> -</p>
             </div>
+
             <div class="flex gap-2 print:hidden">
-              <button onclick="blanquearVotosProyecto()" class="bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs px-3 py-2 rounded-lg font-bold border border-rose-200 transition flex items-center gap-1">
-                <i class="fa-solid fa-trash-can"></i> Reiniciar
+              <button onclick="reiniciarEvaluacionDocenteActual()" class="bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs px-3 py-2 rounded-lg font-bold border border-rose-200 transition flex items-center gap-1" title="Reiniciar rúbrica en pantalla">
+                <i class="fa-solid fa-rotate-left"></i> Reiniciar
               </button>
-              <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition">
-                <i class="fa-solid fa-print mr-1"></i> Imprimir
+              <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition flex items-center gap-1">
+                <i class="fa-solid fa-print"></i> Imprimir
               </button>
             </div>
           </div>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
             <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
               <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO</span>
               <div class="flex items-baseline gap-2">
@@ -270,6 +275,35 @@
 
     let docenteLogueado = null;
 
+    const itemsDefinicion = [
+      { titulo: "1. Diagnóstico e Idea", campos: ["nombreProyecto", "nombre", "slogan"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Idea inicial." }) },
+      { titulo: "2. Equipo Humano", campos: ["integrantes"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Equipo." }) },
+      { titulo: "3. Estudio de Mercado", campos: ["encuestaUrl", "analisis_mercado"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Estudio." }) },
+      { titulo: "4. Público Target", campos: ["publicoObjetivo"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Target." }) },
+      { titulo: "5. Marketing (4 Ps)", campos: ["canalesVenta", "redes_sociales", "video_promo"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Marketing." }) },
+      { titulo: "6. Operativa y Competencia", campos: ["competidores"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Competencia." }) },
+      { titulo: "7. Estructura Financiera", campos: ["inversionInicial", "gastos_mensuales", "finanzas_json"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Finanzas." }) },
+      { titulo: "8. Plan de Implementación", campos: ["plan_implementacion"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Plan." }) },
+      { titulo: "9. Escalabilidad", campos: ["estrategias_crecimiento"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Escala." }) },
+      { titulo: "10. Conclusiones", campos: ["conclusiones"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Conclusión." }) }
+    ];
+
+    const descriptoresRubrica = {
+      0: "Se requiere presentar este apartado.",
+      35: "Planteo inicial que requiere profundizar en datos e investigación.",
+      55: "Estructura adecuada con aspectos puntuales a reforzar.",
+      75: "Desarrollo satisfactorio y alineado a los objetivos planteados.",
+      100: "Desarrollo sobresaliente, exhaustivo y bien fundamentado."
+    };
+
+    let listaProyectos = [];
+    let listaEvaluaciones = [];
+    let proyectoSeleccionado = null;
+    let proyectoParaClave = null;
+    let valoraciones = Array(10).fill(0);
+    let sugerenciasIA = Array(10).fill("");
+    let sesgosAprendidos = Array(10).fill(0);
+
     document.addEventListener("DOMContentLoaded", () => {
       verificarAutenticacionDocente();
     });
@@ -343,98 +377,6 @@
       localStorage.removeItem('auth_docente_data');
       location.reload();
     }
-
-    function abrirModalAltaDocente() {
-      document.getElementById('modal-alta-docente').classList.remove('hidden');
-    }
-
-    function cerrarModalAltaDocente() {
-      document.getElementById('modal-alta-docente').classList.add('hidden');
-    }
-
-    async function guardarNuevoDocente(e) {
-      e.preventDefault();
-      const payload = {
-        nombre_docente: document.getElementById('nuevo-docente-nombre').value.trim(),
-        institucion: document.getElementById('nuevo-docente-institucion').value.trim(),
-        curso: document.getElementById('nuevo-docente-curso').value.trim(),
-        clave_acceso: document.getElementById('nuevo-docente-clave').value.trim()
-      };
-
-      const { error } = await _supabase.from('docentes').insert([payload]);
-      if (error) {
-        alert("Error al registrar docente: " + error.message);
-      } else {
-        alert("¡Docente habilitado con éxito!");
-        cerrarModalAltaDocente();
-      }
-    }
-
-    async function abrirModalGestionDocentes() {
-      document.getElementById('modal-gestion-docentes').classList.remove('hidden');
-      const cont = document.getElementById('lista-docentes-gestion');
-      cont.innerHTML = '<p class="text-xs text-slate-400 italic">Cargando lista de docentes...</p>';
-
-      const { data, error } = await _supabase.from('docentes').select('*').order('id', { ascending: true });
-      if (error || !data || data.length === 0) {
-        cont.innerHTML = '<p class="text-xs text-slate-500 italic">No hay docentes registrados o error al cargar.</p>';
-        return;
-      }
-
-      cont.innerHTML = '';
-      data.forEach(d => {
-        const item = document.createElement('div');
-        item.className = "flex justify-between items-center bg-slate-50 border border-slate-200 p-3 rounded-lg";
-        item.innerHTML = `
-          <div>
-            <strong class="text-slate-900 block">${d.nombre_docente || 'Sin Nombre'}</strong>
-            <span class="text-slate-500">🏫 ${d.institucion} — 📖 ${d.curso}</span><br>
-            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">Clave: ${d.clave_acceso}</span>
-          </div>
-          <button onclick="eliminarDocente(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1.5 rounded transition">
-            Eliminar
-          </button>
-        `;
-        cont.appendChild(item);
-      });
-    }
-
-    function cerrarModalGestionDocentes() {
-      document.getElementById('modal-gestion-docentes').classList.add('hidden');
-      cargarDatos();
-    }
-
-    async function eliminarDocente(id) {
-      if (!confirm(`¿Eliminar permanentemente al docente ID ${id}?`)) return;
-      const { error } = await _supabase.from('docentes').delete().eq('id', id);
-      if (error) {
-        alert("Error al eliminar docente: " + error.message);
-      } else {
-        alert("Docente eliminado.");
-        abrirModalGestionDocentes();
-      }
-    }
-
-    const itemsDefinicion = [
-      { titulo: "1. Diagnóstico e Idea", campos: ["nombreProyecto", "nombre", "slogan"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Idea inicial." }) },
-      { titulo: "2. Equipo Humano", campos: ["integrantes"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Equipo." }) },
-      { titulo: "3. Estudio de Mercado", campos: ["encuestaUrl", "analisis_mercado"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Estudio." }) },
-      { titulo: "4. Público Target", campos: ["publicoObjetivo"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Target." }) },
-      { titulo: "5. Marketing (4 Ps)", campos: ["canalesVenta", "redes_sociales", "video_promo"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Marketing." }) },
-      { titulo: "6. Operativa y Competencia", campos: ["competidores"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Competencia." }) },
-      { titulo: "7. Estructura Financiera", campos: ["inversionInicial", "gastos_mensuales"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Finanzas." }) },
-      { titulo: "8. Plan de Implementación", campos: ["plan_implementacion"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Plan." }) },
-      { titulo: "9. Escalabilidad", campos: ["estrategias_crecimiento"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Escala." }) },
-      { titulo: "10. Conclusiones", campos: ["conclusiones"], analizar: (txt) => ({ val: txt ? 75 : 0, sug: "Conclusión." }) }
-    ];
-
-    let listaProyectos = [];
-    let listaEvaluaciones = [];
-    let proyectoSeleccionado = null;
-    let proyectoParaClave = null;
-    let valoraciones = Array(10).fill(0);
-    let sugerenciasIA = Array(10).fill("");
-    let sesgosAprendidos = Array(10).fill(0);
 
     async function cargarDatos() {
       if (!docenteLogueado) return;
@@ -541,11 +483,11 @@
 
       document.getElementById('vista-vacia').classList.add('hidden');
       document.getElementById('vista-detalle').classList.remove('hidden');
-      document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre;
-      document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || '-'}`;
+
+      document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || 'Sin Nombre';
+      document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || 'No especificados'}`;
       document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
 
-      // RENDERIZAR DETALLE DEL PROYECTO PARA EL DOCENTE EN PESTAÑA "VER ENTREGA"
       renderizarResumenEntrega(proyectoSeleccionado);
 
       const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
@@ -574,7 +516,7 @@
       if (evalP && evalP.devolucion_docente) {
         document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente;
       } else {
-        generarSintesisHeuristica();
+        reconstruirSugerenciaDevolucion();
       }
 
       verificarLimitePalabras();
@@ -583,6 +525,28 @@
 
     function renderizarResumenEntrega(p) {
       const resCont = document.getElementById('resumen-contenido');
+
+      let finanzasHTML = '<p class="text-slate-400 italic">Sin datos financieros cargados.</p>';
+      if (p.finanzas_json) {
+        const f = p.finanzas_json;
+        finanzasHTML = `
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2 text-[11px]">
+            <strong class="text-amber-900 block border-b pb-1 font-bold">💰 Inversión Inicial Total: ${f.inversion?.total || '$0.00'}</strong>
+            <div class="text-slate-600 pl-2 space-y-0.5">
+              • Maquinaria: $${f.inversion?.maquinaria || 0} | Inmueble: $${f.inversion?.inmueble || 0}<br>
+              • Mano de Obra: $${f.inversion?.mano_de_obra || 0} | Materiales: $${f.inversion?.materia_prima || 0}
+            </div>
+
+            <strong class="text-blue-900 block border-b pb-1 pt-1 font-bold">📊 Préstamo: ${f.prestamo?.cuotas || 0} cuotas de $${f.prestamo?.monto_cuota || 0} (Total: ${f.prestamo?.total_devolver || '$0.00'})</strong>
+
+            <strong class="text-rose-900 block border-b pb-1 pt-1 font-bold">📉 Gastos Mensuales Fijos: ${f.gastos_mensuales?.total || '$0.00'}</strong>
+
+            <strong class="text-emerald-900 block border-b pb-1 pt-1 font-bold">⚖️ Punto de Equilibrio: ${f.costo_producto?.punto_equilibrio || '0 Unidades/mes'} (Precio Venta: ${f.costo_producto?.precio_venta || '$0.00'})</strong>
+          </div>
+        `;
+      } else if (p.inversionInicial || p.gastos_mensuales) {
+        finanzasHTML = `<p class="text-slate-600">Inversión Inicial: $${p.inversionInicial || 0} | Gastos Mensuales: $${p.gastos_mensuales || 0}</p>`;
+      }
       
       let html = `
         <div class="space-y-3">
@@ -597,7 +561,7 @@
           </div>
 
           <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📝 Slogan / Descripción:</strong>
+            <strong class="text-slate-900 block font-bold text-xs">📝 Slogan / Pitch:</strong>
             <p class="text-slate-600">${p.slogan || p.descripcion || 'Sin especificar'}</p>
           </div>
 
@@ -607,85 +571,39 @@
           </div>
 
           <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">🎯 Público Objetivos / Target:</strong>
+            <strong class="text-slate-900 block font-bold text-xs">🎯 Público Target / Cliente Ideal:</strong>
             <p class="text-slate-600">${p.publicoObjetivo || p.target || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📊 Estudio / Encuestas:</strong>
-            <p class="text-slate-600">${p.analisis_mercado || p.encuestaUrl || 'Sin especificar'}</p>
+            <strong class="text-slate-900 block font-bold text-xs">📊 Estudio de Mercado / Encuesta:</strong>
+            <p class="text-slate-600">${p.analisis_mercado || 'Sin especificar'}</p>
+            ${p.encuestaUrl ? `<a href="${p.encuestaUrl}" target="_blank" class="text-blue-600 underline text-[11px] block mt-1"><i class="fa-solid fa-link mr-1"></i>Ver Encuesta Formulario</a>` : ''}
           </div>
 
           <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📣 Canales de Venta / Marketing:</strong>
-            <p class="text-slate-600">${p.canalesVenta || p.redes_sociales || 'Sin especificar'}</p>
+            <strong class="text-slate-900 block font-bold text-xs">📣 Marketing y Canales de Venta:</strong>
+            <p class="text-slate-600">${p.canalesVenta || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">💰 Inversión y Gastos:</strong>
-            <p class="text-slate-600">Inicial: ${p.inversionInicial || '-'} | Mensual: ${p.gastos_mensuales || '-'}</p>
+            <strong class="text-slate-900 block font-bold text-xs">⚙️ Competencia y Producción:</strong>
+            <p class="text-slate-600">${p.competidores || 'Sin especificar'}</p>
+          </div>
+
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">📊 Estructura Financiera y Costos:</strong>
+            ${finanzasHTML}
           </div>
 
           <div>
-            <strong class="text-slate-900 block font-bold text-xs">📌 Conclusiones:</strong>
+            <strong class="text-slate-900 block font-bold text-xs">📌 Conclusiones y Viabilidad:</strong>
             <p class="text-slate-600">${p.conclusiones || 'Sin especificar'}</p>
           </div>
         </div>
       `;
 
       resCont.innerHTML = html;
-    }
-
-    // GESTIÓN DEL MODAL DE CLAVE
-    function abrirModalClaveProyecto(id) {
-      proyectoParaClave = listaProyectos.find(p => p.id === id);
-      if (!proyectoParaClave) return;
-
-      document.getElementById('modal-clave-proyecto-nombre').innerText = proyectoParaClave.nombreProyecto || proyectoParaClave.nombre || 'ID: ' + proyectoParaClave.id;
-      document.getElementById('modal-clave-input').value = proyectoParaClave.clave_proyecto || '';
-      document.getElementById('modal-clave-proyecto').classList.remove('hidden');
-    }
-
-    function cerrarModalClaveProyecto() {
-      document.getElementById('modal-clave-proyecto').classList.add('hidden');
-      proyectoParaClave = null;
-    }
-
-    async function guardarClaveDesdeModal() {
-      if (!proyectoParaClave) return;
-      const nuevaClave = document.getElementById('modal-clave-input').value.trim();
-
-      const { error } = await _supabase
-        .from('proyectos')
-        .update({ clave_proyecto: nuevaClave })
-        .eq('id', proyectoParaClave.id);
-
-      if (error) {
-        alert("Error al actualizar contraseña: " + error.message);
-      } else {
-        alert("¡Contraseña de edición guardada correctamente!");
-        proyectoParaClave.clave_proyecto = nuevaClave;
-        cerrarModalClaveProyecto();
-        renderizarLista();
-        if (proyectoSeleccionado && proyectoSeleccionado.id === proyectoParaClave.id) {
-          renderizarResumenEntrega(proyectoParaClave);
-        }
-      }
-    }
-
-    function generarSintesisHeuristica() {
-      let texto = "ANÁLISIS CUALITATIVO Y RECOMENDACIONES:\n";
-      itemsDefinicion.forEach((def, idx) => {
-        texto += `• ${def.titulo}: Estado (${valoraciones[idx]}%)\n`;
-      });
-      document.getElementById('eval-devolucion-docente').value = texto;
-      verificarLimitePalabras();
-    }
-
-    function verificarLimitePalabras() {
-      const texto = document.getElementById('eval-devolucion-docente').value.trim();
-      const palabras = texto === "" ? 0 : texto.split(/\s+/).length;
-      document.getElementById('contador-palabras').innerText = `${palabras} / ${MAX_PALABRAS} palabras`;
     }
 
     function renderizarRubrica() {
@@ -703,7 +621,7 @@
         row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
         row.innerHTML = `
           <div class="flex justify-between items-center gap-2">
-            <span class="font-bold text-slate-800">${def.titulo}</span>
+            <span class="font-bold text-slate-800 text-xs">${def.titulo}</span>
             <select onchange="cambiarValor(${index}, this.value)" class="border border-slate-300 rounded p-1 text-xs font-bold bg-white">
               <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
               <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial</option>
@@ -712,6 +630,9 @@
               <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
             </select>
           </div>
+          <p class="text-[11px] text-slate-500 italic pl-1">
+            <i class="fa-regular fa-lightbulb text-amber-500 mr-1"></i>${descriptoresRubrica[val]}
+          </p>
         `;
         cont.appendChild(row);
       });
@@ -723,6 +644,30 @@
     function cambiarValor(index, nuevoVal) {
       valoraciones[index] = parseInt(nuevoVal);
       renderizarRubrica();
+      reconstruirSugerenciaDevolucion();
+    }
+
+    function reconstruirSugerenciaDevolucion() {
+      const campoDevolucion = document.getElementById('eval-devolucion-docente');
+      if (!campoDevolucion) return;
+
+      let texto = "ANÁLISIS CUALITATIVO Y RECOMENDACIONES:\n";
+      itemsDefinicion.forEach((def, idx) => {
+        const val = valoraciones[idx];
+        const desc = descriptoresRubrica[val] || "";
+        texto += `• ${def.titulo} (${val}%): ${desc}\n`;
+      });
+
+      texto += "\nOBSERVACIONES ESPECÍFICAS Y PROPUESTAS DE MEJORA:\n- ";
+
+      campoDevolucion.value = texto;
+      verificarLimitePalabras();
+    }
+
+    function verificarLimitePalabras() {
+      const texto = document.getElementById('eval-devolucion-docente').value.trim();
+      const palabras = texto === "" ? 0 : texto.split(/\s+/).length;
+      document.getElementById('contador-palabras').innerText = `${palabras} / ${MAX_PALABRAS} palabras`;
     }
 
     async function guardarEvaluacionDocente(notificar = true) {
@@ -791,12 +736,147 @@
       }
     }
 
-    async function blanquearVotosProyecto() {
+    function reiniciarEvaluacionDocenteActual() {
       if (!proyectoSeleccionado) return;
-      if (!confirm("¿Reiniciar evaluaciones de este proyecto?")) return;
-      await _supabase.from('evaluaciones').delete().eq('proyecto_id', proyectoSeleccionado.id);
-      alert("Evaluación restablecida.");
+
+      if (!confirm("¿Deseas limpiar los campos de esta evaluación para volver a calificar este proyecto desde cero?")) {
+        return;
+      }
+
+      valoraciones = Array(10).fill(0);
+      reconstruirSugerenciaDevolucion();
+      renderizarRubrica();
+      
+      alert("Evaluación restablecida en pantalla. Recuerda hacer clic en 'Guardar Evaluación' para confirmar los cambios.");
+    }
+
+    async function blanquearVotosPublicoGeneral() {
+      const confirmacion = confirm("⚠️ ATENCIÓN: ¿Estás seguro de blanquear TODOS los votos del público de la portada?\n\nEsta acción dejará el contador de votos en 0 para todos los emprendimientos antes del lanzamiento oficial.");
+      
+      if (!confirmacion) return;
+
+      try {
+        const { error } = await _supabase
+          .from('votos_publico')
+          .delete()
+          .neq('id', 0);
+
+        if (error) throw error;
+
+        alert("¡Votos del público blanqueados con éxito! El contador de la portada pública ha quedado en cero.");
+      } catch (err) {
+        console.error("Error al blanquear votos del público:", err);
+        alert("Ocurrió un error al blanquear los votos: " + (err.message || err));
+      }
+    }
+
+    // MODAL CLAVE PROYECTO
+    function abrirModalClaveProyecto(id) {
+      proyectoParaClave = listaProyectos.find(p => p.id === id);
+      if (!proyectoParaClave) return;
+
+      document.getElementById('modal-clave-proyecto-nombre').innerText = proyectoParaClave.nombreProyecto || proyectoParaClave.nombre || 'ID: ' + proyectoParaClave.id;
+      document.getElementById('modal-clave-input').value = proyectoParaClave.clave_proyecto || '';
+      document.getElementById('modal-clave-proyecto').classList.remove('hidden');
+    }
+
+    function cerrarModalClaveProyecto() {
+      document.getElementById('modal-clave-proyecto').classList.add('hidden');
+      proyectoParaClave = null;
+    }
+
+    async function guardarClaveDesdeModal() {
+      if (!proyectoParaClave) return;
+      const nuevaClave = document.getElementById('modal-clave-input').value.trim();
+
+      const { error } = await _supabase
+        .from('proyectos')
+        .update({ clave_proyecto: nuevaClave })
+        .eq('id', proyectoParaClave.id);
+
+      if (error) {
+        alert("Error al actualizar contraseña: " + error.message);
+      } else {
+        alert("¡Contraseña de edición guardada correctamente!");
+        proyectoParaClave.clave_proyecto = nuevaClave;
+        cerrarModalClaveProyecto();
+        renderizarLista();
+        if (proyectoSeleccionado && proyectoSeleccionado.id === proyectoParaClave.id) {
+          renderizarResumenEntrega(proyectoParaClave);
+        }
+      }
+    }
+
+    // GESTIÓN DOCENTES Y MODALES ADICIONALES
+    function abrirModalAltaDocente() {
+      document.getElementById('modal-alta-docente').classList.remove('hidden');
+    }
+
+    function cerrarModalAltaDocente() {
+      document.getElementById('modal-alta-docente').classList.add('hidden');
+    }
+
+    async function guardarNuevoDocente(e) {
+      e.preventDefault();
+      const payload = {
+        nombre_docente: document.getElementById('nuevo-docente-nombre').value.trim(),
+        institucion: document.getElementById('nuevo-docente-institucion').value.trim(),
+        curso: document.getElementById('nuevo-docente-curso').value.trim(),
+        clave_acceso: document.getElementById('nuevo-docente-clave').value.trim()
+      };
+
+      const { error } = await _supabase.from('docentes').insert([payload]);
+      if (error) {
+        alert("Error al registrar docente: " + error.message);
+      } else {
+        alert("¡Docente habilitado con éxito!");
+        cerrarModalAltaDocente();
+      }
+    }
+
+    async function abrirModalGestionDocentes() {
+      document.getElementById('modal-gestion-docentes').classList.remove('hidden');
+      const cont = document.getElementById('lista-docentes-gestion');
+      cont.innerHTML = '<p class="text-xs text-slate-400 italic">Cargando lista de docentes...</p>';
+
+      const { data, error } = await _supabase.from('docentes').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        cont.innerHTML = '<p class="text-xs text-slate-500 italic">No hay docentes registrados o error al cargar.</p>';
+        return;
+      }
+
+      cont.innerHTML = '';
+      data.forEach(d => {
+        const item = document.createElement('div');
+        item.className = "flex justify-between items-center bg-slate-50 border border-slate-200 p-3 rounded-lg";
+        item.innerHTML = `
+          <div>
+            <strong class="text-slate-900 block">${d.nombre_docente || 'Sin Nombre'}</strong>
+            <span class="text-slate-500">🏫 ${d.institucion} — 📖 ${d.curso}</span><br>
+            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">Clave: ${d.clave_acceso}</span>
+          </div>
+          <button onclick="eliminarDocente(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1.5 rounded transition">
+            Eliminar
+          </button>
+        `;
+        cont.appendChild(item);
+      });
+    }
+
+    function cerrarModalGestionDocentes() {
+      document.getElementById('modal-gestion-docentes').classList.add('hidden');
       cargarDatos();
+    }
+
+    async function eliminarDocente(id) {
+      if (!confirm(`¿Eliminar permanentemente al docente ID ${id}?`)) return;
+      const { error } = await _supabase.from('docentes').delete().eq('id', id);
+      if (error) {
+        alert("Error al eliminar docente: " + error.message);
+      } else {
+        alert("Docente eliminado.");
+        abrirModalGestionDocentes();
+      }
     }
 
     async function abrirModalDuplicados() {
