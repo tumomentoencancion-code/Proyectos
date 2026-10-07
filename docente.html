@@ -410,7 +410,7 @@
     let proyectoSeleccionado = null;
     let valoraciones = Array(10).fill(0);
     let sugerenciasIA = Array(10).fill("");
-    let sesgosAprendidos = Array(10).fill(0); // Módulo de aprendizaje adaptativo
+    let sesgosAprendidos = Array(10).fill(0);
 
     async function cargarDatos() {
       if (!docenteLogueado) return;
@@ -436,13 +436,11 @@
       const { data: eData } = await _supabase.from('evaluaciones').select('*');
       listaEvaluaciones = eData || [];
 
-      // CALCULAR SESGO/APRENDIZAJE DE LA IA EN BASE A EVALUACIONES HISTÓRICAS
       calcularAprendizajeIA();
 
       if (proyectoSeleccionado) seleccionarProyecto(proyectoSeleccionado.id);
     }
 
-    // MÓDULO DE APRENDIZAJE ADAPTATIVO
     function calcularAprendizajeIA() {
       if (!listaEvaluaciones || listaEvaluaciones.length === 0) return;
 
@@ -453,7 +451,6 @@
         if (e.valoraciones && Array.isArray(e.valoraciones) && e.valoraciones.length === 10) {
           conteoEvaluaciones++;
           e.valoraciones.forEach((valDocente, idx) => {
-            // Estimación base inicial esperada (75%)
             let valOriginalIA = 75; 
             diferenciasTotales[idx] += (valDocente - valOriginalIA);
           });
@@ -462,7 +459,7 @@
 
       if (conteoEvaluaciones > 0) {
         sesgosAprendidos = diferenciasTotales.map(diff => Math.round(diff / conteoEvaluaciones));
-        document.getElementById('badge-ia-status').innerText = `🧠 IA Calibrada (${conteoEvaluaciones} correcciones humanas)`;
+        document.getElementById('badge-ia-status').innerText = `🧠 IA Calibrada (${conteoEvaluaciones} correcciones)`;
       }
     }
 
@@ -520,7 +517,6 @@
       if (evalP && evalP.valoraciones && Array.isArray(evalP.valoraciones) && evalP.valoraciones.length === 10) {
         valoraciones = [...evalP.valoraciones];
       } else {
-        // APLICAR SUGERENCIA IA CON AJUSTE ADAPTATIVO SEGÚN CORRECCIONES DOCENTES
         itemsDefinicion.forEach((def, idx) => {
           let txt = '';
           for (let campo of def.campos) {
@@ -530,11 +526,7 @@
             }
           }
           const res = def.analizar(txt);
-          
-          // Calibración adaptativa: ajustamos el porcentaje según la tendencia del docente
           let valAjustado = res.val + sesgosAprendidos[idx];
-          
-          // Mapear al nivel estándar más cercano (0, 35, 55, 75, 100)
           const opciones = [0, 35, 55, 75, 100];
           valAjustado = opciones.reduce((prev, curr) => Math.abs(curr - valAjustado) < Math.abs(prev - valAjustado) ? curr : prev);
 
