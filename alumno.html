@@ -337,7 +337,17 @@
       if (idParam) {
         const { data } = await _supabase.from('proyectos').select('*').eq('id', idParam).single();
         if (data) {
+          // PEDIR CONTRASEÑA DE ENTRADA SI EL PROYECTO TIENE CLAVE ASIGNADA
+          if (data.clave_proyecto && data.clave_proyecto.trim() !== '') {
+            const pass = prompt(`🔒 PROYECTO PROTEGIDO (#${data.id})\n\nIngresá la contraseña de edición asignada a tu grupo:`);
+            if (!pass || pass.trim() !== data.clave_proyecto.trim()) {
+              alert("❌ Contraseña incorrecta. No se permite acceder ni editar este proyecto.");
+              window.location.href = "index.html";
+              return;
+            }
+          }
           claveRealProyecto = data.clave_proyecto || null;
+          claveVerificada = true;
           poblarFormulario(data);
         }
       }
@@ -397,20 +407,6 @@
     async function guardarProyectoAlumno(e) {
       e.preventDefault();
 
-      // VERIFICACIÓN DE CLAVE SI EL PROYECTO YA EXISTE Y TIENE CLAVE ASIGNADA
-      if (proyectoExistenteId && claveRealProyecto && !claveVerificada) {
-        const inputClave = prompt(`🔒 Este proyecto está protegido.\n\nIngresá la contraseña de edición de tu grupo para guardar los cambios:`);
-
-        if (inputClave === null) return;
-
-        if (inputClave.trim() !== claveRealProyecto.trim()) {
-          alert("❌ Contraseña incorrecta. No se guardaron los cambios. Solicitale la clave a tu docente.");
-          return;
-        }
-
-        claveVerificada = true;
-      }
-
       const btn = document.getElementById('btn-guardar-proyecto');
       btn.disabled = true;
       btn.innerText = "Guardando...";
@@ -448,6 +444,8 @@
         }
       };
 
+      const textoMercado = document.getElementById('analisis_mercado').value.trim();
+
       const payload = {
         institucion: institucion,
         curso: curso,
@@ -456,6 +454,7 @@
         logoUrl: document.getElementById('logoUrl').value.trim(),
         integrantes: document.getElementById('integrantes').value.trim(),
         encuestaUrl: document.getElementById('encuestaUrl').value.trim(),
+        analisis_mercado: textoMercado,
         publicoObjetivo: document.getElementById('publicoObjetivo').value.trim(),
         canalesVenta: document.getElementById('canalesVenta').value.trim(),
         redes_sociales: document.getElementById('redes_sociales').value.trim(),
@@ -469,25 +468,10 @@
         conclusiones: document.getElementById('conclusiones').value.trim()
       };
 
-      // Si el campo analisis_mercado se completa, lo asignamos de forma flexible
-      const textoMercado = document.getElementById('analisis_mercado').value.trim();
-      if (textoMercado) {
-        payload.analisis_mercado = textoMercado;
-      }
-
       try {
         let res = proyectoExistenteId 
           ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
           : await _supabase.from('proyectos').insert([payload]);
-
-        // Si dio error de columna en analisis_mercado, reintentamos sin esa propiedad para garantizar el guardado
-        if (res.error && res.error.message.includes('analisis_mercado')) {
-          delete payload.analisis_mercado;
-          payload.analisisMercado = textoMercado; // Mapeo alternativo
-          res = proyectoExistenteId 
-            ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
-            : await _supabase.from('proyectos').insert([payload]);
-        }
 
         if (res.error) throw res.error;
 
