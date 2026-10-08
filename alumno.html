@@ -335,7 +335,6 @@
       if (idParam) {
         const { data } = await _supabase.from('proyectos').select('*').eq('id', idParam).single();
         if (data) {
-          // PEDIR CONTRASEÑA DE ENTRADA SI EL PROYECTO TIENE CLAVE ASIGNADA
           if (data.clave_proyecto && data.clave_proyecto.trim() !== '') {
             const pass = prompt(`🔒 PROYECTO PROTEGIDO (#${data.id})\n\nIngresá la contraseña de edición asignada a tu grupo:`);
             if (!pass || pass.trim() !== data.clave_proyecto.trim()) {
@@ -440,9 +439,10 @@
         }
       };
 
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetId = proyectoExistenteId || urlParams.get('id');
+
       let payload = {
-        institucion: institucion,
-        curso: curso,
         nombreProyecto: document.getElementById('nombreProyecto').value.trim(),
         slogan: document.getElementById('slogan').value.trim(),
         logoUrl: document.getElementById('logoUrl').value.trim(),
@@ -463,28 +463,40 @@
       };
 
       try {
-        let res = proyectoExistenteId 
-          ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
-          : await _supabase.from('proyectos').insert([payload]);
+        let res = null;
 
-        // REINTENTO AUTOMÁTICO DINÁMICO: SI FALLA POR COLUMNAS INEXISTENTES EN SUPABASE, LAS REMUEVE Y REINTENTA
+        if (targetId) {
+          res = await _supabase.from('proyectos').update(payload).eq('id', targetId).select();
+        } else {
+          payload.institucion = institucion;
+          payload.curso = curso;
+          res = await _supabase.from('proyectos').insert([payload]).select();
+        }
+
         if (res.error && (res.error.message.includes('schema cache') || res.error.message.includes('column'))) {
           delete payload.finanzas_json;
-          delete payload.curso;
-          delete payload.institucion;
           delete payload.analisis_mercado;
+          delete payload.institucion;
+          delete payload.curso;
 
-          res = proyectoExistenteId 
-            ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
-            : await _supabase.from('proyectos').insert([payload]);
+          if (targetId) {
+            res = await _supabase.from('proyectos').update(payload).eq('id', targetId).select();
+          } else {
+            res = await _supabase.from('proyectos').insert([payload]).select();
+          }
         }
 
         if (res.error) throw res.error;
 
+        if (!res.data || res.data.length === 0) {
+          throw new Error("No se pudo confirmar la actualización en la base de datos. Comprobá que estés ingresando desde la URL correcta del proyecto.");
+        }
+
         alert("¡Proyecto guardado con éxito!");
         window.location.href = "index.html";
+
       } catch (err) {
-        alert("Error al guardar el proyecto: " + err.message);
+        alert("⚠️ Atención: Ocurrió un inconveniente al guardar los datos:\n\n" + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = "Guardar Proyecto";
