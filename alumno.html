@@ -280,8 +280,6 @@
     let institucion = localStorage.getItem('multicurso_institucion') || 'E.E.S.T. N°1 Bragado';
     let curso = localStorage.getItem('multicurso_curso') || '7° Año • Energías Renovables';
     let proyectoExistenteId = null;
-    let claveVerificada = false;
-    let claveRealProyecto = null;
 
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('header-institucion').innerText = institucion;
@@ -346,8 +344,6 @@
               return;
             }
           }
-          claveRealProyecto = data.clave_proyecto || null;
-          claveVerificada = true;
           poblarFormulario(data);
         }
       }
@@ -444,9 +440,7 @@
         }
       };
 
-      const textoMercado = document.getElementById('analisis_mercado').value.trim();
-
-      const payload = {
+      let payload = {
         institucion: institucion,
         curso: curso,
         nombreProyecto: document.getElementById('nombreProyecto').value.trim(),
@@ -454,7 +448,7 @@
         logoUrl: document.getElementById('logoUrl').value.trim(),
         integrantes: document.getElementById('integrantes').value.trim(),
         encuestaUrl: document.getElementById('encuestaUrl').value.trim(),
-        analisis_mercado: textoMercado,
+        analisis_mercado: document.getElementById('analisis_mercado').value.trim(),
         publicoObjetivo: document.getElementById('publicoObjetivo').value.trim(),
         canalesVenta: document.getElementById('canalesVenta').value.trim(),
         redes_sociales: document.getElementById('redes_sociales').value.trim(),
@@ -472,6 +466,17 @@
         let res = proyectoExistenteId 
           ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
           : await _supabase.from('proyectos').insert([payload]);
+
+        // MANEJO DE RETROCOMPATIBILIDAD: SI SUPABASE FALLA POR COLUMNAS INEXISTENTES, LAS ELIMINAMOS Y REINTENTAMOS
+        if (res.error && (res.error.message.includes('schema cache') || res.error.message.includes('column'))) {
+          delete payload.curso;
+          delete payload.institucion;
+          delete payload.analisis_mercado;
+
+          res = proyectoExistenteId 
+            ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
+            : await _supabase.from('proyectos').insert([payload]);
+        }
 
         if (res.error) throw res.error;
 
