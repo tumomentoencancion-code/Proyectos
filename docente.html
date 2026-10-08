@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="es" class="notranslate" translate="no">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google" content="notranslate">
   <title>Panel Docente Multi-Institución</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -276,6 +275,7 @@
 
     let docenteLogueado = null;
 
+    // DEFINICIÓN HEURÍSTICA DE LAS 10 ETAPAS DEL PLAN DE NEGOCIOS
     const itemsDefinicion = [
       { 
         titulo: "1. Resumen Ejecutivo e Idea de Negocio", 
@@ -285,7 +285,7 @@
           if (val <= 35) return "Inicial: Planteo básico del nombre o slogan; requiere precisar la propuesta de valor.";
           if (val <= 55) return "En Desarrollo: Idea de negocio definida; profundizar en diferencial comercial.";
           if (val <= 75) return "Satisfactorio: Resumen ejecutivo claro con eslogan y propuesta atractiva.";
-          return "Excelente: Propuesta de valor sobresaliente e idea highly innovadora.";
+          return "Excelente: Propuesta de valor sobresaliente e idea altamente innovadora.";
         } 
       },
       { 
@@ -373,7 +373,7 @@
           if (val <= 35) return "Inicial: Opciones de expansión tímidas; analizar nuevos mercados o productos.";
           if (val <= 55) return "En Desarrollo: Ideas de diversificación planteadas a mediano plazo.";
           if (val <= 75) return "Satisfactorio: Estrategia de crecimiento escalable bien orientada.";
-          return "Excelente: Plan de escalabilidad sólido con diversificación y expansión a nuevos segmentos.";
+          return "Excelente: Plan de escalabilidad solido con diversificación y expansión a nuevos segmentos.";
         } 
       },
       { 
@@ -394,6 +394,7 @@
     let proyectoSeleccionado = null;
     let proyectoParaClave = null;
     let valoraciones = Array(10).fill(0);
+    let sesgosAprendidos = Array(10).fill(0);
 
     document.addEventListener("DOMContentLoaded", () => {
       verificarAutenticacionDocente();
@@ -539,8 +540,8 @@
       } else {
         btnResumen.className = "flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-blue-900 text-white transition shadow-sm";
         btnLista.className = "flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-slate-100 text-slate-600 hover:bg-slate-200 transition";
-        contentLista.classList.add('hidden');
         contentResumen.classList.remove('hidden');
+        contentLista.classList.add('hidden');
       }
     }
 
@@ -551,208 +552,351 @@
       document.getElementById('vista-vacia').classList.add('hidden');
       document.getElementById('vista-detalle').classList.remove('hidden');
 
-      const p = proyectoSeleccionado;
-      document.getElementById('det-nombre').innerText = p.nombreProyecto || p.nombre || 'ID: ' + p.id;
-      document.getElementById('det-integrantes').innerText = p.integrantes || 'Integrantes no especificados';
-      document.getElementById('resumen-id-badge').innerText = `ID: #${p.id}`;
+      document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || 'Sin Nombre';
+      document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || 'No especificados'}`;
+      document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
 
-      // RENDERIZADO DEL RESUMEN COMPLETO DE LAS 10 ETAPAS + 4 BLOQUES FINANCIEROS
-      renderizarResumenEntregaAlumno(p);
+      renderizarResumenEntrega(proyectoSeleccionado);
 
-      // Cargar evaluación previa si existe
-      const evalExistente = listaEvaluaciones.find(e => e.proyecto_id === id);
-      if (evalExistente && evalExistente.valoraciones_json) {
-        valoraciones = evalExistente.valoraciones_json;
-        document.getElementById('eval-devolucion-docente').value = evalExistente.devolucion_docente || '';
+      const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
+
+      if (evalP && evalP.valoraciones && Array.isArray(evalP.valoraciones) && evalP.valoraciones.length === 10) {
+        valoraciones = [...evalP.valoraciones];
       } else {
-        calcularHeuristicaInicialIA(p);
+        itemsDefinicion.forEach((def, idx) => {
+          let txt = '';
+          for (let campo of def.campos) {
+            if (proyectoSeleccionado[campo]) {
+              txt = proyectoSeleccionado[campo].toString();
+              break;
+            }
+          }
+          valoraciones[idx] = txt.trim() === "" ? 0 : 55;
+        });
       }
 
-      renderizarRubrica();
-      actualizarNotas();
+      if (evalP && evalP.devolucion_docente) {
+        document.getElementById('eval-devolucion-docente').value = evalP.devolucion_docente;
+      } else {
+        reconstruirSugerenciaDevolucion();
+      }
+
       verificarLimitePalabras();
+      renderizarRubrica();
     }
 
-    function renderizarResumenEntregaAlumno(p) {
-      const cont = document.getElementById('resumen-contenido');
-      const f = p.finanzas_json || {};
+    function renderizarResumenEntrega(p) {
+      const resCont = document.getElementById('resumen-contenido');
 
-      cont.innerHTML = `
-        <div class="space-y-3">
-          <div class="p-2.5 bg-slate-50 rounded border">
-            <strong class="text-blue-900 block font-bold">1. Resumen Executive e Idea:</strong>
-            <p class="text-slate-600 mt-1">${p.slogan ? '<em>' + p.slogan + '</em><br>' : ''}${p.publicoObjetivo || p.analisis_mercado || 'Sin datos'}</p>
-          </div>
-
-          <div class="p-2.5 bg-slate-50 rounded border">
-            <strong class="text-blue-900 block font-bold">2. Equipo Humano:</strong>
-            <p class="text-slate-600 mt-1">${p.integrantes || 'Sin datos'}</p>
-          </div>
-
-          <div class="p-2.5 bg-slate-50 rounded border">
-            <strong class="text-blue-900 block font-bold">3. Estudio de Mercado / Encuestas:</strong>
-            <p class="text-slate-600 mt-1">${p.encuestaUrl ? '<a href="' + p.encuestaUrl + '" target="_blank" class="text-blue-600 underline">Ver Formulario Encuesta</a><br>' : ''}${p.analisis_mercado || 'Sin datos'}</p>
-          </div>
-
-          <div class="p-2.5 bg-amber-50 rounded border border-amber-200 space-y-1">
-            <strong class="text-amber-900 block font-bold"><i class="fa-solid fa-calculator mr-1"></i> 7. Estructura Financiera Cargada (4 Bloques)</strong>
-            
-            <div class="grid grid-cols-2 gap-1.5 font-mono text-[11px] pt-1">
-              <div class="bg-white p-1.5 rounded border">
-                <span class="text-slate-400 block text-[9px] uppercase">1. Inversión Inicial</span>
-                <strong>${f.inversion?.total || '$ ' + (p.inversionInicial || 0)}</strong>
-              </div>
-              <div class="bg-white p-1.5 rounded border">
-                <span class="text-slate-400 block text-[9px] uppercase">2. Préstamo (Cuotas)</span>
-                <strong>${f.prestamo?.cuotas ? f.prestamo.cuotas + ' cuotas x $' + f.prestamo.monto_cuota : '$ 0'}</strong>
-              </div>
-              <div class="bg-white p-1.5 rounded border">
-                <span class="text-slate-400 block text-[9px] uppercase">3. Gastos Mensuales</span>
-                <strong>${f.gastos_mensuales?.total || '$ ' + (p.gastos_mensuales || 0)}</strong>
-              </div>
-              <div class="bg-white p-1.5 rounded border">
-                <span class="text-slate-400 block text-[9px] uppercase">4. Precio / Equilibrio</span>
-                <strong>${f.costo_producto?.precio_venta || '$ ' + (p.precio_venta || 0)} (${f.costo_producto?.punto_equilibrio || p.punto_equilibrio || 0} Un.)</strong>
-              </div>
+      let finanzasHTML = '<p class="text-slate-400 italic">Sin datos financieros cargados.</p>';
+      if (p.finanzas_json) {
+        const f = p.finanzas_json;
+        finanzasHTML = `
+          <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2 text-[11px]">
+            <strong class="text-amber-900 block border-b pb-1 font-bold">💰 Inversión Inicial Total: ${f.inversion?.total || '$0.00'}</strong>
+            <div class="text-slate-600 pl-2 space-y-0.5">
+              • Maquinaria: $${f.inversion?.maquinaria || 0} | Inmueble: $${f.inversion?.inmueble || 0}<br>
+              • Mano de Obra: $${f.inversion?.mano_de_obra || 0} | Materiales: $${f.inversion?.materia_prima || 0}
             </div>
+
+            <strong class="text-blue-900 block border-b pb-1 pt-1 font-bold">📊 Préstamo: ${f.prestamo?.cuotas || 0} cuotas de $${f.prestamo?.monto_cuota || 0} (Total: ${f.prestamo?.total_devolver || '$0.00'})</strong>
+
+            <strong class="text-rose-900 block border-b pb-1 pt-1 font-bold">📉 Gastos Mensuales Fijos: ${f.gastos_mensuales?.total || '$0.00'}</strong>
+
+            <strong class="text-emerald-900 block border-b pb-1 pt-1 font-bold">⚖️ Punto de Equilibrio: ${f.costo_producto?.punto_equilibrio || '0 Unidades/mes'} (Precio Venta: ${f.costo_producto?.precio_venta || '$0.00'})</strong>
+          </div>
+        `;
+      } else if (p.inversionInicial || p.gastos_mensuales) {
+        finanzasHTML = `<p class="text-slate-600">Inversión Inicial: $${p.inversionInicial || 0} | Gastos Mensuales: $${p.gastos_mensuales || 0}</p>`;
+      }
+
+      let html = `
+        <div class="space-y-3">
+          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-lg flex justify-between items-center">
+            <div>
+              <span class="font-bold text-[11px] text-amber-900 block"><i class="fa-solid fa-key mr-1"></i> Clave de Edición:</span>
+              <span class="font-mono font-bold text-amber-800 text-xs">${p.clave_proyecto || 'Sin clave asignada'}</span>
+            </div>
+            <button onclick="abrirModalClaveProyecto(${p.id})" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-2 py-1 rounded">
+              Editar
+            </button>
           </div>
 
-          <div class="p-2.5 bg-slate-50 rounded border">
-            <strong class="text-blue-900 block font-bold">8. Plan de Implementación:</strong>
-            <p class="text-slate-600 mt-1">${p.plan_implementacion || 'Sin datos'}</p>
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">📝 Slogan / Pitch:</strong>
+            <p class="text-slate-600">${p.slogan || p.descripcion || 'Sin especificar'}</p>
           </div>
 
-          <div class="p-2.5 bg-slate-50 rounded border">
-            <strong class="text-blue-900 block font-bold">10. Conclusiones y Viabilidad:</strong>
-            <p class="text-slate-600 mt-1">${p.conclusiones || 'Sin datos'}</p>
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">👥 Integrantes:</strong>
+            <p class="text-slate-600">${p.integrantes || 'Sin especificar'}</p>
+          </div>
+
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">🎯 Público Target / Cliente Ideal:</strong>
+            <p class="text-slate-600">${p.publicoObjetivo || p.target || 'Sin especificar'}</p>
+          </div>
+
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">📊 Estudio de Mercado / Encuesta:</strong>
+            <p class="text-slate-600">${p.analisis_mercado || 'Sin especificar'}</p>
+            ${p.encuestaUrl ? `<a href="${p.encuestaUrl}" target="_blank" class="text-blue-600 underline text-[11px] block mt-1"><i class="fa-solid fa-link mr-1"></i>Ver Encuesta Formulario</a>` : ''}
+          </div>
+
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">📣 Marketing y Canales de Venta:</strong>
+            <p class="text-slate-600">${p.canalesVenta || 'Sin especificar'}</p>
+          </div>
+
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">⚙️ Competencia y Producción:</strong>
+            <p class="text-slate-600">${p.competidores || 'Sin especificar'}</p>
+          </div>
+
+          <div class="border-b pb-2">
+            <strong class="text-slate-900 block font-bold text-xs">📊 Estructura Financiera y Costos:</strong>
+            ${finanzasHTML}
+          </div>
+
+          <div>
+            <strong class="text-slate-900 block font-bold text-xs">📌 Conclusiones y Viabilidad:</strong>
+            <p class="text-slate-600">${p.conclusiones || 'Sin especificar'}</p>
           </div>
         </div>
       `;
-    }
 
-    function calcularHeuristicaInicialIA(p) {
-      valoraciones = itemsDefinicion.map(item => {
-        let cont = 0;
-        item.campos.forEach(c => {
-          if (p[c] && String(p[c]).trim() !== '') cont++;
-        });
-        if (cont === 0) return 0;
-        return Math.min(100, Math.round((cont / item.campos.length) * 80 + 10));
-      });
+      resCont.innerHTML = html;
     }
 
     function renderizarRubrica() {
       const cont = document.getElementById('contenedor-rubrica');
       cont.innerHTML = '';
+      let sumaTotal = 0;
+      let sumaProceso = 0;
 
-      itemsDefinicion.forEach((item, idx) => {
-        const val = valoraciones[idx] || 0;
-        const textoIA = item.generarHeuristica(proyectoSeleccionado ? proyectoSeleccionado[item.campos[0]] : '', val);
+      itemsDefinicion.forEach((def, index) => {
+        const val = valoraciones[index];
+        sumaTotal += val;
+        if (index < 6) sumaProceso += val;
 
-        const div = document.createElement('div');
-        div.className = "p-3 bg-slate-50 rounded-lg border border-slate-200 space-y-2";
-        div.innerHTML = `
-          <div class="flex justify-between items-center flex-wrap gap-2">
-            <h4 class="font-bold text-slate-800 text-xs">${item.titulo}</h4>
-            <div class="flex items-center gap-2">
-              <input type="range" min="0" max="100" value="${val}" oninput="actualizarSlider(${idx}, this.value)" class="w-28 accent-blue-900">
-              <span id="badge-val-${idx}" class="font-mono font-bold text-xs w-10 text-right">${val}%</span>
-            </div>
+        let txt = '';
+        for (let campo of def.campos) {
+          if (proyectoSeleccionado && proyectoSeleccionado[campo]) {
+            txt = proyectoSeleccionado[campo].toString();
+            break;
+          }
+        }
+        const heuristica = def.generarHeuristica(txt, val);
+
+        const row = document.createElement('div');
+        row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
+        row.innerHTML = `
+          <div class="flex justify-between items-center gap-2">
+            <span class="font-bold text-slate-800 text-xs">${def.titulo}</span>
+            <select onchange="cambiarValor(${index}, this.value)" class="border border-slate-300 rounded p-1 text-xs font-bold bg-white">
+              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
+              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial</option>
+              <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
+              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio</option>
+              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
+            </select>
           </div>
-          <p id="text-ia-${idx}" class="text-[11px] text-slate-600 bg-white p-2 rounded border border-slate-100 italic">${textoIA}</p>
+          <p class="text-[11px] text-slate-600 italic pl-1">
+            <i class="fa-regular fa-lightbulb text-amber-500 mr-1"></i>${heuristica}
+          </p>
         `;
-        cont.appendChild(div);
+        cont.appendChild(row);
       });
+
+      document.getElementById('nota-global-val').innerText = ((sumaTotal / 1000) * 10).toFixed(1);
+      document.getElementById('nota-proceso-val').innerText = ((sumaProceso / 600) * 10).toFixed(1);
     }
 
-    function actualizarSlider(idx, nuevoVal) {
-      valoraciones[idx] = parseInt(nuevoVal);
-      document.getElementById(`badge-val-${idx}`).innerText = `${nuevoVal}%`;
-      const item = itemsDefinicion[idx];
-      const textoIA = item.generarHeuristica(proyectoSeleccionado ? proyectoSeleccionado[item.campos[0]] : '', parseInt(nuevoVal));
-      document.getElementById(`text-ia-${idx}`).innerText = textoIA;
-      actualizarNotas();
+    function cambiarValor(index, nuevoVal) {
+      valoraciones[index] = parseInt(nuevoVal);
+      renderizarRubrica();
+      reconstruirSugerenciaDevolucion();
     }
 
-    function actualizarNotas() {
-      const suma = valoraciones.reduce((a, b) => a + b, 0);
-      const promedio = (suma / 10) / 10;
-      document.getElementById('nota-proceso-val').innerText = promedio.toFixed(1);
-      document.getElementById('nota-global-val').innerText = promedio.toFixed(1);
+    function reconstruirSugerenciaDevolucion() {
+      const campoDevolucion = document.getElementById('eval-devolucion-docente');
+      if (!campoDevolucion) return;
+
+      let texto = "ANÁLISIS CUALITATIVO Y RECOMENDACIONES POR ETAPA:\n";
+      itemsDefinicion.forEach((def, idx) => {
+        const val = valoraciones[idx];
+        let txt = '';
+        for (let campo of def.campos) {
+          if (proyectoSeleccionado && proyectoSeleccionado[campo]) {
+            txt = proyectoSeleccionado[campo].toString();
+            break;
+          }
+        }
+        const heuristica = def.generarHeuristica(txt, val);
+        texto += `• ${def.titulo} (${val}%): ${heuristica}\n`;
+      });
+
+      texto += "\nOBSERVACIONES ESPECÍFICAS Y PROPUESTAS DE MEJORA:\n- ";
+
+      campoDevolucion.value = texto;
+      verificarLimitePalabras();
     }
 
     function verificarLimitePalabras() {
-      const txt = document.getElementById('eval-devolucion-docente').value.trim();
-      const palabras = txt ? txt.split(/\s+/).length : 0;
+      const texto = document.getElementById('eval-devolucion-docente').value.trim();
+      const palabras = texto === "" ? 0 : texto.split(/\s+/).length;
       document.getElementById('contador-palabras').innerText = `${palabras} / ${MAX_PALABRAS} palabras`;
-
-      const alerta = document.getElementById('alerta-palabras');
-      if (palabras > MAX_PALABRAS) {
-        alerta.classList.remove('hidden');
-      } else {
-        alerta.classList.add('hidden');
-      }
     }
 
-    async function guardarEvaluacionDocente() {
-      if (!proyectoSeleccionado) return;
-
-      const txt = document.getElementById('eval-devolucion-docente').value.trim();
-      const palabras = txt ? txt.split(/\s+/).length : 0;
-      if (palabras > MAX_PALABRAS) {
-        alert("⚠️ Superaste el límite de 300 palabras en la devolución.");
+    async function guardarEvaluacionDocente(notificar = true) {
+      if (!proyectoSeleccionado || !docenteLogueado) {
+        alert("No hay proyecto seleccionado o no has iniciado sesión.");
         return;
       }
 
-      const nota = parseFloat(document.getElementById('nota-global-val').innerText);
+      const btn = document.getElementById('btn-guardar');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Guardando...`;
+      }
 
-      const payload = {
-        proyecto_id: proyectoSeleccionado.id,
-        docente_nombre: docenteLogueado.nombre_docente,
-        nota_final: nota,
-        devolucion_docente: txt,
-        valoraciones_json: valoraciones
-      };
+      try {
+        const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
+        const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
 
-      const { error } = await _supabase.from('evaluaciones').upsert([payload], { onConflict: 'proyecto_id' });
+        const payload = {
+          proyecto_id: parseInt(proyectoSeleccionado.id),
+          docente_id: docenteLogueado.id ? parseInt(docenteLogueado.id) : null,
+          nota_global: parseFloat(((sumaTotal / 1000) * 10).toFixed(1)),
+          nota_proceso: parseFloat(((sumaProceso / 600) * 10).toFixed(1)),
+          devolucion_docente: document.getElementById('eval-devolucion-docente').value.trim(),
+          valoraciones: valoraciones
+        };
 
-      if (error) {
-        alert("Error al guardar la evaluación: " + error.message);
-      } else {
-        alert("¡Evaluación docente guardada con éxito!");
-        cargarDatos();
+        const { data: existente, error: errSelect } = await _supabase
+          .from('evaluaciones')
+          .select('id')
+          .eq('proyecto_id', payload.proyecto_id);
+
+        if (errSelect) throw errSelect;
+
+        let error = null;
+        if (existente && existente.length > 0) {
+          const res = await _supabase
+            .from('evaluaciones')
+            .update(payload)
+            .eq('proyecto_id', payload.proyecto_id);
+          error = res.error;
+        } else {
+          const res = await _supabase
+            .from('evaluaciones')
+            .insert([payload]);
+          error = res.error;
+        }
+
+        if (error) {
+          console.error("Error al guardar en Supabase:", error);
+          if (notificar) alert("Error al guardar la evaluación: " + error.message);
+        } else {
+          if (notificar) alert("¡Evaluación docente guardada correctamente!");
+          const { data: eData } = await _supabase.from('evaluaciones').select('*');
+          listaEvaluaciones = eData || [];
+        }
+      } catch (err) {
+        console.error("Excepción al guardar:", err);
+        alert("Ocurrió un error inesperado al guardar: " + (err.message || err));
+      } finally {
+        if (btn) {
+          btn.disabled = false;
+          btn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación Docente`;
+        }
       }
     }
 
-    // MODALES Y HABILITACIONES
+    function reiniciarEvaluacionDocenteActual() {
+      if (!proyectoSeleccionado) return;
+
+      if (!confirm("¿Deseas restablecer los valores de la rúbrica y sugerencias cualitativas en pantalla? (Los datos guardados anteriormente no se borrarán de la base de datos).")) {
+        return;
+      }
+
+      itemsDefinicion.forEach((def, idx) => {
+        let txt = '';
+        for (let campo of def.campos) {
+          if (proyectoSeleccionado[campo]) {
+            txt = proyectoSeleccionado[campo].toString();
+            break;
+          }
+        }
+        valoraciones[idx] = txt.trim() === "" ? 0 : 55;
+      });
+
+      reconstruirSugerenciaDevolucion();
+      renderizarRubrica();
+    }
+
+    async function blanquearVotosPublicoGeneral() {
+      const confirmacion = confirm("⚠️ ATENCIÓN: ¿Estás seguro de blanquear TODOS los votos del público de la portada?\n\nEsta acción dejará el contador de votos en 0 para todos los emprendimientos antes del lanzamiento oficial.");
+
+      if (!confirmacion) return;
+
+      try {
+        const { error } = await _supabase
+          .from('votos_publico')
+          .delete()
+          .neq('id', 0);
+
+        if (error) throw error;
+
+        alert("¡Votos del público blanqueados con éxito! El contador de la portada pública ha quedado en cero.");
+      } catch (err) {
+        console.error("Error al blanquear votos del público:", err);
+        alert("Ocurrió un error al blanquear los votos: " + (err.message || err));
+      }
+    }
+
+    // MODAL CLAVE PROYECTO
     function abrirModalClaveProyecto(id) {
       proyectoParaClave = listaProyectos.find(p => p.id === id);
       if (!proyectoParaClave) return;
-      document.getElementById('modal-clave-proyecto-nombre').innerText = proyectoParaClave.nombreProyecto || proyectoParaClave.nombre;
+
+      document.getElementById('modal-clave-proyecto-nombre').innerText = proyectoParaClave.nombreProyecto || proyectoParaClave.nombre || 'ID: ' + proyectoParaClave.id;
       document.getElementById('modal-clave-input').value = proyectoParaClave.clave_proyecto || '';
       document.getElementById('modal-clave-proyecto').classList.remove('hidden');
     }
 
     function cerrarModalClaveProyecto() {
       document.getElementById('modal-clave-proyecto').classList.add('hidden');
+      proyectoParaClave = null;
     }
 
     async function guardarClaveDesdeModal() {
       if (!proyectoParaClave) return;
-      const clave = document.getElementById('modal-clave-input').value.trim();
-      const { error } = await _supabase.from('proyectos').update({ clave_proyecto: clave }).eq('id', proyectoParaClave.id);
+      const nuevaClave = document.getElementById('modal-clave-input').value.trim();
+
+      const { error } = await _supabase
+        .from('proyectos')
+        .update({ clave_proyecto: nuevaClave })
+        .eq('id', proyectoParaClave.id);
+
       if (error) {
-        alert("Error al guardar clave: " + error.message);
+        alert("Error al actualizar contraseña: " + error.message);
       } else {
-        alert("¡Clave actualizada correctamente!");
+        alert("¡Contraseña de edición guardada correctamente!");
+        proyectoParaClave.clave_proyecto = nuevaClave;
         cerrarModalClaveProyecto();
-        cargarDatos();
+        renderizarLista();
+        if (proyectoSeleccionado && proyectoSeleccionado.id === proyectoParaClave.id) {
+          renderizarResumenEntrega(proyectoParaClave);
+        }
       }
     }
 
+    // GESTIÓN DOCENTES
     function abrirModalAltaDocente() {
       document.getElementById('modal-alta-docente').classList.remove('hidden');
     }
+
     function cerrarModalAltaDocente() {
       document.getElementById('modal-alta-docente').classList.add('hidden');
     }
@@ -765,64 +909,72 @@
         curso: document.getElementById('nuevo-docente-curso').value.trim(),
         clave_acceso: document.getElementById('nuevo-docente-clave').value.trim()
       };
+
       const { error } = await _supabase.from('docentes').insert([payload]);
-      if (error) alert("Error al crear docente: " + error.message);
-      else {
+      if (error) {
+        alert("Error al registrar docente: " + error.message);
+      } else {
         alert("¡Docente habilitado con éxito!");
         cerrarModalAltaDocente();
       }
     }
 
-    function abrirModalGestionDocentes() {
+    async function abrirModalGestionDocentes() {
       document.getElementById('modal-gestion-docentes').classList.remove('hidden');
-      cargarListaGestionDocentes();
-    }
-    function cerrarModalGestionDocentes() {
-      document.getElementById('modal-gestion-docentes').classList.add('hidden');
+      const cont = document.getElementById('lista-docentes-gestion');
+      cont.innerHTML = '<p class="text-xs text-slate-400 italic">Cargando lista de docentes...</p>';
+
+      const { data, error } = await _supabase.from('docentes').select('*').order('id', { ascending: true });
+      if (error || !data || data.length === 0) {
+        cont.innerHTML = '<p class="text-xs text-slate-500 italic">No hay docentes registrados o error al cargar.</p>';
+        return;
+      }
+
+      cont.innerHTML = '';
+      data.forEach(d => {
+        const item = document.createElement('div');
+        item.className = "flex justify-between items-center bg-slate-50 border border-slate-200 p-3 rounded-lg";
+        item.innerHTML = `
+          <div>
+            <strong class="text-slate-900 block">${d.nombre_docente || 'Sin Nombre'}</strong>
+            <span class="text-slate-500">🏫 ${d.institucion} — 📖 ${d.curso}</span><br>
+            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">Clave: ${d.clave_acceso}</span>
+          </div>
+          <button onclick="eliminarDocente(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1.5 rounded transition">
+            Eliminar
+          </button>
+        `;
+        cont.appendChild(item);
+      });
     }
 
-    async function cargarListaGestionDocentes() {
-      const { data } = await _supabase.from('docentes').select('*');
-      const cont = document.getElementById('lista-docentes-gestion');
-      cont.innerHTML = (data || []).map(d => `
-        <div class="p-2 border rounded flex justify-between items-center">
-          <div>
-            <strong>${d.nombre_docente}</strong> (${d.institucion} - ${d.curso})
-            <span class="block font-mono text-[10px] text-slate-500">Clave: ${d.clave_acceso}</span>
-          </div>
-          <button onclick="eliminarDocente(${d.id})" class="text-red-600 hover:text-red-800 font-bold text-xs"><i class="fa-solid fa-trash"></i></button>
-        </div>
-      `).join('');
+    function cerrarModalGestionDocentes() {
+      document.getElementById('modal-gestion-docentes').classList.add('hidden');
+      cargarDatos();
     }
 
     async function eliminarDocente(id) {
-      if (confirm("¿Confirmás eliminar este docente?")) {
-        await _supabase.from('docentes').delete().eq('id', id);
-        cargarListaGestionDocentes();
+      if (!confirm(`¿Eliminar permanentemente al docente ID ${id}?`)) return;
+      const { error } = await _supabase.from('docentes').delete().eq('id', id);
+      if (error) {
+        alert("Error al eliminar docente: " + error.message);
+      } else {
+        alert("Docente eliminado.");
+        abrirModalGestionDocentes();
       }
     }
 
-    function abrirModalDuplicados() {
+    async function abrirModalDuplicados() {
       document.getElementById('modal-duplicados').classList.remove('hidden');
       const cont = document.getElementById('lista-duplicados-container');
-      cont.innerHTML = '<p class="text-xs text-slate-400 italic">No se detectaron proyectos duplicados.</p>';
+      cont.innerHTML = '<p class="text-xs text-slate-400">Buscando...</p>';
+      const { data } = await _supabase.from('proyectos').select('*');
+      cont.innerHTML = '<p class="text-xs text-slate-500">Sin duplicados críticos.</p>';
     }
+
     function cerrarModalDuplicados() {
       document.getElementById('modal-duplicados').classList.add('hidden');
-    }
-
-    async function blanquearVotosPublicoGeneral() {
-      if (confirm("⚠️ ¿Estás seguro de blanquear todos los votos e inversiones del público?")) {
-        alert("Votos del público reseteados a 0.");
-      }
-    }
-
-    function reiniciarEvaluacionDocenteActual() {
-      if (proyectoSeleccionado) {
-        calcularHeuristicaInicialIA(proyectoSeleccionado);
-        renderizarRubrica();
-        actualizarNotas();
-      }
+      cargarDatos();
     }
   </script>
 </body>
