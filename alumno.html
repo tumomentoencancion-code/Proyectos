@@ -467,8 +467,9 @@
           ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
           : await _supabase.from('proyectos').insert([payload]);
 
-        // MANEJO DE RETROCOMPATIBILIDAD: SI SUPABASE FALLA POR COLUMNAS INEXISTENTES, LAS ELIMINAMOS Y REINTENTAMOS
+        // REINTENTO AUTOMÁTICO DINÁMICO: SI FALLA POR COLUMNAS INEXISTENTES EN SUPABASE, LAS REMUEVE Y REINTENTA
         if (res.error && (res.error.message.includes('schema cache') || res.error.message.includes('column'))) {
+          delete payload.finanzas_json;
           delete payload.curso;
           delete payload.institucion;
           delete payload.analisis_mercado;
