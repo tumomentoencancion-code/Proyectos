@@ -25,7 +25,6 @@
 
   <main class="max-w-5xl mx-auto px-6">
     <div id="contenedor-proyecto" class="bg-white rounded-2xl shadow-sm border border-slate-200 p-6 sm:p-8">
-      <!-- Carga dinámica -->
       <div class="text-center py-12 text-slate-400">
         <i class="fa-solid fa-spinner fa-spin text-3xl mb-3"></i>
         <p class="text-xs">Cargando datos del proyecto...</p>
@@ -38,18 +37,20 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+    let proyectoId = null;
+
     document.addEventListener("DOMContentLoaded", cargarDetalleVotacion);
 
     async function cargarDetalleVotacion() {
       const urlParams = new URLSearchParams(window.location.search);
-      const idParam = urlParams.get('id');
+      proyectoId = urlParams.get('id');
 
-      if (!idParam) {
+      if (!proyectoId) {
         document.getElementById('contenedor-proyecto').innerHTML = `<p class="text-red-500 font-bold text-center">No se especificó ningún proyecto.</p>`;
         return;
       }
 
-      const { data: p, error } = await _supabase.from('proyectos').select('*').eq('id', idParam).single();
+      const { data: p, error } = await _supabase.from('proyectos').select('*').eq('id', proyectoId).single();
 
       if (error || !p) {
         document.getElementById('contenedor-proyecto').innerHTML = `<p class="text-red-500 font-bold text-center">Error al cargar el proyecto.</p>`;
@@ -61,57 +62,138 @@
       const integrantes = p.integrantes || 'Equipo no especificado';
       const publico = p.publicoObjetivo || p.analisis_mercado || 'Sin descripción';
       
-      // Renderización saneada con límites de tipografía
       document.getElementById('contenedor-proyecto').innerHTML = `
         <div class="border-b pb-6 mb-6">
           <span class="text-[10px] font-bold uppercase tracking-wider bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full">PROYECTO #${p.id}</span>
-          <h2 class="text-2xl font-black text-slate-900 mt-2 mb-1 leading-snug">${nombre}</h2>
-          ${slogan ? `<p class="text-sm font-medium text-slate-500 italic">${slogan}</p>` : ''}
-          <p class="text-xs text-slate-600 mt-3"><i class="fa-solid fa-users mr-1 text-slate-400"></i> <strong>Integrantes:</strong> ${integrantes}</p>
+          <h2 class="text-xl font-bold text-slate-900 mt-2 mb-1 leading-snug">${nombre}</h2>
+          ${slogan ? `<p class="text-xs font-medium text-slate-500 italic">${slogan}</p>` : ''}
+          <p class="text-xs text-slate-600 mt-2"><i class="fa-solid fa-users mr-1 text-slate-400"></i> <strong>Integrantes:</strong> ${integrantes}</p>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          <div class="lg:col-span-2 space-y-6">
-            <div class="bg-slate-50 p-5 rounded-xl border border-slate-200">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          <!-- COLUMNA IZQUIERDA: DETALLES Y FINANZAS -->
+          <div class="lg:col-span-7 space-y-6">
+            <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
               <h3 class="text-xs font-bold text-slate-800 uppercase mb-2"><i class="fa-solid fa-bullseye text-blue-600 mr-1.5"></i> Resumen del Emprendimiento</h3>
               <p class="text-xs text-slate-700 leading-relaxed whitespace-pre-line">${publico}</p>
             </div>
 
-            ${renderFinanzasPublicas(p)}
+            ${renderFinanzasDetalladas(p)}
           </div>
 
-          <div class="bg-slate-900 text-white p-6 rounded-xl space-y-4 h-fit shadow-md">
-            <h3 class="text-sm font-bold uppercase tracking-wider text-amber-400"><i class="fa-solid fa-check-to-slot mr-1.5"></i> Evaluar e Invertir</h3>
-            <p class="text-xs text-slate-300">Sumá tu voto cualitativo y simulá tu inversión para este proyecto.</p>
+          <!-- COLUMNA DERECHA: VOTACIÓN CUALITATIVA E INVERSIÓN SIMULADA -->
+          <div class="lg:col-span-5 space-y-6">
+            
+            <!-- PANEL VOTACIÓN CUALITATIVA -->
+            <div class="bg-white border border-slate-200 p-5 rounded-xl shadow-sm space-y-4">
+              <h3 class="text-xs font-bold uppercase text-slate-800 border-b pb-2 flex items-center gap-2">
+                <i class="fa-solid fa-star text-amber-500"></i> Evaluación Cualitativa
+              </h3>
 
-            <button onclick="alert('¡Gracias por evaluar este emprendimiento!')" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow">
-              <i class="fa-solid fa-star mr-1.5"></i> Votar Proyecto
-            </button>
+              <div class="space-y-3 text-xs">
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">1. Innovación y Creatividad</label>
+                  <select id="voto-innovacion" class="w-full border rounded p-2 text-xs">
+                    <option value="5">⭐⭐⭐⭐⭐ Excelente (5 pts)</option>
+                    <option value="4" selected>⭐⭐⭐⭐ Muy Bueno (4 pts)</option>
+                    <option value="3">⭐⭐⭐ Bueno (3 pts)</option>
+                    <option value="2">⭐⭐ Regular (2 pts)</option>
+                    <option value="1">⭐ Insuficiente (1 pt)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">2. Propuesta de Marketing / Imagen</label>
+                  <select id="voto-marketing" class="w-full border rounded p-2 text-xs">
+                    <option value="5">⭐⭐⭐⭐⭐ Excelente (5 pts)</option>
+                    <option value="4" selected>⭐⭐⭐⭐ Muy Bueno (4 pts)</option>
+                    <option value="3">⭐⭐⭐ Bueno (3 pts)</option>
+                    <option value="2">⭐⭐ Regular (2 pts)</option>
+                    <option value="1">⭐ Insuficiente (1 pt)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label class="block font-bold text-slate-700 mb-1">3. Viabilidad Técnica y Financiera</label>
+                  <select id="voto-viabilidad" class="w-full border rounded p-2 text-xs">
+                    <option value="5">⭐⭐⭐⭐⭐ Excelente (5 pts)</option>
+                    <option value="4" selected>⭐⭐⭐⭐ Muy Bueno (4 pts)</option>
+                    <option value="3">⭐⭐⭐ Bueno (3 pts)</option>
+                    <option value="2">⭐⭐ Regular (2 pts)</option>
+                    <option value="1">⭐ Insuficiente (1 pt)</option>
+                  </select>
+                </div>
+
+                <button onclick="enviarVotoCualitativo()" class="w-full bg-blue-900 hover:bg-blue-800 text-white font-bold py-2.5 rounded-lg text-xs transition shadow mt-2">
+                  <i class="fa-solid fa-check-to-slot mr-1.5"></i> Registrar Evaluación
+                </button>
+              </div>
+            </div>
+
+            <!-- PANEL INVERSIÓN SIMULADA -->
+            <div class="bg-slate-900 text-white p-5 rounded-xl space-y-4 shadow-md">
+              <h3 class="text-xs font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-2">
+                <i class="fa-solid fa-hand-holding-dollar"></i> Inversión Simulada (Ángel Investor)
+              </h3>
+              <p class="text-[11px] text-slate-300">Simulá cuánto dinero ficticio invertirías en este proyecto para impulsarlo en el ranking comercial.</p>
+
+              <div class="space-y-2 text-xs">
+                <label class="block font-medium text-slate-300">Monto a Invertir ($)</label>
+                <input type="number" id="monto-inversion" placeholder="Ej: 50000" class="w-full border border-slate-700 bg-slate-800 text-white rounded p-2 font-mono text-xs focus:ring-2 focus:ring-emerald-500">
+                <button onclick="enviarInversionSimulada()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-lg text-xs transition shadow mt-1">
+                  <i class="fa-solid fa-coins mr-1.5"></i> Confirmar Inversión
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
       `;
     }
 
-    function renderFinanzasPublicas(p) {
-      if (p.finanzas_json && p.finanzas_json.costo_producto) {
-        const f = p.finanzas_json;
-        return `
-          <div class="bg-emerald-50 p-5 rounded-xl border border-emerald-200 space-y-3">
-            <h3 class="text-xs font-bold text-emerald-900 uppercase"><i class="fa-solid fa-calculator mr-1.5"></i> Estructura Financiera</h3>
-            <div class="grid grid-cols-2 gap-3 text-xs font-mono">
-              <div class="bg-white p-2.5 rounded border border-emerald-100">
-                <span class="text-[10px] text-slate-500 block uppercase">Inversión Inicial</span>
-                <strong class="text-slate-800">${f.inversion?.total || '$ ' + (p.inversionInicial || 0)}</strong>
-              </div>
-              <div class="bg-white p-2.5 rounded border border-emerald-100">
-                <span class="text-[10px] text-slate-500 block uppercase">Precio de Venta</span>
-                <strong class="text-emerald-700">${f.costo_producto?.precio_venta || '$ ' + (p.precio_venta || 0)}</strong>
-              </div>
+    function renderFinanzasDetalladas(p) {
+      const f = p.finanzas_json || {};
+      const inv = f.inversion || {};
+      const gas = f.gastos_mensuales || {};
+      const prod = f.costo_producto || {};
+
+      return `
+        <div class="bg-emerald-50 p-4 rounded-xl border border-emerald-200 space-y-3">
+          <h3 class="text-xs font-bold text-emerald-900 uppercase"><i class="fa-solid fa-calculator mr-1.5"></i> Plan Financiero Resumido</h3>
+          <div class="grid grid-cols-2 gap-3 text-xs font-mono">
+            <div class="bg-white p-2.5 rounded border border-emerald-100">
+              <span class="text-[10px] text-slate-500 block uppercase font-sans">Inversión Requerida</span>
+              <strong class="text-slate-800">${inv.total || '$ ' + (p.inversionInicial || 0)}</strong>
+            </div>
+            <div class="bg-white p-2.5 rounded border border-emerald-100">
+              <span class="text-[10px] text-slate-500 block uppercase font-sans">Gastos Fijos Mensuales</span>
+              <strong class="text-slate-800">${gas.total || '$ ' + (p.gastos_mensuales || 0)}</strong>
+            </div>
+            <div class="bg-white p-2.5 rounded border border-emerald-100">
+              <span class="text-[10px] text-slate-500 block uppercase font-sans">Precio de Venta</span>
+              <strong class="text-emerald-700">${prod.precio_venta || '$ ' + (p.precio_venta || 0)}</strong>
+            </div>
+            <div class="bg-white p-2.5 rounded border border-emerald-100">
+              <span class="text-[10px] text-slate-500 block uppercase font-sans">Punto de Equilibrio</span>
+              <strong class="text-emerald-700">${prod.punto_equilibrio || (p.punto_equilibrio || 0) + ' Unidades/mes'}</strong>
             </div>
           </div>
-        `;
+        </div>
+      `;
+    }
+
+    function enviarVotoCualitativo() {
+      alert("¡Evaluación cualitativa registrada con éxito!");
+    }
+
+    function enviarInversionSimulada() {
+      const monto = document.getElementById('monto-inversion').value;
+      if (!monto || monto <= 0) {
+        alert("Ingresá un monto válido para invertir.");
+        return;
       }
-      return '';
+      alert(`¡Inversión simulada de $${monto} registrada correctamente!`);
     }
   </script>
 </body>
