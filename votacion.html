@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" class="notranslate" translate="no">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
   <title>Portal de Votación — E.E.S.T. N°1 Bragado</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -13,7 +14,7 @@
   <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
       <div>
-        <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Emprendimientos</h1>
+        <h1 class="text-base font-bold tracking-tight">E.E.S.T. N°1 Bragado — Emprendimientos</h1>
         <p class="text-slate-400 text-xs">Portal Público de Evaluación e Inversión Simulada</p>
       </div>
       <a href="posiciones.html" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
@@ -26,20 +27,20 @@
 
     <div id="vista-vacia" class="hidden bg-white p-12 rounded-xl shadow-sm border border-slate-200 text-center">
       <i class="fa-solid fa-magnifying-glass text-4xl text-slate-300 mb-3"></i>
-      <h3 class="text-slate-600 font-bold">No se especificó ningún proyecto</h3>
+      <h3 class="text-slate-600 font-bold text-sm">No se especificó ningún proyecto</h3>
       <p class="text-xs text-slate-400 mt-1">Selecciona un emprendimiento desde la tabla de posiciones.</p>
       <a href="posiciones.html" class="mt-4 inline-block bg-blue-900 text-white text-xs font-bold px-4 py-2 rounded-lg">Ir a la Tabla de Posiciones</a>
     </div>
 
     <div id="vista-proyecto" class="space-y-8">
 
-      <!-- CABECERA PRINCIPAL -->
+      <!-- CABECERA PRINCIPAL CON TÍTULO NORMALIZADO -->
       <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">PROYECTO 7° AÑO • E.E.S.T. N°1</span>
-            <h2 id="p-nombre" class="text-3xl font-black text-slate-900 mt-2">-</h2>
-            <p id="p-slogan" class="text-sm italic text-slate-500 mt-0.5">-</p>
+            <h2 id="p-nombre" class="text-base font-bold text-slate-900 mt-2 leading-snug">-</h2>
+            <p id="p-slogan" class="text-xs italic text-slate-500 mt-0.5">-</p>
           </div>
           <div class="flex items-center gap-2">
             <span class="text-xs font-bold text-slate-500">Integrantes:</span>
@@ -73,31 +74,56 @@
         </div>
       </section>
 
+      <!-- PLAN FINANCIERO RESUMIDO (4 BLOQUES) -->
+      <section class="bg-emerald-50 border border-emerald-200 p-6 rounded-xl shadow-sm space-y-3">
+        <h3 class="text-xs font-bold text-emerald-900 uppercase tracking-wider border-b border-emerald-200 pb-2 flex items-center gap-2">
+          <i class="fa-solid fa-calculator text-emerald-700"></i> Plan Financiero Resumido
+        </h3>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs font-mono">
+          <div class="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
+            <span class="text-[10px] text-slate-500 block uppercase font-sans font-bold">Inversión Requerida</span>
+            <strong id="fin-inversion" class="text-slate-800 text-xs font-bold">$0</strong>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
+            <span class="text-[10px] text-slate-500 block uppercase font-sans font-bold">Gastos Fijos Mensuales</span>
+            <strong id="fin-gastos" class="text-slate-800 text-xs font-bold">$0</strong>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
+            <span class="text-[10px] text-slate-500 block uppercase font-sans font-bold">Precio de Venta</span>
+            <strong id="fin-precio" class="text-emerald-700 text-xs font-bold">$0</strong>
+          </div>
+          <div class="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm">
+            <span class="text-[10px] text-slate-500 block uppercase font-sans font-bold">Punto de Equilibrio</span>
+            <strong id="fin-equilibrio" class="text-emerald-700 text-xs font-bold">0 Un/mes</strong>
+          </div>
+        </div>
+      </section>
+
       <!-- INDICADORES EN TIEMPO REAL -->
       <section class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-amber-50 border border-amber-200 p-4 rounded-xl text-center">
           <span class="text-[11px] font-bold text-amber-800 uppercase block">Promedio del Público</span>
           <div class="flex justify-center items-baseline gap-1 mt-1">
-            <span id="stat-promedio" class="text-3xl font-black text-amber-600">0.0</span>
+            <span id="stat-promedio" class="text-2xl font-black text-amber-600">0.0</span>
             <span class="text-xs text-slate-500 font-bold">/ 10</span>
           </div>
         </div>
 
         <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-center">
           <span class="text-[11px] font-bold text-blue-800 uppercase block">Total Votos Emitidos</span>
-          <span id="stat-votos" class="text-3xl font-black text-blue-900 block mt-1">0</span>
+          <span id="stat-votos" class="text-2xl font-black text-blue-900 block mt-1">0</span>
         </div>
 
         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center">
           <span class="text-[11px] font-bold text-emerald-800 uppercase block">Capital Semilla Atraído</span>
-          <span id="stat-inversion" class="text-2xl font-black text-emerald-700 block mt-1.5">$0</span>
+          <span id="stat-inversion" class="text-xl font-black text-emerald-700 block mt-1.5">$0</span>
         </div>
       </section>
 
       <!-- FORMULARIO DE VOTACIÓN -->
       <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
         <div class="border-b pb-3">
-          <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
+          <h3 class="text-xs font-bold text-slate-800 flex items-center gap-2 uppercase tracking-wider">
             <i class="fa-solid fa-star text-amber-500"></i> Calificá este Emprendimiento (1 al 10)
           </h3>
           <p class="text-xs text-slate-500 mt-0.5">Tu evaluación suma puntos directos para la tabla de posiciones oficial.</p>
@@ -167,10 +193,10 @@
         </form>
       </section>
 
-      <!-- INVERSIÓN SEMILLA -->
+      <!-- INVERSIÓN SEMILLA (MÁXIMO $100.000) -->
       <section class="bg-emerald-900 text-white p-6 rounded-xl shadow-md border border-emerald-800 space-y-4">
         <div class="flex justify-between items-center border-b border-emerald-800 pb-3">
-          <h3 class="text-base font-bold flex items-center gap-2 text-emerald-300">
+          <h3 class="text-xs font-bold flex items-center gap-2 text-emerald-300 uppercase tracking-wider">
             <i class="fa-solid fa-hand-holding-dollar"></i> Simulación de Inversor Ángel (Capital Semilla Virtual)
           </h3>
           <span class="text-[10px] bg-emerald-800 text-emerald-200 px-2.5 py-1 rounded font-bold uppercase">Bragado Capital</span>
@@ -283,9 +309,20 @@
       document.getElementById('p-slogan').innerText = data.slogan ? `"${data.slogan}"` : '';
       document.getElementById('p-integrantes').innerText = data.integrantes || 'Alumnos de 7° Año';
 
-      // Aplicar formateo y recorte en descripciones
       configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo, 140);
       configurarTextoExpandible('p-canales', 'btn-toggle-canales', data.canalesVenta, 140);
+
+      // Cargar resumen financiero de los 4 bloques
+      const f = data.finanzas_json || {};
+      const invTotal = f.inversion?.total || ('$ ' + (data.inversionInicial || 0));
+      const gasTotal = f.gastos_mensuales?.total || ('$ ' + (data.gastos_mensuales || 0));
+      const precVenta = f.costo_producto?.precio_venta || ('$ ' + (data.precio_venta || 0));
+      const eqUnidades = f.costo_producto?.punto_equilibrio || ((data.punto_equilibrio || 0) + ' Un/mes');
+
+      document.getElementById('fin-inversion').innerText = invTotal;
+      document.getElementById('fin-gastos').innerText = gasTotal;
+      document.getElementById('fin-precio').innerText = precVenta;
+      document.getElementById('fin-equilibrio').innerText = eqUnidades;
 
       const containerLinks = document.getElementById('p-links');
       containerLinks.innerHTML = '';
@@ -318,27 +355,44 @@
     }
 
     async function cargarEstadisticas() {
-      const { data: votos } = await _supabase.from('votos_publico').select('puntuacion_promedio').eq('proyecto_id', proyectoId);
-      
-      let totalVotos = 0;
-      let sumaPromedios = 0;
+      // 1. Obtener Votos del Público
+      const { data: votos } = await _supabase
+        .from('votos_publico')
+        .select('puntuacion_promedio')
+        .eq('proyecto_id', proyectoId);
 
-      if (votos && votos.length > 0) {
-        totalVotos = votos.length;
-        sumaPromedios = votos.reduce((acc, curr) => acc + (parseFloat(curr.puntuacion_promedio) || 0), 0);
-      }
-
+      let totalVotos = votos ? votos.length : 0;
+      let sumaPromedios = votos ? votos.reduce((acc, curr) => acc + (parseFloat(curr.puntuacion_promedio) || 0), 0) : 0;
       const promedio = totalVotos > 0 ? (sumaPromedios / totalVotos).toFixed(1) : '0.0';
+
       document.getElementById('stat-promedio').innerText = promedio;
       document.getElementById('stat-votos').innerText = totalVotos;
 
-      const { data: inversiones } = await _supabase.from('inversiones_simuladas').select('monto_invertido').eq('proyecto_id', proyectoId);
-      let totalInversion = 0;
+      // 2. Obtener Capital del Público
+      const { data: inversiones } = await _supabase
+        .from('inversiones_simuladas')
+        .select('monto_invertido')
+        .eq('proyecto_id', proyectoId);
+
+      let capitalPublico = 0;
       if (inversiones && inversiones.length > 0) {
-        totalInversion = inversiones.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+        capitalPublico = inversiones.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
       }
 
-      document.getElementById('stat-inversion').innerText = '$' + totalInversion.toLocaleString('es-AR');
+      // 3. Obtener Capital Institucional desde la Nota Docente (1 punto = $100.000 ARS)
+      const { data: evalDocente } = await _supabase
+        .from('evaluaciones')
+        .select('nota_final')
+        .eq('proyecto_id', proyectoId)
+        .maybeSingle();
+
+      const notaDocente = (evalDocente && evalDocente.nota_final) ? parseFloat(evalDocente.nota_final) : 0;
+      const capitalInstitucional = notaDocente * 100000;
+
+      // 4. Suma Total de Capital Semilla Atraído
+      const capitalTotal = capitalPublico + capitalInstitucional;
+
+      document.getElementById('stat-inversion').innerText = '$' + capitalTotal.toLocaleString('es-AR');
     }
 
     async function enviarVoto(e) {
