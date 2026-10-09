@@ -291,7 +291,6 @@
     let curso = localStorage.getItem('multicurso_curso') || '7° Año • Energías Renovables';
     let proyectoExistenteId = null;
 
-    // Saneador universal de números para evitar error HTTP 400 por enviar cadenas vacías ""
     const parseNum = (val) => {
       if (val === null || val === undefined || val === '') return 0;
       const num = parseFloat(String(val).replace(',', '.'));
@@ -305,7 +304,6 @@
     });
 
     function calcularFinanzas() {
-      // 1. Inversión Inicial
       const invMaq = parseNum(document.getElementById('fin-inv-maquinaria')?.value);
       const invInm = parseNum(document.getElementById('fin-inv-inmueble')?.value);
       const invMO = parseNum(document.getElementById('fin-inv-mo')?.value);
@@ -316,13 +314,11 @@
       const totalInversion = invMaq + invInm + invMO + invMob + invMP + invServ;
       document.getElementById('txt-total-inversion').innerText = `$ ${totalInversion.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
-      // 2. Préstamo
       const cuotas = parseInt(document.getElementById('fin-pres-cuotas')?.value) || 0;
       const montoCuota = parseNum(document.getElementById('fin-pres-monto-cuota')?.value);
       const totalDevolver = cuotas * montoCuota;
       document.getElementById('fin-pres-total').value = `$ ${totalDevolver.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
-      // 3. Gastos Mensuales
       const gInm = parseNum(document.getElementById('fin-gasto-inmueble')?.value);
       const gMOI = parseNum(document.getElementById('fin-gasto-moi')?.value);
       const gServ = parseNum(document.getElementById('fin-gasto-servicios')?.value);
@@ -331,7 +327,6 @@
       const totalGastosMensuales = gInm + gMOI + gServ + gCuota;
       document.getElementById('txt-total-gastos').innerText = `$ ${totalGastosMensuales.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
-      // 4. Costo Producto y Precio
       const prodMP = parseNum(document.getElementById('fin-prod-mp')?.value);
       const prodMOD = parseNum(document.getElementById('fin-prod-mod')?.value);
       const ganancia = parseNum(document.getElementById('fin-prod-ganancia')?.value);
@@ -347,12 +342,7 @@
       document.getElementById('txt-punto-equilibrio').innerText = `${unidadesEquilibrio} Unidades/mes`;
 
       return {
-        totalInversion,
-        totalGastosMensuales,
-        costoTotalProducto,
-        precioVenta,
-        ganancia,
-        unidadesEquilibrio,
+        totalInversion, totalGastosMensuales, costoTotalProducto, precioVenta, ganancia, unidadesEquilibrio,
         invMaq, invInm, invMO, invMob, invMP, invServ,
         cuotas, montoCuota, totalDevolver,
         gInm, gMOI, gServ, gCuota,
@@ -400,8 +390,7 @@
 
       document.getElementById('desglose_inversion_inicial').value = p.desglose_inversion_inicial || '';
 
-      // Si vienen datos en JSON desglosados
-      if (p.finanzas_json) {
+      if (p.finanzas_json && typeof p.finanzas_json === 'object') {
         const f = p.finanzas_json;
         if (f.inversion) {
           document.getElementById('fin-inv-maquinaria').value = f.inversion.maquinaria || 0;
@@ -427,11 +416,11 @@
           document.getElementById('fin-prod-ganancia').value = f.costo_producto.ganancia || 0;
         }
       } else {
-        // Carga de respaldo si vienen en campos planos
-        if (p.costoMateriales) document.getElementById('fin-prod-mp').value = p.costoMateriales;
-        if (p.costoManoObra) document.getElementById('fin-prod-mod').value = p.costoManoObra;
-        if (p.ganancia_unitaria) document.getElementById('fin-prod-ganancia').value = p.ganancia_unitaria;
-        if (p.gastos_mensuales) document.getElementById('fin-gasto-inmueble').value = p.gastos_mensuales;
+        document.getElementById('fin-prod-mp').value = p.costoMateriales || p.costoConsumibles || 0;
+        document.getElementById('fin-prod-mod').value = p.costoManoObra || 0;
+        document.getElementById('fin-prod-ganancia').value = p.ganancia_unitaria || p.margenGanancia || 0;
+        document.getElementById('fin-gasto-inmueble').value = p.gastos_mensuales || p.costoGastos || 0;
+        document.getElementById('fin-inv-maquinaria').value = p.inversionInicial || p.inversion_inicial || 0;
       }
 
       calcularFinanzas();
@@ -452,7 +441,6 @@
       const urlParams = new URLSearchParams(window.location.search);
       const targetId = proyectoExistenteId || urlParams.get('id');
 
-      // Estructura JSON interna completa para conservar el 100% de los detalles
       const finanzasJson = {
         inversion: {
           maquinaria: calc.invMaq,
@@ -484,7 +472,6 @@
         }
       };
 
-      // Mapeo exhaustivo 1:1 con las columnas reales en Supabase
       let payload = {
         nombreProyecto: document.getElementById('nombreProyecto').value.trim(),
         nombre: document.getElementById('nombreProyecto').value.trim(),
@@ -502,7 +489,6 @@
         videoUrl: document.getElementById('video_promo').value.trim(),
         competidores: document.getElementById('competidores').value.trim(),
         
-        // Totales Financieros mapeados
         inversionInicial: calc.totalInversion,
         inversion_inicial: calc.totalInversion,
         desglose_inversion_inicial: document.getElementById('desglose_inversion_inicial').value.trim(),
@@ -531,20 +517,10 @@
           res = await _supabase.from('proyectos').insert([payload]).select();
         }
 
-        // Si la columna finanzas_json no llegara a existir en el esquema, reintenta sin esa clave para evitar el 400
-        if (res.error && (res.error.message.includes('schema cache') || res.error.message.includes('column'))) {
-          delete payload.finanzas_json;
-          if (targetId) {
-            res = await _supabase.from('proyectos').update(payload).eq('id', targetId).select();
-          } else {
-            res = await _supabase.from('proyectos').insert([payload]).select();
-          }
-        }
-
         if (res.error) throw res.error;
 
         if (!res.data || res.data.length === 0) {
-          throw new Error("No se pudo confirmar la actualización en la base de datos. Comprobá que estés editando con la URL del proyecto correcta (?id=).");
+          throw new Error("No se pudo confirmar la actualización en la base de datos. Comprobá que estés editando con el parámetro ?id= en la URL.");
         }
 
         alert("¡Proyecto guardado con éxito!");
