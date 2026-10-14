@@ -14,7 +14,7 @@
     <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
         <h1 id="header-institucion" class="text-base font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga de Emprendimientos</h1>
-        <p id="header-curso" class="text-slate-400 text-xs">Tabla General de Posiciones • Popularidad e Inversión Semilla</p>
+        <p id="header-curso" class="text-slate-400 text-xs">Tabla General de Posiciones • Capital Técnico e Inversión Semilla</p>
       </div>
 
       <!-- SELECTOR FILTRO MULTICURSO Y ACCESOS -->
@@ -62,16 +62,15 @@
               <th class="p-3 text-center">Pos</th>
               <th class="p-3">Emprendimiento</th>
               <th class="p-3 text-center">Escuela / Curso</th>
-              <th class="p-3 text-center">Nota Docente</th>
-              <th class="p-3 text-right">Capital Docente</th>
-              <th class="p-3 text-right">Capital Mercado</th>
+              <th class="p-3 text-right">Inversión Técnica</th>
+              <th class="p-3 text-right">Inversión Mercado</th>
               <th class="p-3 text-right">Capital Total</th>
               <th class="p-3 text-center">Acción</th>
             </tr>
           </thead>
           <tbody id="tabla-body" class="divide-y divide-slate-100">
             <tr>
-              <td colspan="8" class="p-6 text-center text-slate-400 italic">Cargando tabla de posiciones...</td>
+              <td colspan="7" class="p-6 text-center text-slate-400 italic">Cargando tabla de posiciones...</td>
             </tr>
           </tbody>
         </table>
@@ -135,7 +134,7 @@
       podioContainer.innerHTML = '';
 
       if (!proyectos || proyectos.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">No hay emprendimientos registrados para esta selección.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400 italic">No hay emprendimientos registrados para esta selección.</td></tr>';
         podioContainer.classList.add('hidden');
         return;
       }
@@ -148,17 +147,18 @@
       const consolidado = dataFiltrada.map(p => {
         const evalD = (evaluaciones || []).find(e => e.proyecto_id === p.id);
         const notaDocente = evalD && (evalD.nota_global || evalD.nota_final) ? parseFloat(evalD.nota_global || evalD.nota_final) : 0;
-        const capDocente = notaDocente * 100000;
+        
+        // Inversión Técnica basada en la evaluación del plan de negocios ($100.000 por punto)
+        const capTecnico = notaDocente * 100000;
 
         const invs = (inversiones || []).filter(i => i.proyecto_id === p.id);
         const capMercado = invs.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
 
-        const capTotal = capDocente + capMercado;
+        const capTotal = capTecnico + capMercado;
 
         return {
           ...p,
-          notaDocente,
-          capDocente,
+          capTecnico,
           capMercado,
           capTotal
         };
@@ -212,8 +212,8 @@
             </div>
             <div class="bg-slate-100/70 p-2 rounded-lg grid grid-cols-2 gap-1 text-center border border-slate-200/50 font-mono">
               <div>
-                <span class="text-[9px] text-slate-500 font-bold block uppercase font-sans">Nota Doc.</span>
-                <span class="text-xs font-bold text-blue-900">${p.notaDocente > 0 ? p.notaDocente.toFixed(1) : '-'}</span>
+                <span class="text-[9px] text-slate-500 font-bold block uppercase font-sans">Inv. Técnica</span>
+                <span class="text-xs font-bold text-blue-900">$${p.capTecnico.toLocaleString('es-AR')}</span>
               </div>
               <div>
                 <span class="text-[9px] text-slate-500 font-bold block uppercase font-sans">Cap. Total</span>
@@ -228,7 +228,7 @@
         });
       }
 
-      // RENDERIZAR FILAS COMPACTAS DE LA TABLA
+      // RENDERIZAR FILAS COMPACTAS DE LA TABLA (SIN EXPOSICIÓN DE NOTA NUMÉRICA)
       consolidado.forEach((p, index) => {
         const pos = index + 1;
         let posBadge = `<span class="font-bold text-slate-500">${pos}°</span>`;
@@ -251,8 +251,7 @@
             <span class="font-bold block text-[11px]">${p.institucion || 'E.E.S.T. N°1 Bragado'}</span>
             <span class="text-[10px] text-slate-400 block">${p.curso || '7° Año'}</span>
           </td>
-          <td class="p-3 text-center font-bold text-blue-900 align-middle">${p.notaDocente > 0 ? p.notaDocente.toFixed(1) : '-'}</td>
-          <td class="p-3 text-right font-mono text-slate-600 align-middle">$ ${p.capDocente.toLocaleString('es-AR')}</td>
+          <td class="p-3 text-right font-mono font-bold text-blue-900 align-middle">$ ${p.capTecnico.toLocaleString('es-AR')}</td>
           <td class="p-3 text-right font-mono text-slate-600 align-middle">$ ${p.capMercado.toLocaleString('es-AR')}</td>
           <td class="p-3 text-right font-mono font-bold text-emerald-700 text-xs align-middle">$ ${p.capTotal.toLocaleString('es-AR')}</td>
           <td class="p-3 text-center align-middle">
