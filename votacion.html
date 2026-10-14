@@ -201,7 +201,7 @@
 
   </main>
 
-  <script>
+<script>
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -229,20 +229,22 @@
       const btn = document.getElementById(btnId);
 
       if (!textoOriginal) {
-        elem.innerText = "Sin descripción detallada disponible.";
-        btn.classList.add('hidden');
+        if (elem) elem.innerText = "Sin descripción detallada disponible.";
+        if (btn) btn.classList.add('hidden');
         return;
       }
 
       textosCompletos[elemId] = textoOriginal;
 
       if (textoOriginal.length > limite) {
-        elem.innerText = recortarTexto(textoOriginal, limite);
-        btn.classList.remove('hidden');
-        btn.innerText = "Ver más";
+        if (elem) elem.innerText = recortarTexto(textoOriginal, limite);
+        if (btn) {
+          btn.classList.remove('hidden');
+          btn.innerText = "Ver más";
+        }
       } else {
-        elem.innerText = textoOriginal;
-        btn.classList.add('hidden');
+        if (elem) elem.innerText = textoOriginal;
+        if (btn) btn.classList.add('hidden');
       }
     }
 
@@ -278,13 +280,39 @@
         return;
       }
 
-      const nombre = data.nombreProyecto || data.nombre || `Proyecto ID: ${data.id}`;
-      document.getElementById('p-nombre').innerText = nombre;
+      // TRATAMIENTO DEL NOMBRE Y PRESENTACIÓN
+      let textoNombre = data.nombreProyecto || data.nombre || `Proyecto ID: ${data.id}`;
+      let tituloLimpio = textoNombre;
+      let textoPresentacion = "";
+
+      // Si el alumno cargó un texto largo dentro del casillero del nombre (más de 60 caracteres)
+      if (textoNombre.length > 60) {
+        let palabras = textoNombre.split(" ");
+        tituloLimpio = palabras.slice(0, 6).join(" ") + "..."; // Primeras 6 palabras como título
+        textoPresentacion = textoNombre; // Párrafo completo conservado
+      }
+
+      document.getElementById('p-nombre').innerText = tituloLimpio;
       document.getElementById('p-slogan').innerText = data.slogan ? `"${data.slogan}"` : '';
       document.getElementById('p-integrantes').innerText = data.integrantes || 'Alumnos de 7° Año';
 
+      // Si el nombre contenía la descripción completa, la inyectamos como Presentación Ejecutiva
+      if (textoPresentacion !== "") {
+        const contenedorPublico = document.getElementById('p-publico');
+        if (contenedorPublico && contenedorPublico.parentElement) {
+          let bloquePresentacion = document.getElementById('p-bloque-presentacion-extra');
+          if (!bloquePresentacion) {
+            bloquePresentacion = document.createElement('div');
+            bloquePresentacion.id = 'p-bloque-presentacion-extra';
+            bloquePresentacion.className = "bg-slate-50 p-4 rounded-xl border border-slate-200 mb-4 text-xs text-slate-700 leading-relaxed font-medium";
+            contenedorPublico.parentElement.insertBefore(bloquePresentacion, contenedorPublico);
+          }
+          bloquePresentacion.innerHTML = `<strong class="text-blue-900 block mb-1 font-bold"><i class="fa-solid fa-circle-info mr-1"></i> Presentación del Emprendimiento:</strong>${textoPresentacion}`;
+        }
+      }
+
       // Aplicar formateo y recorte en descripciones
-      configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo, 140);
+      configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo || data.descripcion, 140);
       configurarTextoExpandible('p-canales', 'btn-toggle-canales', data.canalesVenta, 140);
 
       const containerLinks = document.getElementById('p-links');
