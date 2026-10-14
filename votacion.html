@@ -34,7 +34,7 @@
 
     <div id="vista-proyecto" class="space-y-8">
 
-      <!-- CABECERA PRINCIPAL CON TÍTULO NORMALIZADO -->
+      <!-- CABECERA PRINCIPAL CON TÍTULO UNIFICADO -->
       <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-3">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
@@ -115,7 +115,7 @@
         </div>
 
         <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center">
-          <span class="text-[11px] font-bold text-emerald-800 uppercase block">Capital Semilla Atraído</span>
+          <span class="text-[11px] font-bold text-emerald-800 uppercase block">Capital Semilla Total Atraído</span>
           <span id="stat-inversion" class="text-xl font-black text-emerald-700 block mt-1.5">$0</span>
         </div>
       </section>
@@ -193,7 +193,7 @@
         </form>
       </section>
 
-      <!-- INVERSIÓN SEMILLA (MÁXIMO $100.000) -->
+      <!-- INVERSIÓN SEMILLA -->
       <section class="bg-emerald-900 text-white p-6 rounded-xl shadow-md border border-emerald-800 space-y-4">
         <div class="flex justify-between items-center border-b border-emerald-800 pb-3">
           <h3 class="text-xs font-bold flex items-center gap-2 text-emerald-300 uppercase tracking-wider">
@@ -312,7 +312,6 @@
       configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo, 140);
       configurarTextoExpandible('p-canales', 'btn-toggle-canales', data.canalesVenta, 140);
 
-      // Cargar resumen financiero de los 4 bloques
       const f = data.finanzas_json || {};
       const invTotal = f.inversion?.total || ('$ ' + (data.inversionInicial || 0));
       const gasTotal = f.gastos_mensuales?.total || ('$ ' + (data.gastos_mensuales || 0));
@@ -368,7 +367,7 @@
       document.getElementById('stat-promedio').innerText = promedio;
       document.getElementById('stat-votos').innerText = totalVotos;
 
-      // 2. Obtener Capital del Público
+      // 2. Obtener Inversión del Público (Capital Mercado)
       const { data: inversiones } = await _supabase
         .from('inversiones_simuladas')
         .select('monto_invertido')
@@ -379,7 +378,7 @@
         capitalPublico = inversiones.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
       }
 
-      // 3. Obtener Capital Institucional desde la Nota Docente (1 punto = $100.000 ARS)
+      // 3. Obtener Nota del Docente y convertir a Capital Institucional ($100.000 x punto)
       const { data: evalDocente } = await _supabase
         .from('evaluaciones')
         .select('nota_final')
@@ -389,7 +388,7 @@
       const notaDocente = (evalDocente && evalDocente.nota_final) ? parseFloat(evalDocente.nota_final) : 0;
       const capitalInstitucional = notaDocente * 100000;
 
-      // 4. Suma Total de Capital Semilla Atraído
+      // 4. Suma Consolidada de Capital Semilla Total
       const capitalTotal = capitalPublico + capitalInstitucional;
 
       document.getElementById('stat-inversion').innerText = '$' + capitalTotal.toLocaleString('es-AR');
