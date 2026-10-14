@@ -34,30 +34,30 @@
         <span id="badge-modo" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Nuevo Proyecto</span>
       </div>
 
-      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE EN LA FICHA DEL ALUMNO -->
+      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE -->
       <div id="bloque-evaluacion-docente" class="hidden bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
-            <i class="fa-solid fa-graduation-cap text-emerald-700"></i> Estado de Evaluación del Docente
+            <i class="fa-solid fa-graduation-cap text-emerald-700"></i> Calificación / Devolución Docente
           </span>
           <span class="bg-emerald-700 text-white font-bold text-xs px-2.5 py-1 rounded-lg">
             Nota de Avance: <span id="alumno-nota-val" class="font-mono text-sm">0.0</span> / 10
           </span>
         </div>
-        <p id="alumno-devolucion-txt" class="text-xs text-slate-700 italic bg-white p-3 rounded-lg border border-emerald-100">
+        <p id="alumno-devolucion-txt" class="text-xs text-slate-700 italic bg-white p-3 rounded-lg border border-emerald-100 whitespace-pre-line">
           Cargando observaciones del docente...
         </p>
       </div>
 
       <form onsubmit="guardarProyectoAlumno(event)" class="space-y-6 text-xs">
         
-        <!-- ETAPA 1: RESUMEN EJECUTIVO E IDEA -->
+        <!-- ETAPA 1: DIAGNÓSTICO E IDEA -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 1: RESUMEN EJECUTIVO E IDEA DE NEGOCIO
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> ¿Definiste un nombre comercial claro, el eslogan/pitch y la propuesta de valor del producto o servicio?
+            💡 <strong>Checklist Orientativo:</strong> ¿Definiste un nombre comercial claro, el eslogan/pitch y la propuesta de valor del producto o servicio que vas a fabricar?
           </p>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -69,15 +69,9 @@
               <input type="text" id="slogan" placeholder="Ej: Innovación en iluminación flotante sustentable" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
             </div>
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">URL de Logo / Imagen Representativa</label>
-              <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
-            </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Ubicación / Radicación</label>
-              <input type="text" id="ubicacion" placeholder="Ej: Bragado, Buenos Aires" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
-            </div>
+          <div>
+            <label class="block font-bold text-slate-700 mb-1">URL de Logo / Imagen Representativa (Opcional)</label>
+            <input type="url" id="logoUrl" placeholder="https://ejemplo.com/logo.jpg" class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
           </div>
         </div>
 
@@ -87,11 +81,11 @@
             ETAPA 2: DESCRIPCIÓN DE LA EMPRESA Y EQUIPO HUMANO
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Mencioná los integrantes, sus roles específicos, la visión/misión y la figura legal proyectada.
+            💡 <strong>Checklist Orientativo:</strong> Mencioná los integrantes, sus roles específicos, la misión/visión/valores y la figura legal (Monotributo, Cooperativa, S.A., etc.).
           </p>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Integrantes del Equipo, Roles y Figura Legal *</label>
-            <textarea id="integrantes" rows="3" required placeholder="Ej: Juan Pérez (Diseño), María Gómez (Marketing). Figura Legal: Monotributista..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <textarea id="integrantes" rows="3" required placeholder="Ej: Juan Pérez (Diseño), María Gómez (Marketing). Figura Legal: Actividad personal monotributista..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
@@ -101,43 +95,43 @@
             ETAPA 3: ANÁLISIS DEL MERCADO Y ENCUESTAS
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Adjuntá el link de la encuesta realizada y explicá las conclusiones sobre competidores y potencial de mercado.
+            💡 <strong>Checklist Orientativo:</strong> Adjuntá el link de la encuesta realizada y explicá las conclusiones sobre competidores, precios, FODA y hábitos del cliente.
           </p>
           <div>
             <label class="block font-bold text-slate-700 mb-1">URL de Encuesta / Formulario de Investigación *</label>
             <input type="url" id="encuestaUrl" required placeholder="https://docs.google.com/forms/d/e/..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500">
           </div>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Análisis e Interpretación del Estudio de Mercado *</label>
-            <textarea id="analisis_mercado" rows="4" required placeholder="Describe las respuestas obtenidas, hábitos de consumo detectados y oportunidades del sector..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <label class="block font-bold text-slate-700 mb-1">Análisis e Interpretación de Resultados del Estudio de Mercado *</label>
+            <textarea id="analisis_mercado" rows="4" required placeholder="Describe las respuestas obtenidas, hábitos de consumo detectados, oportunidades y análisis de competencia..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
-        <!-- ETAPA 4: PRODUCTO / SERVICIO -->
+        <!-- ETAPA 4: PÚBLICO TARGET -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 4: PRODUCTO / SERVICIO E INFORME TÉCNICO
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Describí el producto/servicio, cliente ideal, materiales, ventajas competitivas y proceso técnico.
+            💡 <strong>Checklist Orientativo:</strong> Describí el producto/servicio, cliente ideal, ventajas competitivas, materiales, máquinas y tiempo de producción.
           </p>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Descripción del Producto, Informe Técnico y Público Objetivo *</label>
-            <textarea id="publicoObjetivo" rows="3" required placeholder="Especificaciones técnicas, despiece, tiempo de fabricación y cliente target..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <label class="block font-bold text-slate-700 mb-1">Descripción del Producto, Informe Técnico y Cliente Ideal *</label>
+            <textarea id="publicoObjetivo" rows="3" required placeholder="Especificaciones técnicas, cliente target, despiece, tiempos de fabricación y ventajas competitivas..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
         <!-- ETAPA 5: MARKETING Y REDES -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
-            ETAPA 5: PLAN DE MARKETING Y ESTRATEGIA COMERCIAL
+            ETAPA 5: PLAN DE MARKETING Y ESTRATEGIA COMERCIAL (4 Ps)
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Definí precios, canales de distribución, promociones y adjuntá redes sociales o video publicitario.
+            💡 <strong>Checklist Orientativo:</strong> Definí precio, canales de distribución, promociones y agregá links a redes sociales o video promocional.
           </p>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Estrategia Comercial y Canales de Venta *</label>
-            <textarea id="canalesVenta" rows="3" required placeholder="Estrategia de precios, ofertas, distribución y puntos de venta..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <textarea id="canalesVenta" rows="3" required placeholder="Detalla precio, promociones, distribución y canales de venta..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
@@ -151,21 +145,21 @@
           </div>
         </div>
 
-        <!-- ETAPA 6: OPERATIVA Y LOGÍSTICA -->
+        <!-- ETAPA 6: OPERATIVA Y COMPETENCIA -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 6: PLAN OPERATIVO Y LOGÍSTICA
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Detallá las áreas de la empresa, proveedores de insumos, instalaciones, equipamiento y envíos.
+            💡 <strong>Checklist Orientativo:</strong> Detallá las áreas de la empresa, proveedores de insumos, instalaciones, equipamiento y logística de envío.
           </p>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Análisis Operativo, Proveedores y Competencia *</label>
-            <textarea id="competidores" rows="3" required placeholder="Proceso productivo, proveedores de materia prima, logística de distribución..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <label class="block font-bold text-slate-700 mb-1">Análisis Operativo, Proveedores y Proceso de Producción *</label>
+            <textarea id="competidores" rows="3" required placeholder="Procesos de producción, instalaciones, proveedores, logística de entrega..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
-        <!-- ETAPA 7: PLAN FINANCIERO Y ESTRUCTURA DE COSTOS -->
+        <!-- ETAPA 7: ESTRUCTURA FINANCIERA -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
           <div class="border-b pb-3">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
@@ -176,45 +170,41 @@
             </p>
           </div>
 
-          <!-- 1. INVERSIÓN INICIAL DESGLOSADA -->
+          <!-- A. INVERSIÓN INICIAL -->
           <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-coins mr-1 text-amber-500"></i> 1. Inversión Inicial</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 text-xs">
-              <div><label class="block font-medium text-slate-600">Maquinaria ($)</label><input type="number" step="any" id="fin-inv-maquinaria" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Inmueble (Alquiler/Compra) ($)</label><input type="number" step="any" id="fin-inv-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Mano de Obra Directa/Indirecta ($)</label><input type="number" step="any" id="fin-inv-mo" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Mobiliario ($)</label><input type="number" step="any" id="fin-inv-mobiliario" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Materia Prima e Insumos ($)</label><input type="number" step="any" id="fin-inv-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Servicios e Impuestos Iniciales ($)</label><input type="number" step="any" id="fin-inv-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Maquinaria ($)</label><input type="number" id="fin-inv-maquinaria" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Inmueble (Alquiler/Compra) ($)</label><input type="number" id="fin-inv-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mano de Obra Directa/Indirecta ($)</label><input type="number" id="fin-inv-mo" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mobiliario ($)</label><input type="number" id="fin-inv-mobiliario" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Materia Prima e Insumos ($)</label><input type="number" id="fin-inv-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Servicios e Impuestos Iniciales ($)</label><input type="number" id="fin-inv-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
             </div>
             <div class="flex justify-between items-center bg-amber-100 p-2.5 rounded-lg border border-amber-300 text-xs font-bold text-amber-900">
               <span>TOTAL INVERSIÓN INICIAL:</span>
               <span id="txt-total-inversion" class="text-xs font-mono">$ 0.00</span>
             </div>
-            <div>
-              <label class="block font-bold text-slate-700 mb-1">Detalle del Desglose de Inversión Inicial</label>
-              <textarea id="desglose_inversion_inicial" rows="2" placeholder="Explica detalladamente en qué se aplicará la inversión inicial..." class="w-full border border-slate-300 rounded-lg p-2 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
-            </div>
           </div>
 
-          <!-- 2. SIMULACIÓN DE PRÉSTAMO INVERSIÓN INICIAL -->
+          <!-- B. SIMULACIÓN PRÉSTAMO -->
           <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-building-columns mr-1 text-blue-600"></i> 2. Simulación Préstamo Inversión Inicial</h4>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
               <div><label class="block font-medium text-slate-600">Cantidad de Cuotas</label><input type="number" id="fin-pres-cuotas" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-center font-bold" value="12"></div>
-              <div><label class="block font-medium text-slate-600">Monto Por Cuota ($)</label><input type="number" step="any" id="fin-pres-monto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Monto por Cuota ($)</label><input type="number" id="fin-pres-monto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
               <div><label class="block font-medium text-slate-600">Importe Total a Devolver ($)</label><input type="text" id="fin-pres-total" readonly class="w-full border rounded p-2 text-right font-mono font-bold bg-slate-100 text-slate-800" value="$ 0.00"></div>
             </div>
           </div>
 
-          <!-- 3. GASTOS MENSUALES FIJOS DESGLOSADOS -->
+          <!-- C. GASTOS MENSUALES -->
           <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-calendar-days mr-1 text-rose-600"></i> 3. Gastos Mensuales Fijos</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-              <div><label class="block font-medium text-slate-600">Inmueble / Leasing ($)</label><input type="number" step="any" id="fin-gasto-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Mano de Obra Indirecta ($)</label><input type="number" step="any" id="fin-gasto-moi" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Servicios (EDEN, ABSA, Gas, Net) ($)</label><input type="number" step="any" id="fin-gasto-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Cuota Crédito Mensual ($)</label><input type="number" step="any" id="fin-gasto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Inmueble / Leasing ($)</label><input type="number" id="fin-gasto-inmueble" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mano de Obra Indirecta ($)</label><input type="number" id="fin-gasto-moi" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Servicios (EDEN, ABSA, Gas, Net) ($)</label><input type="number" id="fin-gasto-servicios" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Cuota Crédito Mensual ($)</label><input type="number" id="fin-gasto-cuota" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
             </div>
             <div class="flex justify-between items-center bg-rose-100 p-2.5 rounded-lg border border-rose-300 text-xs font-bold text-rose-900">
               <span>TOTAL GASTO MENSUAL (Fijo):</span>
@@ -222,13 +212,13 @@
             </div>
           </div>
 
-          <!-- 4. COSTO UNITARIO, PRECIO Y PUNTO DE EQUILIBRIO DESGLOSADO -->
+          <!-- D. COSTO POR PRODUCTO Y PUNTO DE EQUILIBRIO -->
           <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-chart-line mr-1 text-emerald-600"></i> 4. Costo Unitario, Precio y Punto de Equilibrio</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
-              <div><label class="block font-medium text-slate-600">Costo Mat. Prima e Insumos / Un. ($)</label><input type="number" step="any" id="fin-prod-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Mano de Obra Directa / Un. ($)</label><input type="number" step="any" id="fin-prod-mod" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
-              <div><label class="block font-medium text-slate-600">Ganancia Pretendida / Un. ($)</label><input type="number" step="any" id="fin-prod-ganancia" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Costo Mat. Prima e Insumos / Un. ($)</label><input type="number" id="fin-prod-mp" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Mano de Obra Directa / Un. ($)</label><input type="number" id="fin-prod-mod" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
+              <div><label class="block font-medium text-slate-600">Ganancia Pretendida / Un. ($)</label><input type="number" id="fin-prod-ganancia" oninput="calcularFinanzas()" class="w-full border rounded p-2 text-right font-mono" value="0"></div>
               <div><label class="block font-medium text-slate-600">Precio de Venta Final ($)</label><input type="text" id="fin-prod-precio" readonly class="w-full border rounded p-2 text-right font-mono font-bold bg-emerald-100 text-emerald-900" value="$ 0.00"></div>
             </div>
 
@@ -247,14 +237,14 @@
         <!-- ETAPA 8: IMPLEMENTACIÓN -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
-            ETAPA 8: PLAN DE IMPLEMENTACIÓN Y CRONOGRAMA
+            ETAPA 8: PLAN DE IMPLEMENTACIÓN Y CRONOGRAMA (GANTT)
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Organizá las fases de desarrollo, hitos clave y responsables de cada tarea.
+            💡 <strong>Checklist Orientativo:</strong> Organizá las fases de desarrollo, tiempos asignados (Gantt) y responsables de cada tarea.
           </p>
           <div>
-            <label class="block font-bold text-slate-700 mb-1">Cronograma de Tareas e Hitos Principales *</label>
-            <textarea id="plan_implementacion" rows="3" required placeholder="Fases de desarrollo, tiempos asignados y responsables..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <label class="block font-bold text-slate-700 mb-1">Cronograma de Tareas e Hitos Principal *</label>
+            <textarea id="plan_implementacion" rows="3" required placeholder="Fases de desarrollo, tiempos asignados, responsables y recursos necesarios..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
@@ -264,11 +254,11 @@
             ETAPA 9: ESTRATEGIAS DE CRECIMIENTO Y ESCALABILIDAD
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Plan de expansión, incorporación a nuevos mercados o diversificación de productos.
+            💡 <strong>Checklist Orientativo:</strong> Plan de expansión, incorporación de nuevos mercados, diversificación de productos o servicios.
           </p>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Plan de Expansión o Diversificación *</label>
-            <textarea id="estrategias_crecimiento" rows="3" required placeholder="Proyección a mediano/largo plazo e incorporación de nuevos canales..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
+            <textarea id="estrategias_crecimiento" rows="3" required placeholder="Proyección a mediano/largo plazo, incorporación de nuevos mercados..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500"></textarea>
           </div>
         </div>
 
@@ -278,7 +268,7 @@
             ETAPA 10: CONCLUSIONES Y VIABILIDAD
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
-            💡 <strong>Checklist Orientativo:</strong> Síntesis final sobre la factibilidad técnica, económica y comercial de la propuesta.
+            💡 <strong>Checklist Orientativo:</strong> Síntesis final sobre la factibilidad técnica, económica y comercial de la propuesta y próximos pasos.
           </p>
           <div>
             <label class="block font-bold text-slate-700 mb-1">Síntesis Final de Viabilidad *</label>
@@ -306,12 +296,6 @@
     let curso = localStorage.getItem('multicurso_curso') || '7° Año • Energías Renovables';
     let proyectoExistenteId = null;
 
-    const parseNum = (val) => {
-      if (val === null || val === undefined || val === '') return 0;
-      const num = parseFloat(String(val).replace(',', '.'));
-      return isNaN(num) ? 0 : num;
-    };
-
     document.addEventListener("DOMContentLoaded", () => {
       document.getElementById('header-institucion').innerText = institucion;
       document.getElementById('header-curso').innerText = `Curso: ${curso} • Formulación de Proyecto`;
@@ -319,32 +303,32 @@
     });
 
     function calcularFinanzas() {
-      const invMaq = parseNum(document.getElementById('fin-inv-maquinaria')?.value);
-      const invInm = parseNum(document.getElementById('fin-inv-inmueble')?.value);
-      const invMO = parseNum(document.getElementById('fin-inv-mo')?.value);
-      const invMob = parseNum(document.getElementById('fin-inv-mobiliario')?.value);
-      const invMP = parseNum(document.getElementById('fin-inv-mp')?.value);
-      const invServ = parseNum(document.getElementById('fin-inv-servicios')?.value);
+      const invMaq = parseFloat(document.getElementById('fin-inv-maquinaria').value) || 0;
+      const invInm = parseFloat(document.getElementById('fin-inv-inmueble').value) || 0;
+      const invMO = parseFloat(document.getElementById('fin-inv-mo').value) || 0;
+      const invMob = parseFloat(document.getElementById('fin-inv-mobiliario').value) || 0;
+      const invMP = parseFloat(document.getElementById('fin-inv-mp').value) || 0;
+      const invServ = parseFloat(document.getElementById('fin-inv-servicios').value) || 0;
 
       const totalInversion = invMaq + invInm + invMO + invMob + invMP + invServ;
       document.getElementById('txt-total-inversion').innerText = `$ ${totalInversion.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
-      const cuotas = parseInt(document.getElementById('fin-pres-cuotas')?.value) || 0;
-      const montoCuota = parseNum(document.getElementById('fin-pres-monto-cuota')?.value);
+      const cuotas = parseInt(document.getElementById('fin-pres-cuotas').value) || 0;
+      const montoCuota = parseFloat(document.getElementById('fin-pres-monto-cuota').value) || 0;
       const totalDevolver = cuotas * montoCuota;
       document.getElementById('fin-pres-total').value = `$ ${totalDevolver.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
-      const gInm = parseNum(document.getElementById('fin-gasto-inmueble')?.value);
-      const gMOI = parseNum(document.getElementById('fin-gasto-moi')?.value);
-      const gServ = parseNum(document.getElementById('fin-gasto-servicios')?.value);
-      const gCuota = parseNum(document.getElementById('fin-gasto-cuota')?.value);
+      const gInm = parseFloat(document.getElementById('fin-gasto-inmueble').value) || 0;
+      const gMOI = parseFloat(document.getElementById('fin-gasto-moi').value) || 0;
+      const gServ = parseFloat(document.getElementById('fin-gasto-servicios').value) || 0;
+      const gCuota = parseFloat(document.getElementById('fin-gasto-cuota').value) || 0;
 
       const totalGastosMensuales = gInm + gMOI + gServ + gCuota;
       document.getElementById('txt-total-gastos').innerText = `$ ${totalGastosMensuales.toLocaleString('es-AR', {minimumFractionDigits: 2})}`;
 
-      const prodMP = parseNum(document.getElementById('fin-prod-mp')?.value);
-      const prodMOD = parseNum(document.getElementById('fin-prod-mod')?.value);
-      const ganancia = parseNum(document.getElementById('fin-prod-ganancia')?.value);
+      const prodMP = parseFloat(document.getElementById('fin-prod-mp').value) || 0;
+      const prodMOD = parseFloat(document.getElementById('fin-prod-mod').value) || 0;
+      const ganancia = parseFloat(document.getElementById('fin-prod-ganancia').value) || 0;
 
       const costoTotalProducto = prodMP + prodMOD;
       const precioVenta = costoTotalProducto + ganancia;
@@ -356,13 +340,7 @@
       }
       document.getElementById('txt-punto-equilibrio').innerText = `${unidadesEquilibrio} Unidades/mes`;
 
-      return {
-        totalInversion, totalGastosMensuales, costoTotalProducto, precioVenta, ganancia, unidadesEquilibrio,
-        invMaq, invInm, invMO, invMob, invMP, invServ,
-        cuotas, montoCuota, totalDevolver,
-        gInm, gMOI, gServ, gCuota,
-        prodMP, prodMOD
-      };
+      return { totalInversion, totalGastosMensuales };
     }
 
     async function cargarProyectoPrevio() {
@@ -373,9 +351,9 @@
         const { data } = await _supabase.from('proyectos').select('*').eq('id', idParam).single();
         if (data) {
           if (data.clave_proyecto && data.clave_proyecto.trim() !== '') {
-            const pass = prompt(`🔒 PROYECTO PROTEGIDO (#${data.id})\n\nIngresá la contraseña de edición de tu grupo:`);
+            const pass = prompt(`🔒 PROYECTO PROTEGIDO (#${data.id})\n\nIngresá la contraseña de edición asignada a tu grupo:`);
             if (!pass || pass.trim() !== data.clave_proyecto.trim()) {
-              alert("❌ Contraseña incorrecta. No podés modificar este proyecto.");
+              alert("❌ Contraseña incorrecta. No se permite acceder ni editar este proyecto.");
               window.location.href = "index.html";
               return;
             }
@@ -391,7 +369,9 @@
       if (data) {
         const bloque = document.getElementById('bloque-evaluacion-docente');
         bloque.classList.remove('hidden');
-        document.getElementById('alumno-nota-val').innerText = data.nota_final ? parseFloat(data.nota_final).toFixed(1) : '0.0';
+        
+        const notaFinal = data.nota_final || data.nota_global || 0;
+        document.getElementById('alumno-nota-val').innerText = parseFloat(notaFinal).toFixed(1);
         document.getElementById('alumno-devolucion-txt').innerText = data.devolucion_docente || 'Sin observaciones registradas por el docente.';
       }
     }
@@ -404,19 +384,16 @@
       document.getElementById('nombreProyecto').value = p.nombreProyecto || p.nombre || '';
       document.getElementById('slogan').value = p.slogan || '';
       document.getElementById('logoUrl').value = p.logoUrl || '';
-      document.getElementById('ubicacion').value = p.ubicacion || '';
       document.getElementById('integrantes').value = p.integrantes || '';
       document.getElementById('encuestaUrl').value = p.encuestaUrl || '';
       document.getElementById('analisis_mercado').value = p.analisis_mercado || p.analisisMercado || '';
       document.getElementById('publicoObjetivo').value = p.publicoObjetivo || '';
       document.getElementById('canalesVenta').value = p.canalesVenta || '';
       document.getElementById('redes_sociales').value = p.redes_sociales || '';
-      document.getElementById('video_promo').value = p.video_promo || p.videoUrl || '';
+      document.getElementById('video_promo').value = p.video_promo || '';
       document.getElementById('competidores').value = p.competidores || '';
 
-      document.getElementById('desglose_inversion_inicial').value = p.desglose_inversion_inicial || '';
-
-      if (p.finanzas_json && typeof p.finanzas_json === 'object') {
+      if (p.finanzas_json) {
         const f = p.finanzas_json;
         if (f.inversion) {
           document.getElementById('fin-inv-maquinaria').value = f.inversion.maquinaria || 0;
@@ -458,93 +435,82 @@
       btn.innerText = "Guardando...";
 
       const calc = calcularFinanzas();
-      const urlParams = new URLSearchParams(window.location.search);
-      const targetId = proyectoExistenteId || urlParams.get('id');
 
       const finanzasJson = {
         inversion: {
-          maquinaria: calc.invMaq,
-          inmueble: calc.invInm,
-          mano_de_obra: calc.invMO,
-          mobiliario: calc.invMob,
-          materia_prima: calc.invMP,
-          servicios: calc.invServ,
+          maquinaria: parseFloat(document.getElementById('fin-inv-maquinaria').value) || 0,
+          inmueble: parseFloat(document.getElementById('fin-inv-inmueble').value) || 0,
+          mano_de_obra: parseFloat(document.getElementById('fin-inv-mo').value) || 0,
+          mobiliario: parseFloat(document.getElementById('fin-inv-mobiliario').value) || 0,
+          materia_prima: parseFloat(document.getElementById('fin-inv-mp').value) || 0,
+          servicios: parseFloat(document.getElementById('fin-inv-servicios').value) || 0,
           total: document.getElementById('txt-total-inversion').innerText
         },
         prestamo: {
-          cuotas: calc.cuotas,
-          monto_cuota: calc.montoCuota,
+          cuotas: parseInt(document.getElementById('fin-pres-cuotas').value) || 0,
+          monto_cuota: parseFloat(document.getElementById('fin-pres-monto-cuota').value) || 0,
           total_devolver: document.getElementById('fin-pres-total').value
         },
         gastos_mensuales: {
-          inmueble: calc.gInm,
-          mano_de_obra_ind: calc.gMOI,
-          servicios: calc.gServ,
-          cuota_credito: calc.gCuota,
+          inmueble: parseFloat(document.getElementById('fin-gasto-inmueble').value) || 0,
+          mano_de_obra_ind: parseFloat(document.getElementById('fin-gasto-moi').value) || 0,
+          servicios: parseFloat(document.getElementById('fin-gasto-servicios').value) || 0,
+          cuota_credito: parseFloat(document.getElementById('fin-gasto-cuota').value) || 0,
           total: document.getElementById('txt-total-gastos').innerText
         },
         costo_producto: {
-          materia_prima: calc.prodMP,
-          mano_de_obra_dir: calc.prodMOD,
-          ganancia: calc.ganancia,
+          materia_prima: parseFloat(document.getElementById('fin-prod-mp').value) || 0,
+          mano_de_obra_dir: parseFloat(document.getElementById('fin-prod-mod').value) || 0,
+          ganancia: parseFloat(document.getElementById('fin-prod-ganancia').value) || 0,
           precio_venta: document.getElementById('fin-prod-precio').value,
           punto_equilibrio: document.getElementById('txt-punto-equilibrio').innerText
         }
       };
 
       let payload = {
+        institucion: institucion,
+        curso: curso,
         nombreProyecto: document.getElementById('nombreProyecto').value.trim(),
-        nombre: document.getElementById('nombreProyecto').value.trim(),
         slogan: document.getElementById('slogan').value.trim(),
         logoUrl: document.getElementById('logoUrl').value.trim(),
-        ubicacion: document.getElementById('ubicacion').value.trim(),
         integrantes: document.getElementById('integrantes').value.trim(),
         encuestaUrl: document.getElementById('encuestaUrl').value.trim(),
         analisis_mercado: document.getElementById('analisis_mercado').value.trim(),
-        analisisMercado: document.getElementById('analisis_mercado').value.trim(),
         publicoObjetivo: document.getElementById('publicoObjetivo').value.trim(),
         canalesVenta: document.getElementById('canalesVenta').value.trim(),
         redes_sociales: document.getElementById('redes_sociales').value.trim(),
         video_promo: document.getElementById('video_promo').value.trim(),
-        videoUrl: document.getElementById('video_promo').value.trim(),
         competidores: document.getElementById('competidores').value.trim(),
-        
         inversionInicial: calc.totalInversion,
-        inversion_inicial: calc.totalInversion,
-        desglose_inversion_inicial: document.getElementById('desglose_inversion_inicial').value.trim(),
         gastos_mensuales: calc.totalGastosMensuales,
-        costo_unitario: calc.costoTotalProducto,
-        precio_venta: calc.precioVenta,
-        ganancia_unitaria: calc.ganancia,
-        punto_equilibrio: calc.unidadesEquilibrio,
-        puntoEquilibrio: calc.unidadesEquilibrio,
         finanzas_json: finanzasJson,
-
         plan_implementacion: document.getElementById('plan_implementacion').value.trim(),
         estrategias_crecimiento: document.getElementById('estrategias_crecimiento').value.trim(),
-        estrategia_crecimiento: document.getElementById('estrategias_crecimiento').value.trim(),
         conclusiones: document.getElementById('conclusiones').value.trim()
       };
 
       try {
-        let res = null;
+        let res = proyectoExistenteId 
+          ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
+          : await _supabase.from('proyectos').insert([payload]);
 
-        if (targetId) {
-          res = await _supabase.from('proyectos').update(payload).eq('id', targetId).select();
-        } else {
-          payload.institucion = institucion;
-          payload.curso = curso;
-          res = await _supabase.from('proyectos').insert([payload]).select();
+        if (res.error && (res.error.message.includes('schema cache') || res.error.message.includes('column'))) {
+          delete payload.finanzas_json;
+          delete payload.curso;
+          delete payload.institucion;
+          delete payload.analisis_mercado;
+
+          res = proyectoExistenteId 
+            ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
+            : await _supabase.from('proyectos').insert([payload]);
         }
 
         if (res.error) throw res.error;
 
         alert("¡Proyecto guardado con éxito!");
         window.location.href = "index.html";
-
       } catch (err) {
-        console.error("Error al guardar:", err);
-        alert("⚠️ Ocurrió un error al guardar los datos:\n\n" + (err.message || JSON.stringify(err)));
+        alert("Error al guardar el proyecto: " + err.message);
       } finally {
         btn.disabled = false;
         btn.innerText = "Guardar Proyecto";
