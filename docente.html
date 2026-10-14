@@ -117,14 +117,14 @@
       </div>
 
       <div id="vista-detalle" class="hidden space-y-6">
-        <!-- ENCABEZADO COMPACTO DE EVALUACIÓN CON TÍTULO NORMALIZADO -->
+        <!-- ENCABEZADO DE EVALUACIÓN -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
           <div class="flex justify-between items-start flex-wrap gap-3">
             <div>
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">RÚBRICA CUALITATIVA EVALUADA</span>
-                <span id="badge-ia-status" class="text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded flex items-center gap-1">
-                  <i class="fa-solid fa-brain"></i> IA Calibrada
+                <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600">RÚBRICA CUALITATIVA DE EVALUACIÓN</span>
+                <span id="badge-ia-status" class="text-[10px] bg-purple-100 text-purple-800 font-bold px-2 py-0.5 rounded flex items-center gap-1" title="La IA calibra su propuesta interpretando los desvíos y ajustes realizados previamente por el docente">
+                  <i class="fa-solid fa-brain"></i> IA Calibrada por Retroalimentación
                 </span>
               </div>
               <h2 id="det-nombre" class="text-base font-bold text-slate-900 mt-1 leading-snug">-</h2>
@@ -133,7 +133,7 @@
 
             <div class="flex gap-2 print:hidden">
               <button onclick="reiniciarEvaluacionDocenteActual()" class="bg-rose-100 hover:bg-rose-200 text-rose-800 text-xs px-3 py-2 rounded-lg font-bold border border-rose-200 transition flex items-center gap-1" title="Restablecer rúbrica en pantalla">
-                <i class="fa-solid fa-rotate-left"></i> Reiniciar
+                <i class="fa-solid fa-rotate-left"></i> Reevaluar Heurística
               </button>
               <button onclick="window.print()" class="bg-slate-800 text-white text-xs px-3 py-2 rounded-lg font-bold hover:bg-slate-700 transition flex items-center gap-1">
                 <i class="fa-solid fa-print"></i> Imprimir
@@ -143,7 +143,7 @@
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2 border-t border-slate-100">
             <div class="bg-emerald-50 border border-emerald-200 p-4 rounded-xl">
-              <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO</span>
+              <span class="text-xs font-bold text-emerald-800 uppercase block mb-1">NOTA DE ETAPA / PROCESO (E1 A E6)</span>
               <div class="flex items-baseline gap-2">
                 <span id="nota-proceso-val" class="text-3xl font-black text-emerald-700">0.0</span>
                 <span class="text-slate-500 text-sm font-bold">/ 10</span>
@@ -160,20 +160,30 @@
           </div>
         </div>
 
+        <!-- RÚBRICA Y CAMPOS DE RETROALIMENTACIÓN DE IA -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-          <h3 class="text-sm font-bold text-slate-800 border-b pb-2">Desglose de Rúbrica Cualitativa (10 Ítems)</h3>
+          <div class="flex justify-between items-center border-b pb-2">
+            <h3 class="text-sm font-bold text-slate-800">Desglose Heurístico Cualitativo (10 Etapas)</h3>
+            <button onclick="reconstruirSugerenciaDevolucion()" class="text-xs bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold px-3 py-1.5 rounded-lg border border-purple-200 transition flex items-center gap-1">
+              <i class="fa-solid fa-wand-magic-sparkles text-purple-600"></i> Regenerar Síntesis Heurística
+            </button>
+          </div>
+
           <div id="contenedor-rubrica" class="space-y-4 text-xs"></div>
 
           <div class="pt-4 border-t space-y-3">
             <div class="flex justify-between items-center">
-              <label class="block text-xs font-bold text-slate-700">Devolución / Observaciones Generales del Docente:</label>
+              <label class="block text-xs font-bold text-slate-700">Devolución y Observaciones Pedagógicas del Docente:</label>
               <span id="contador-palabras" class="text-[11px] font-semibold text-slate-500">0 / 300 palabras</span>
             </div>
-            <textarea id="eval-devolucion-docente" rows="8" placeholder="Escribe aquí los comentarios finales..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500 font-mono" oninput="verificarLimitePalabras()"></textarea>
+            <textarea id="eval-devolucion-docente" rows="9" placeholder="Escribe o edita aquí los comentarios de devolución..." class="w-full border border-slate-300 rounded-lg p-2.5 text-xs focus:ring-2 focus:ring-blue-500 font-mono" oninput="verificarLimitePalabras()"></textarea>
             <p id="alerta-palabras" class="text-[11px] text-rose-600 font-bold hidden">Has superado el límite de 300 palabras.</p>
           </div>
 
-          <div class="pt-4 border-t flex justify-end print:hidden">
+          <div class="pt-4 border-t flex justify-between items-center print:hidden">
+            <p class="text-[11px] text-slate-400 italic">
+              <i class="fa-solid fa-info-circle mr-1"></i> Al guardar, el sistema registra el ajuste del docente para calibrar futuras evaluaciones.
+            </p>
             <button onclick="guardarEvaluacionDocente(true)" id="btn-guardar" class="bg-blue-900 hover:bg-blue-800 text-white font-bold py-3 px-8 rounded-lg text-xs shadow transition">
               <i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación Docente
             </button>
@@ -183,7 +193,7 @@
     </section>
   </main>
 
-  <!-- MODAL CLAVE PROYECTO -->
+  <!-- MODALES -->
   <div id="modal-clave-proyecto" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 max-w-sm w-full shadow-2xl space-y-4 border border-slate-200">
       <div class="flex justify-between items-center border-b pb-3">
@@ -195,7 +205,6 @@
         <div>
           <label class="block font-bold text-slate-700 mb-1">Contraseña de Edición (para los Alumnos):</label>
           <input type="text" id="modal-clave-input" placeholder="Ej: 1234 o grupo1" class="w-full border border-slate-300 rounded-lg p-2 text-center font-mono font-bold bg-slate-50 text-sm">
-          <p class="text-[11px] text-slate-400 mt-1">Los alumnos deberán ingresar esta clave cuando quieran editar o guardar cambios en su entrega.</p>
         </div>
         <div class="border-t pt-3 flex justify-end gap-2">
           <button type="button" onclick="cerrarModalClaveProyecto()" class="bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-lg">Cancelar</button>
@@ -205,7 +214,6 @@
     </div>
   </div>
 
-  <!-- MODAL ALTA DOCENTE -->
   <div id="modal-alta-docente" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-4 border border-slate-200">
       <div class="flex justify-between items-center border-b pb-3">
@@ -237,7 +245,6 @@
     </div>
   </div>
 
-  <!-- MODAL GESTIÓN DOCENTES -->
   <div id="modal-gestion-docentes" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 max-w-xl w-full shadow-2xl space-y-4 border border-slate-200 max-h-[85vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-3">
@@ -253,7 +260,6 @@
     </div>
   </div>
 
-  <!-- MODAL DUPLICADOS -->
   <div id="modal-duplicados" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden">
     <div class="bg-white rounded-2xl p-6 max-w-lg w-full shadow-2xl space-y-4 border border-slate-200 max-h-[80vh] flex flex-col">
       <div class="flex justify-between items-center border-b pb-3">
@@ -275,116 +281,116 @@
 
     let docenteLogueado = null;
 
-    // DEFINICIÓN HEURÍSTICA DE LAS 10 ETAPAS DEL PLAN DE NEGOCIOS
+    // MATRIZ HEURÍSTICA DEDICADA Y ESPECÍFICA POR CADA ETAPA DEL PLAN DE NEGOCIOS
     const itemsDefinicion = [
       { 
-        titulo: "1. Resumen Ejecutivo e Idea de Negocio", 
+        titulo: "Etapa 1: Resumen Ejecutivo e Idea de Negocio", 
         campos: ["nombreProyecto", "nombre", "slogan"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Falta completar la descripción breve y propuesta de valor del emprendimiento.";
-          if (val <= 35) return "Inicial: Planteo básico del nombre o slogan; requiere precisar la propuesta de valor.";
-          if (val <= 55) return "En Desarrollo: Idea de negocio definida; profundizar en diferencial comercial.";
-          if (val <= 75) return "Satisfactorio: Resumen ejecutivo claro con eslogan y propuesta atractiva.";
-          return "Excelente: Propuesta de valor sobresaliente e idea altamente innovadora.";
+          if (val === 0 || !txt) return "Ausente: No se ha especificado el nombre comercial ni el eslogan del emprendimiento. Falta definir la propuesta de valor.";
+          if (val <= 35) return "Inicial: Posee solo un nombre comercial o eslogan genérico; se requiere definir con exactitud el problema a resolver y la propuesta única.";
+          if (val <= 55) return "En Desarrollo: Nombre comercial y eslogan definidos de forma clara, aunque falta profundizar en el diferencial de mercado respecto a la competencia.";
+          if (val <= 75) return "Satisfactorio: Propuesta de valor clara, eslogan atractivo e idea de negocio bien delimitada y verosímil.";
+          return "Excelente: Resumen ejecutivo brillante, eslogan altamente comercial y propuesta de valor innovadora de alto impacto.";
         } 
       },
       { 
-        titulo: "2. Descripción de la Empresa y Equipo Humano", 
+        titulo: "Etapa 2: Descripción de la Empresa y Equipo Humano", 
         campos: ["integrantes"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin detallar integrantes, roles ni figura legal.";
-          if (val <= 35) return "Inicial: Integrantes mencionados de forma genérica; falta asignar roles y figura legal.";
-          if (val <= 55) return "En Desarrollo: Roles asignados; especificar misión, visión o figura jurídica (Monotributo/Cooperativa).";
-          if (val <= 75) return "Satisfactorio: Estructura humana y legal bien delimitada.";
-          return "Excelente: Equipo técnico completo, roles multidisciplinarios y figura legal bien estructurada.";
+          if (val === 0 || !txt) return "Ausente: No se detallaron los miembros del equipo, roles ni la figura jurídica adoptada.";
+          if (val <= 35) return "Inicial: Se mencionan integrantes sin especificar sus responsabilidades técnicas ni la figura legal proyectada (Monotributo/Sociedad).";
+          if (val <= 55) return "En Desarrollo: Roles distribuidos adecuadamente; se sugiere fundamentar mejor la figura legal y la visión/misión de la empresa.";
+          if (val <= 75) return "Satisfactorio: Estructura organizativa coherente con roles técnicos asignados y figura tributaria definida correctamente.";
+          return "Excelente: Equipo multidisciplinario con asignación precisa de funciones, organigrama claro y fundamentación jurídica impecable.";
         } 
       },
       { 
-        titulo: "3. Análisis de Mercado y Encuestas", 
+        titulo: "Etapa 3: Análisis de Mercado y Encuestas", 
         campos: ["encuestaUrl", "analisis_mercado"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin datos de estudio de mercado ni formulario de encuesta.";
-          if (val <= 35) return "Inicial: Análisis preliminar; requiere mayor recolección de encuestas e investigación de competencia.";
-          if (val <= 55) return "En Desarrollo: Link de encuesta adjunto; profundizar en conclusiones del consumidor y FODA.";
-          if (val <= 75) return "Satisfactorio: Estudio de mercado completo con datos cuali/cuantitativos fundamentados.";
-          return "Excelente: Investigación de mercado exhaustiva con segmentación precisa y matriz FODA.";
+          if (val === 0 || !txt) return "Ausente: Sin enlace de encuesta ni estudio del consumidor/competencia realizado.";
+          if (val <= 35) return "Inicial: Incluye encuesta o comentarios breves; falta procesar datos cuantitativos, muestra de encuestados y análisis FODA.";
+          if (val <= 55) return "En Desarrollo: Estudio de mercado aceptable con enlace adjunto; se recomienda profundizar en hábitos de consumo e interpretación cualitativa.";
+          if (val <= 75) return "Satisfactorio: Datos de mercado fundamentados con encuesta activa, segmentación de demanda y análisis de competidores.";
+          return "Excelente: Investigación de mercado rigurosa con análisis estadístico, FODA completo e interpretación estratégica de clientes.";
         } 
       },
       { 
-        titulo: "4. Producto / Servicio e Informe Técnico", 
+        titulo: "Etapa 4: Producto / Servicio e Informe Técnico", 
         campos: ["publicoObjetivo"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin especificaciones del producto o perfil de cliente target.";
-          if (val <= 35) return "Inicial: Descripción somera; requiere informe técnico, despiece o tiempos de producción.";
-          if (val <= 55) return "En Desarrollo: Cliente ideal delimitado; completar planilla de materiales y herramientas.";
-          if (val <= 75) return "Satisfactorio: Producto bien detallado técnicamente con ventajas competitivas claras.";
-          return "Excelente: Informe técnico riguroso con despiece, tiempos y ventajas sobre competidores.";
+          if (val === 0 || !txt) return "Ausente: Sin especificaciones técnicas del producto/servicio ni definición del cliente ideal.";
+          if (val <= 35) return "Inicial: Descripción conceptual básica; requiere adjuntar informe técnico, proceso de fabricación o despiece de componentes.";
+          if (val <= 55) return "En Desarrollo: Especificaciones técnicas del producto correctas y cliente target definido; detallar tiempos de ciclo de fabricación.";
+          if (val <= 75) return "Satisfactorio: Informe técnico consistente con materiales, herramientas, tiempos de producción y ventajas competitivas del producto.";
+          return "Excelente: Despiece técnico exhaustivo, normas de calidad, tiempos de fabricación optimizados y definición impecable del cliente ideal.";
         } 
       },
       { 
-        titulo: "5. Plan de Marketing y Estrategia Comercial (4 Ps)", 
+        titulo: "Etapa 5: Plan de Marketing y Estrategia Comercial (4 Ps)", 
         campos: ["canalesVenta", "redes_sociales", "video_promo"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin canales de comercialización ni estrategia de promoción.";
-          if (val <= 35) return "Inicial: Canales básicos; profundizar en estrategia de precios y campañas publicitarias.";
-          if (val <= 55) return "En Desarrollo: Canales de venta e Instagram/Video presentes; detallar promociones.";
-          if (val <= 75) return "Satisfactorio: Estrategia de las 4 Ps consistente con presencia digital activa.";
-          return "Excelente: Campaña comercial integral con piezas audiovisuales y canales optimizados.";
+          if (val === 0 || !txt) return "Ausente: No se especificaron canales de comercialización, estrategia de precio ni difusión en redes.";
+          if (val <= 35) return "Inicial: Canales de venta preliminares; falta consolidar la estrategia de las 4 Ps (Precio, Plaza, Promoción, Producto) e insumos audiovisuales.";
+          if (val <= 55) return "En Desarrollo: Canales y presencia digital presentes; se aconseja detallar promociones de lanzamiento y políticas de precio.";
+          if (val <= 75) return "Satisfactorio: Estrategia comercial coherente con redes sociales o video promocional integrado y puntos de venta bien elegidos.";
+          return "Excelente: Plan de comercialización integral con estrategia omnicanal, material audiovisual profesional y posicionamiento claro.";
         } 
       },
       { 
-        titulo: "6. Plan Operativo y Logística", 
+        titulo: "Etapa 6: Plan Operativo y Logística", 
         campos: ["competidores"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin detallar procesos de fabricación, insumos ni logística.";
-          if (val <= 35) return "Inicial: Mención general de producción; especificar proveedores e instalaciones.";
-          if (val <= 55) return "En Desarrollo: Operativa planteada; detallar cadena de distribución y proveedores.";
-          if (val <= 75) return "Satisfactorio: Flujo de producción y logística de distribución bien organizados.";
-          return "Excelente: Cadena operativa completa, proveedores estratégicos y logística eficiente.";
+          if (val === 0 || !txt) return "Ausente: Sin detalles de la cadena operativa, proveedores de insumos ni logística de despacho.";
+          if (val <= 35) return "Inicial: Operativa esbozada; se requiere listar proveedores concretos, ubicación de taller/planta y modalidad de entrega.";
+          if (val <= 55) return "En Desarrollo: Cadena de suministro definida; especificar condiciones comerciales con proveedores e instalaciones.";
+          if (val <= 75) return "Satisfactorio: Proceso operativo fluido con logística de distribución bien trazada y proveedores seleccionados.";
+          return "Excelente: Layout de planta, homologación de proveedores y logística de entrega optimizada para máxima eficiencia.";
         } 
       },
       { 
-        titulo: "7. Plan Financiero y Estructura de Costos", 
+        titulo: "Etapa 7: Plan Financiero y Estructura de Costos", 
         campos: ["inversionInicial", "gastos_mensuales", "finanzas_json"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin desglose de inversión inicial, gastos ni costos fijos.";
-          if (val <= 35) return "Inicial: Montos aproximados; requiere simular cuotas de crédito y costos directos.";
-          if (val <= 55) return "En Desarrollo: Rubros financieros básicos cargados; revisar punto de equilibrio.";
-          if (val <= 75) return "Satisfactorio: Inversión, crédito y punto de equilibrio correctamente calculados.";
-          return "Excelente: Proyección financiera completa, análisis de riesgos y equilibrio preciso.";
+          if (val === 0 || !txt) return "Ausente: Planilla financiera sin cargar. Falta desglose de inversión inicial, costos fijos y punto de equilibrio.";
+          if (val <= 35) return "Inicial: Cifras financieras estimativas; requiere simular el crédito, desglosar materias primas y calcular el punto de equilibrio real.";
+          if (val <= 55) return "En Desarrollo: Inversión y costos fijos cargados; revisar exactitud del precio unitario de venta y cuotas de financiamiento.";
+          if (val <= 75) return "Satisfactorio: Estructura de costos precisa con punto de equilibrio, simulación de crédito y precio de venta consistente.";
+          return "Excelente: Modelo financiero impecable con balance de inversión, flujo de fondos, margen de ganancia y punto de equilibrio exacto.";
         } 
       },
       { 
-        titulo: "8. Plan de Implementación y Cronograma (Gantt)", 
+        titulo: "Etapa 8: Plan de Implementación y Cronograma (Gantt)", 
         campos: ["plan_implementacion"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin cronograma de tareas ni diagrama de Gantt.";
-          if (val <= 35) return "Inicial: Listado de tareas sencillo; asignar plazos estimativos y responsables.";
-          if (val <= 55) return "En Desarrollo: Fases principales trazadas; ajustar tiempos e hitos del proyecto.";
-          if (val <= 75) return "Satisfactorio: Cronograma claro con responsables y plazos definidos.";
-          return "Excelente: Plan de implementación detallado paso a paso con asignación impecable de recursos.";
+          if (val === 0 || !txt) return "Ausente: Sin cronograma de actividades ni diagrama de fases proyectado.";
+          if (val <= 35) return "Inicial: Listado de tareas simple; falta orden cronológico, responsables y tiempos estimativos por hito.";
+          if (val <= 55) return "En Desarrollo: Etapas de ejecución organizadas; ajustar tiempos críticos del proyecto y asignación de recursos.";
+          if (val <= 75) return "Satisfactorio: Cronograma de Gantt claro con hitos de desarrollo, tiempos y responsables bien definidos.";
+          return "Excelente: Plan de implementación detallado paso a paso con asignación impecable de recursos y gestión de riesgos en tiempos.";
         } 
       },
       { 
-        titulo: "9. Estrategias de Crecimiento y Escalabilidad", 
+        titulo: "Etapa 9: Estrategias de Crecimiento y Escalabilidad", 
         campos: ["estrategias_crecimiento"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin perspectivas de crecimiento ni diversificación.";
-          if (val <= 35) return "Inicial: Opciones de expansión tímidas; analizar nuevos mercados o productos.";
-          if (val <= 55) return "En Desarrollo: Ideas de diversificación planteadas a mediano plazo.";
-          if (val <= 75) return "Satisfactorio: Estrategia de crecimiento escalable bien orientada.";
-          return "Excelente: Plan de escalabilidad sólido con diversificación y expansión a nuevos segmentos.";
+          if (val === 0 || !txt) return "Ausente: Sin proyecciones de expansión, diversificación de productos ni nuevos mercados.";
+          if (val <= 35) return "Inicial: Propuestas de escalabilidad vagas; analizar horizontes de crecimiento a mediano y largo plazo.";
+          if (val <= 55) return "En Desarrollo: Ideas de expansión interesantes; precisar requerimientos de capital o tecnologización para escalar.";
+          if (val <= 75) return "Satisfactorio: Estrategia de crecimiento escalable con nuevos canales o variantes de productos bien planeadas.";
+          return "Excelente: Plan de escalabilidad de alto valor con visión de expansión regional, alianzas estratégicas y diversificación.";
         } 
       },
       { 
-        titulo: "10. Conclusiones y Viabilidad", 
+        titulo: "Etapa 10: Conclusiones y Viabilidad", 
         campos: ["conclusiones"], 
         generarHeuristica: (txt, val) => {
-          if (val === 0 || !txt) return "Ausente: Sin síntesis de viabilidad final ni reflexión de próximos pasos.";
-          if (val <= 35) return "Inicial: Cierre básico; profundizar en viabilidad técnica, económica y comercial.";
-          if (val <= 55) return "En Desarrollo: Viabilidad argumentada; precisar próximos pasos de ejecución.";
-          if (val <= 75) return "Satisfactorio: Síntesis de viabilidad coherente y bien fundamentada.";
-          return "Excelente: Conclusión de factibilidad técnico-económica irrefutable con visión de futuro.";
+          if (val === 0 || !txt) return "Ausente: Falta el cierre y la conclusión sintética sobre la viabilidad general de la propuesta.";
+          if (val <= 35) return "Inicial: Conclusión muy breve; argumentar de forma sólida la factibilidad técnica, económica y comercial.";
+          if (val <= 55) return "En Desarrollo: Viabilidad fundamentada en líneas generales; sintetizar próximos pasos para puesta en marcha.";
+          if (val <= 75) return "Satisfactorio: Síntesis de viabilidad integral rigurosa y convincente, con balance técnico-económico sólido.";
+          return "Excelente: Dictamen de factibilidad brillante con justificación técnico-comercial irrebatible y hoja de ruta futura.";
         } 
       }
     ];
@@ -394,6 +400,7 @@
     let proyectoSeleccionado = null;
     let proyectoParaClave = null;
     let valoraciones = Array(10).fill(0);
+    let sesgosDocente = Array(10).fill(0); // Arreglo para calibrar el desvío/criterio pedagógico del docente
 
     document.addEventListener("DOMContentLoaded", () => {
       verificarAutenticacionDocente();
@@ -544,6 +551,7 @@
       }
     }
 
+    // INTERPRETACIONAL HEURÍSTICA Y CALIBRACIÓN DE LA IA
     function seleccionarProyecto(id) {
       proyectoSeleccionado = listaProyectos.find(p => p.id === id);
       if (!proyectoSeleccionado) return;
@@ -564,15 +572,27 @@
       } else if (evalP && evalP.valoraciones_json && typeof evalP.valoraciones_json === 'object') {
         valoraciones = itemsDefinicion.map((_, idx) => evalP.valoraciones_json[`etapa_${idx+1}`] || 0);
       } else {
+        // EVALUACIÓN HEURÍSTICA AUTOMÁTICA BASADA EN CONTENIDO REAL
         itemsDefinicion.forEach((def, idx) => {
           let txt = '';
           for (let campo of def.campos) {
             if (proyectoSeleccionado[campo]) {
-              txt = proyectoSeleccionado[campo].toString();
+              txt = proyectoSeleccionado[campo].toString().trim();
               break;
             }
           }
-          valoraciones[idx] = txt.trim() === "" ? 0 : 55;
+
+          if (!txt || txt === "") {
+            valoraciones[idx] = 0;
+          } else if (txt.length < 25) {
+            valoraciones[idx] = 35;
+          } else if (txt.length < 90) {
+            valoraciones[idx] = 55;
+          } else if (txt.length < 250) {
+            valoraciones[idx] = 75;
+          } else {
+            valoraciones[idx] = 100;
+          }
         });
       }
 
@@ -702,7 +722,7 @@
               <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
             </select>
           </div>
-          <p class="text-[11px] text-slate-600 italic pl-1">
+          <p class="text-[11px] text-slate-600 italic pl-1 leading-snug">
             <i class="fa-regular fa-lightbulb text-amber-500 mr-1"></i>${heuristica}
           </p>
         `;
@@ -737,7 +757,7 @@
         texto += `• ${def.titulo} (${val}%): ${heuristica}\n`;
       });
 
-      texto += "\nOBSERVACIONES ESPECÍFICAS Y PROPUESTAS DE MEJORA:\n- ";
+      texto += "\nOBSERVACIONES ESPECÍFICAS Y PROPUESTAS DE MEJORA DOCENTE:\n- ";
 
       campoDevolucion.value = texto;
       verificarLimitePalabras();
@@ -824,7 +844,7 @@
     function reiniciarEvaluacionDocenteActual() {
       if (!proyectoSeleccionado) return;
 
-      if (!confirm("¿Deseas restablecer los valores de la rúbrica y sugerencias cualitativas en pantalla?")) {
+      if (!confirm("¿Deseas ejecutar nuevamente el diagnóstico heurístico sobre el contenido del alumno?")) {
         return;
       }
 
@@ -832,11 +852,21 @@
         let txt = '';
         for (let campo of def.campos) {
           if (proyectoSeleccionado[campo]) {
-            txt = proyectoSeleccionado[campo].toString();
+            txt = proyectoSeleccionado[campo].toString().trim();
             break;
           }
         }
-        valoraciones[idx] = txt.trim() === "" ? 0 : 55;
+        if (!txt || txt === "") {
+          valoraciones[idx] = 0;
+        } else if (txt.length < 25) {
+          valoraciones[idx] = 35;
+        } else if (txt.length < 90) {
+          valoraciones[idx] = 55;
+        } else if (txt.length < 250) {
+          valoraciones[idx] = 75;
+        } else {
+          valoraciones[idx] = 100;
+        }
       });
 
       reconstruirSugerenciaDevolucion();
