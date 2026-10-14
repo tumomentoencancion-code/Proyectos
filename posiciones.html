@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="es" class="notranslate" translate="no">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google" content="notranslate">
   <title>Tabla de Posiciones — Liga de Emprendimientos</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,54 +13,55 @@
   <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-6xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
-        <h1 class="text-base font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga Comercial</h1>
-        <p class="text-slate-400 text-xs">Ranking Oficial de Capital Semilla e Inversión Simulada</p>
+        <h1 id="header-institucion" class="text-base font-bold tracking-tight">E.E.S.T. N°1 Bragado — Liga de Emprendimientos</h1>
+        <p id="header-curso" class="text-slate-400 text-xs">Tabla General de Posiciones • Popularidad e Inversión Semilla</p>
       </div>
-      <div class="flex items-center gap-2">
-        <a href="index.html" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold px-3 py-2 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+
+      <!-- SELECTOR FILTRO MULTICURSO Y ACCESOS -->
+      <div class="flex items-center gap-3 w-full sm:w-auto flex-wrap justify-end">
+        <a href="index.html" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
           <i class="fa-solid fa-house"></i> Volver al Portal
         </a>
+        <select id="select-curso-filtro" onchange="cambiarFiltroCurso(this.value)" class="bg-slate-800 border border-slate-700 text-white text-xs font-bold rounded-lg px-3 py-2 focus:ring-2 focus:ring-amber-500 w-full sm:w-auto">
+          <option value="TODOS">🌐 Ver Todos los Cursos</option>
+        </select>
+        <span id="realtime-status" class="text-xs bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-3 py-2 rounded-lg flex items-center gap-2 shrink-0">
+          <i class="fa-solid fa-bolt"></i> En Vivo
+        </span>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-6 space-y-6">
+  <main class="max-w-6xl mx-auto px-6 space-y-8">
 
-    <!-- METRICAS GLOBALES -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
-        <span class="text-[10px] font-bold text-slate-500 uppercase block">Proyectos Inscriptos</span>
-        <span id="stat-total-proyectos" class="text-2xl font-bold text-slate-900 block mt-1">0</span>
-      </div>
+    <!-- SECCIÓN PODIO / TOP 3 VISUAL COMPACTO -->
+    <section id="podio-container" class="grid grid-cols-1 md:grid-cols-3 gap-4 hidden">
+      <!-- El podio se genera dinámicamente con JS -->
+    </section>
 
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
-        <span class="text-[10px] font-bold text-slate-500 uppercase block">Promedio Nota Docente</span>
-        <span id="stat-promedio-docente" class="text-2xl font-bold text-blue-900 block mt-1">0.0 / 10</span>
-      </div>
-
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 text-center">
-        <span class="text-[10px] font-bold text-slate-500 uppercase block">Capital Semilla Consolidado</span>
-        <span id="stat-total-capital" class="text-2xl font-bold text-emerald-700 block mt-1">$0</span>
-      </div>
-    </div>
-
-    <!-- TABLA DE POSICIONES -->
-    <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-      <div class="p-4 border-b flex justify-between items-center flex-wrap gap-2 bg-slate-50">
+    <!-- TABLA GENERAL TIPO LIGA -->
+    <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+      <div class="p-4 bg-slate-50 border-b flex justify-between items-center">
         <h2 class="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-2">
-          <i class="fa-solid fa-trophy text-amber-500"></i> Ranking Oficial de Emprendimientos
+          <i class="fa-solid fa-trophy text-amber-500"></i> Tabla General de Posiciones
         </h2>
-        <button onclick="cargarRanking()" class="text-xs text-blue-700 hover:text-blue-900 font-bold flex items-center gap-1">
-          <i class="fa-solid fa-rotate"></i> Actualizar
-        </button>
+        <div class="flex items-center gap-3">
+          <a href="index.html" class="text-xs text-slate-500 hover:text-slate-700 font-medium flex items-center gap-1">
+            <i class="fa-solid fa-house"></i> Portada
+          </a>
+          <button onclick="cargarTabla()" class="text-xs text-blue-600 hover:text-blue-800 font-bold flex items-center gap-1">
+            <i class="fa-solid fa-rotate"></i> Actualizar
+          </button>
+        </div>
       </div>
 
       <div class="overflow-x-auto">
         <table class="w-full text-left text-xs">
-          <thead class="bg-slate-100 text-slate-600 uppercase font-bold text-[10px] border-b">
+          <thead class="bg-slate-100 text-slate-600 uppercase text-[10px] tracking-wider font-bold border-b">
             <tr>
-              <th class="p-3 text-center">Puesto</th>
-              <th class="p-3">Proyecto / Integrantes</th>
+              <th class="p-3 text-center">Pos</th>
+              <th class="p-3">Emprendimiento</th>
+              <th class="p-3 text-center">Escuela / Curso</th>
               <th class="p-3 text-center">Nota Docente</th>
               <th class="p-3 text-right">Capital Docente</th>
               <th class="p-3 text-right">Capital Mercado</th>
@@ -69,14 +69,14 @@
               <th class="p-3 text-center">Acción</th>
             </tr>
           </thead>
-          <tbody id="tabla-ranking-body" class="divide-y divide-slate-100">
+          <tbody id="tabla-body" class="divide-y divide-slate-100">
             <tr>
-              <td colspan="7" class="p-6 text-center text-slate-400 italic">Cargando posiciones...</td>
+              <td colspan="8" class="p-6 text-center text-slate-400 italic">Cargando tabla de posiciones...</td>
             </tr>
           </tbody>
         </table>
       </div>
-    </div>
+    </section>
 
   </main>
 
@@ -85,88 +85,194 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    document.addEventListener("DOMContentLoaded", cargarRanking);
+    let cursoActivo = localStorage.getItem('multicurso_curso') || "TODOS";
+    let institucionActiva = localStorage.getItem('multicurso_institucion') || "";
 
-    async function cargarRanking() {
+    async function cargarCursosEnSelector() {
+      const select = document.getElementById('select-curso-filtro');
+      const { data: docentes } = await _supabase.from('docentes').select('institucion, curso');
+      
+      if (docentes && docentes.length > 0) {
+        select.innerHTML = '<option value="TODOS">🌐 Ver Todos los Cursos</option>';
+        docentes.forEach(d => {
+          const val = `${d.institucion} - ${d.curso}`;
+          const option = document.createElement('option');
+          option.value = val;
+          option.innerText = `🏫 ${d.institucion} (${d.curso})`;
+          if (cursoActivo !== "TODOS" && institucionActiva && d.institucion === institucionActiva && d.curso === cursoActivo) {
+            option.selected = true;
+          }
+          select.appendChild(option);
+        });
+      }
+    }
+
+    function cambiarFiltroCurso(valor) {
+      if (valor === "TODOS") {
+        cursoActivo = "TODOS";
+        document.getElementById('header-institucion').innerText = "Liga Global de Emprendimientos";
+        document.getElementById('header-curso').innerText = "Todos los cursos e instituciones participantes";
+      } else {
+        const partes = valor.split(' - ');
+        institucionActiva = partes[0];
+        cursoActivo = partes[1];
+        localStorage.setItem('multicurso_institucion', institucionActiva);
+        localStorage.setItem('multicurso_curso', cursoActivo);
+        document.getElementById('header-institucion').innerText = `${institucionActiva} — Liga de Emprendimientos`;
+        document.getElementById('header-curso').innerText = `Curso: ${cursoActivo}`;
+      }
+      cargarTabla();
+    }
+
+    async function cargarTabla() {
       const { data: proyectos } = await _supabase.from('proyectos').select('*');
       const { data: evaluaciones } = await _supabase.from('evaluaciones').select('*');
       const { data: inversiones } = await _supabase.from('inversiones_simuladas').select('*');
 
+      const tbody = document.getElementById('tabla-body');
+      const podioContainer = document.getElementById('podio-container');
+      tbody.innerHTML = '';
+      podioContainer.innerHTML = '';
+
       if (!proyectos || proyectos.length === 0) {
-        document.getElementById('tabla-ranking-body').innerHTML = '<tr><td colspan="7" class="p-6 text-center text-slate-400 italic">No hay proyectos registrados aún.</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="8" class="p-6 text-center text-slate-400 italic">No hay emprendimientos registrados para esta selección.</td></tr>';
+        podioContainer.classList.add('hidden');
         return;
       }
 
-      let sumaNotas = 0;
-      let proyectosCalificados = 0;
-      let granTotalCapital = 0;
+      let dataFiltrada = proyectos;
+      if (cursoActivo !== "TODOS") {
+        dataFiltrada = proyectos.filter(p => p.institucion === institucionActiva && p.curso === cursoActivo);
+      }
 
-      const ranking = proyectos.map(p => {
+      const consolidado = dataFiltrada.map(p => {
         const evalD = (evaluaciones || []).find(e => e.proyecto_id === p.id);
-        const nota = evalD && evalD.nota_final ? parseFloat(evalD.nota_final) : 0;
-        
-        if (evalD && evalD.nota_final) {
-          sumaNotas += nota;
-          proyectosCalificados++;
-        }
-
-        const capDocente = nota * 100000;
+        const notaDocente = evalD && (evalD.nota_global || evalD.nota_final) ? parseFloat(evalD.nota_global || evalD.nota_final) : 0;
+        const capDocente = notaDocente * 100000;
 
         const invs = (inversiones || []).filter(i => i.proyecto_id === p.id);
-        const capPublico = invs.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+        const capMercado = invs.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
 
-        const capTotal = capDocente + capPublico;
-        granTotalCapital += capTotal;
+        const capTotal = capDocente + capMercado;
 
         return {
           ...p,
-          nota,
+          notaDocente,
           capDocente,
-          capPublico,
+          capMercado,
           capTotal
         };
       });
 
-      ranking.sort((a, b) => b.capTotal - a.capTotal);
+      consolidado.sort((a, b) => b.capTotal - a.capTotal);
 
-      document.getElementById('stat-total-proyectos').innerText = proyectos.length;
-      document.getElementById('stat-promedio-docente').innerText = proyectosCalificados > 0 ? (sumaNotas / proyectosCalificados).toFixed(1) + ' / 10' : '0.0 / 10';
-      document.getElementById('stat-total-capital').innerText = '$ ' + granTotalCapital.toLocaleString('es-AR');
+      // RENDERIZAR PODIO TOP 3
+      if (consolidado.length > 0) {
+        podioContainer.classList.remove('hidden');
+        const top3 = consolidado.slice(0, 3);
+        
+        let visualPodio = [];
+        if (top3.length === 1) visualPodio = [top3[0]];
+        else if (top3.length === 2) visualPodio = [top3[1], top3[0]];
+        else visualPodio = [top3[1], top3[0], top3[2]];
 
-      const tbody = document.getElementById('tabla-ranking-body');
-      tbody.innerHTML = '';
+        visualPodio.forEach((p) => {
+          const posReal = consolidado.findIndex(item => item.id === p.id) + 1;
+          let bgColor = "bg-white border-slate-200";
+          let badgeColor = "bg-slate-100 text-slate-700";
+          let icon = "fa-medal text-slate-400";
 
-      ranking.forEach((item, index) => {
-        const tr = document.createElement('tr');
-        tr.className = "hover:bg-slate-50 transition";
+          if (posReal === 1) {
+            bgColor = "bg-gradient-to-b from-amber-50 to-white border-amber-300 shadow-md transform md:-translate-y-2";
+            badgeColor = "bg-amber-400 text-slate-900";
+            icon = "fa-crown text-amber-500 text-xl";
+          } else if (posReal === 2) {
+            bgColor = "bg-slate-50 border-slate-300";
+            badgeColor = "bg-slate-300 text-slate-900";
+            icon = "fa-medal text-slate-400 text-lg";
+          } else if (posReal === 3) {
+            bgColor = "bg-orange-50/50 border-orange-200";
+            badgeColor = "bg-amber-700 text-white";
+            icon = "fa-award text-amber-700 text-lg";
+          }
 
-        let insigniaPuesto = `<span class="font-bold text-slate-600">#${index + 1}</span>`;
-        if (index === 0) insigniaPuesto = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded text-xs"><i class="fa-solid fa-crown mr-1"></i>1°</span>`;
-        if (index === 1) insigniaPuesto = `<span class="bg-slate-200 text-slate-800 font-bold px-2 py-0.5 rounded text-xs">2°</span>`;
-        if (index === 2) insigniaPuesto = `<span class="bg-amber-700 text-amber-100 font-bold px-2 py-0.5 rounded text-xs">3°</span>`;
+          const nombreLimpio = p.nombreProyecto || p.nombre || 'Sin Nombre';
+          const integrantesLimpios = p.integrantes || p.institucion || 'Alumnos de 7° Año';
 
-        const nombre = item.nombreProyecto || item.nombre || `Proyecto #${item.id}`;
+          const card = document.createElement('div');
+          card.className = `${bgColor} p-4 rounded-xl border flex flex-col justify-between text-center space-y-3 relative`;
+          card.innerHTML = `
+            <div class="space-y-1">
+              <div class="flex justify-center items-center gap-1 mb-1">
+                <i class="fa-solid ${icon}"></i>
+                <span class="text-[10px] font-black uppercase tracking-wider ${badgeColor} px-2.5 py-0.5 rounded-full">${posReal}° LUGAR</span>
+              </div>
+              <h3 class="font-bold text-slate-900 text-xs truncate px-2" title="${nombreLimpio}">${nombreLimpio}</h3>
+              <p class="text-[11px] text-slate-500 truncate px-2" title="${integrantesLimpios}">${integrantesLimpios}</p>
+            </div>
+            <div class="bg-slate-100/70 p-2 rounded-lg grid grid-cols-2 gap-1 text-center border border-slate-200/50 font-mono">
+              <div>
+                <span class="text-[9px] text-slate-500 font-bold block uppercase font-sans">Nota Doc.</span>
+                <span class="text-xs font-bold text-blue-900">${p.notaDocente > 0 ? p.notaDocente.toFixed(1) : '-'}</span>
+              </div>
+              <div>
+                <span class="text-[9px] text-slate-500 font-bold block uppercase font-sans">Cap. Total</span>
+                <span class="text-xs font-bold text-emerald-700">$${p.capTotal.toLocaleString('es-AR')}</span>
+              </div>
+            </div>
+            <a href="votacion.html?id=${p.id}" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-1.5 rounded-lg text-xs transition inline-block">
+              Ver Ficha
+            </a>
+          `;
+          podioContainer.appendChild(card);
+        });
+      }
 
-        tr.innerHTML = `
-          <td class="p-3 text-center">${insigniaPuesto}</td>
-          <td class="p-3">
-            <strong class="text-slate-900 font-bold text-xs block">${nombre}</strong>
-            <span class="text-[11px] text-slate-500">${item.integrantes || '-'}</span>
+      // RENDERIZAR FILAS COMPACTAS DE LA TABLA
+      consolidado.forEach((p, index) => {
+        const pos = index + 1;
+        let posBadge = `<span class="font-bold text-slate-500">${pos}°</span>`;
+        if (pos === 1) posBadge = `<span class="bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full"><i class="fa-solid fa-crown text-amber-500 mr-1"></i>1°</span>`;
+        if (pos === 2) posBadge = `<span class="bg-slate-200 text-slate-800 font-bold px-2 py-0.5 rounded-full">2°</span>`;
+        if (pos === 3) posBadge = `<span class="bg-amber-900/10 text-amber-900 font-bold px-2 py-0.5 rounded-full">3°</span>`;
+
+        const nombreLimpio = p.nombreProyecto || p.nombre || 'Sin Nombre';
+        const integrantesLimpios = p.integrantes || '-';
+
+        const row = document.createElement('tr');
+        row.className = "hover:bg-slate-50 transition";
+        row.innerHTML = `
+          <td class="p-3 text-center align-middle">${posBadge}</td>
+          <td class="p-3 max-w-xs align-middle">
+            <span class="font-bold text-slate-900 block truncate" title="${nombreLimpio}">${nombreLimpio}</span>
+            <span class="text-[11px] text-slate-500 block truncate" title="${integrantesLimpios}">${integrantesLimpios}</span>
           </td>
-          <td class="p-3 text-center font-bold text-blue-900">${item.nota > 0 ? item.nota.toFixed(1) : '-'}</td>
-          <td class="p-3 text-right font-mono text-slate-600">$ ${item.capDocente.toLocaleString('es-AR')}</td>
-          <td class="p-3 text-right font-mono text-slate-600">$ ${item.capPublico.toLocaleString('es-AR')}</td>
-          <td class="p-3 text-right font-mono font-bold text-emerald-700 text-xs">$ ${item.capTotal.toLocaleString('es-AR')}</td>
-          <td class="p-3 text-center">
-            <a href="votacion.html?id=${item.id}" target="_blank" class="bg-blue-900 hover:bg-blue-800 text-white font-bold px-2.5 py-1.5 rounded transition inline-flex items-center gap-1 text-[11px]">
+          <td class="p-3 text-center text-slate-600 align-middle">
+            <span class="font-bold block text-[11px]">${p.institucion || 'E.E.S.T. N°1 Bragado'}</span>
+            <span class="text-[10px] text-slate-400 block">${p.curso || '7° Año'}</span>
+          </td>
+          <td class="p-3 text-center font-bold text-blue-900 align-middle">${p.notaDocente > 0 ? p.notaDocente.toFixed(1) : '-'}</td>
+          <td class="p-3 text-right font-mono text-slate-600 align-middle">$ ${p.capDocente.toLocaleString('es-AR')}</td>
+          <td class="p-3 text-right font-mono text-slate-600 align-middle">$ ${p.capMercado.toLocaleString('es-AR')}</td>
+          <td class="p-3 text-right font-mono font-bold text-emerald-700 text-xs align-middle">$ ${p.capTotal.toLocaleString('es-AR')}</td>
+          <td class="p-3 text-center align-middle">
+            <a href="votacion.html?id=${p.id}" class="bg-blue-900 hover:bg-blue-800 text-white font-bold px-2.5 py-1.5 rounded text-[11px] transition inline-block">
               <i class="fa-solid fa-eye"></i> Ver
             </a>
           </td>
         `;
-
-        tbody.appendChild(tr);
+        tbody.appendChild(row);
       });
     }
+
+    window.onload = () => {
+      cargarCursosEnSelector();
+      if (cursoActivo !== "TODOS" && institucionActiva) {
+        document.getElementById('header-institucion').innerText = `${institucionActiva} — Liga de Emprendimientos`;
+        document.getElementById('header-curso').innerText = `Curso: ${cursoActivo}`;
+      }
+      cargarTabla();
+    };
   </script>
 </body>
 </html>
