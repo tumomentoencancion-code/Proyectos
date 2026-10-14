@@ -14,7 +14,7 @@
   <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
-        <h1 id="header-institucion" class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado</h1>
+        <h1 id="header-institucion" class="text-base font-bold tracking-tight">E.E.S.T. N°1 Bragado</h1>
         <p id="header-curso" class="text-slate-400 text-xs">Formulación de Proyecto de Emprendimiento</p>
       </div>
       <a href="index.html" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
@@ -28,17 +28,32 @@
       
       <div class="border-b pb-4 flex justify-between items-center flex-wrap gap-2">
         <div>
-          <h2 class="text-lg font-black text-slate-900">Formulario de Carga / Edición de Emprendimiento</h2>
+          <h2 class="text-base font-bold text-slate-900">Formulario de Carga / Edición de Emprendimiento</h2>
           <p class="text-xs text-slate-500">Completá los datos requeridos por las 10 etapas del plan de negocios.</p>
         </div>
         <span id="badge-modo" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Nuevo Proyecto</span>
+      </div>
+
+      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE EN LA FICHA DEL ALUMNO -->
+      <div id="bloque-evaluacion-docente" class="hidden bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
+        <div class="flex justify-between items-center">
+          <span class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
+            <i class="fa-solid fa-graduation-cap text-emerald-700"></i> Estado de Evaluación del Docente
+          </span>
+          <span class="bg-emerald-700 text-white font-bold text-xs px-2.5 py-1 rounded-lg">
+            Nota de Avance: <span id="alumno-nota-val" class="font-mono text-sm">0.0</span> / 10
+          </span>
+        </div>
+        <p id="alumno-devolucion-txt" class="text-xs text-slate-700 italic bg-white p-3 rounded-lg border border-emerald-100">
+          Cargando observaciones del docente...
+        </p>
       </div>
 
       <form onsubmit="guardarProyectoAlumno(event)" class="space-y-6 text-xs">
         
         <!-- ETAPA 1: RESUMEN EJECUTIVO E IDEA -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 1: RESUMEN EJECUTIVO E IDEA DE NEGOCIO
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -68,7 +83,7 @@
 
         <!-- ETAPA 2: EQUIPO -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 2: DESCRIPCIÓN DE LA EMPRESA Y EQUIPO HUMANO
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -82,7 +97,7 @@
 
         <!-- ETAPA 3: ESTUDIO DE MERCADO Y ENCUESTAS -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 3: ANÁLISIS DEL MERCADO Y ENCUESTAS
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -100,7 +115,7 @@
 
         <!-- ETAPA 4: PRODUCTO / SERVICIO -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 4: PRODUCTO / SERVICIO E INFORME TÉCNICO
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -114,7 +129,7 @@
 
         <!-- ETAPA 5: MARKETING Y REDES -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 5: PLAN DE MARKETING Y ESTRATEGIA COMERCIAL
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -138,7 +153,7 @@
 
         <!-- ETAPA 6: OPERATIVA Y LOGÍSTICA -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 6: PLAN OPERATIVO Y LOGÍSTICA
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -150,10 +165,10 @@
           </div>
         </div>
 
-        <!-- ETAPA 7: PLAN FINANCIERO Y ESTRUCTURA DE COSTOS COMPLETA EXTENDIDA -->
+        <!-- ETAPA 7: PLAN FINANCIERO Y ESTRUCTURA DE COSTOS -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
           <div class="border-b pb-3">
-            <h3 class="text-sm font-bold text-slate-800 uppercase tracking-wider">
+            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
               <i class="fa-solid fa-calculator text-emerald-600 mr-2"></i>ETAPA 7: PLAN FINANCIERO Y ESTRUCTURA DE COSTOS
             </h3>
             <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium mt-2">
@@ -174,7 +189,7 @@
             </div>
             <div class="flex justify-between items-center bg-amber-100 p-2.5 rounded-lg border border-amber-300 text-xs font-bold text-amber-900">
               <span>TOTAL INVERSIÓN INICIAL:</span>
-              <span id="txt-total-inversion" class="text-sm font-mono">$ 0.00</span>
+              <span id="txt-total-inversion" class="text-xs font-mono">$ 0.00</span>
             </div>
             <div>
               <label class="block font-bold text-slate-700 mb-1">Detalle del Desglose de Inversión Inicial</label>
@@ -203,7 +218,7 @@
             </div>
             <div class="flex justify-between items-center bg-rose-100 p-2.5 rounded-lg border border-rose-300 text-xs font-bold text-rose-900">
               <span>TOTAL GASTO MENSUAL (Fijo):</span>
-              <span id="txt-total-gastos" class="text-sm font-mono">$ 0.00</span>
+              <span id="txt-total-gastos" class="text-xs font-mono">$ 0.00</span>
             </div>
           </div>
 
@@ -223,7 +238,7 @@
                 <span class="text-slate-600">Unidades mensuales necesarias a vender para cubrir los costos fijos (Gastos Mensuales / Ganancia por Producto).</span>
               </div>
               <div class="text-right min-w-max">
-                <span id="txt-punto-equilibrio" class="text-base font-black text-emerald-800">0 Unidades/mes</span>
+                <span id="txt-punto-equilibrio" class="text-sm font-bold text-emerald-800">0 Unidades/mes</span>
               </div>
             </div>
           </div>
@@ -231,7 +246,7 @@
 
         <!-- ETAPA 8: IMPLEMENTACIÓN -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 8: PLAN DE IMPLEMENTACIÓN Y CRONOGRAMA
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -245,7 +260,7 @@
 
         <!-- ETAPA 9: ESCALABILIDAD -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 9: ESTRATEGIAS DE CRECIMIENTO Y ESCALABILIDAD
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -259,7 +274,7 @@
 
         <!-- ETAPA 10: CONCLUSIONES -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
-          <h3 class="font-bold text-slate-900 text-sm border-b pb-1 text-blue-900 uppercase tracking-wider">
+          <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 10: CONCLUSIONES Y VIABILIDAD
           </h3>
           <p class="text-[11px] text-amber-800 bg-amber-50 p-2 rounded border border-amber-200 font-medium">
@@ -366,7 +381,18 @@
             }
           }
           poblarFormulario(data);
+          cargarEvaluacionDocente(data.id);
         }
+      }
+    }
+
+    async function cargarEvaluacionDocente(pId) {
+      const { data } = await _supabase.from('evaluaciones').select('*').eq('proyecto_id', pId).maybeSingle();
+      if (data) {
+        const bloque = document.getElementById('bloque-evaluacion-docente');
+        bloque.classList.remove('hidden');
+        document.getElementById('alumno-nota-val').innerText = data.nota_final ? parseFloat(data.nota_final).toFixed(1) : '0.0';
+        document.getElementById('alumno-devolucion-txt').innerText = data.devolucion_docente || 'Sin observaciones registradas por el docente.';
       }
     }
 
@@ -415,12 +441,6 @@
           document.getElementById('fin-prod-mod').value = f.costo_producto.mano_de_obra_dir || 0;
           document.getElementById('fin-prod-ganancia').value = f.costo_producto.ganancia || 0;
         }
-      } else {
-        document.getElementById('fin-prod-mp').value = p.costoMateriales || p.costoConsumibles || 0;
-        document.getElementById('fin-prod-mod').value = p.costoManoObra || 0;
-        document.getElementById('fin-prod-ganancia').value = p.ganancia_unitaria || p.margenGanancia || 0;
-        document.getElementById('fin-gasto-inmueble').value = p.gastos_mensuales || p.costoGastos || 0;
-        document.getElementById('fin-inv-maquinaria').value = p.inversionInicial || p.inversion_inicial || 0;
       }
 
       calcularFinanzas();
@@ -518,10 +538,6 @@
         }
 
         if (res.error) throw res.error;
-
-        if (!res.data || res.data.length === 0) {
-          throw new Error("No se pudo confirmar la actualización en la base de datos. Comprobá que estés editando con el parámetro ?id= en la URL.");
-        }
 
         alert("¡Proyecto guardado con éxito!");
         window.location.href = "index.html";
