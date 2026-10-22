@@ -7,22 +7,94 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    /* ESTILOS EXCLUSIVOS PARA LA GENERACIÓN DE PDF / IMPRESIÓN */
+    @media print {
+      /* Ocultar elementos de navegación e interacción web */
+      header, 
+      #p-links, 
+      #form-voto, 
+      #form-inversion, 
+      section:has(#form-voto), 
+      section:has(#form-inversion),
+      .no-print,
+      button {
+        display: none !important;
+      }
+
+      /* Formato general de la página para PDF A4 */
+      body {
+        background-color: #ffffff !important;
+        color: #0f172a !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        font-size: 11pt;
+      }
+
+      main {
+        max-width: 100% !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        space-y: 4 !important;
+      }
+
+      /* Mostrar encabezado institucional exclusivo de impresión */
+      .print-header {
+        display: block !important;
+        border-bottom: 2px solid #0f172a;
+        padding-bottom: 12px;
+        margin-bottom: 20px;
+        text-align: center;
+      }
+
+      /* Ajuste de tarjetas y contenedores */
+      section, div.bg-white {
+        border: 1px solid #e2e8f0 !important;
+        box-shadow: none !important;
+        page-break-inside: avoid;
+        margin-bottom: 16px !important;
+      }
+
+      /* Asegurar que el texto extendido se vea completo en el PDF */
+      p {
+        max-height: none !important;
+        overflow: visible !important;
+      }
+    }
+
+    /* Ocultar membrete institucional en la pantalla web normal */
+    .print-header {
+      display: none;
+    }
+  </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <header class="bg-slate-900 text-white shadow-lg mb-8">
-    <div class="max-w-4xl mx-auto px-6 py-4 flex justify-between items-center">
+  <header class="bg-slate-900 text-white shadow-lg mb-8 no-print">
+    <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-3">
       <div>
         <h1 class="text-xl font-bold tracking-tight">E.E.S.T. N°1 Bragado — Emprendimientos</h1>
         <p class="text-slate-400 text-xs">Portal Público de Evaluación e Inversión Simulada</p>
       </div>
-      <a href="posiciones.html" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-        <i class="fa-solid fa-trophy"></i> Ver Tabla de Posiciones
-      </a>
+      <div class="flex items-center gap-2">
+        <button onclick="window.print()" class="text-xs bg-slate-800 hover:bg-slate-700 text-white font-bold px-3 py-1.5 rounded-lg border border-slate-700 transition flex items-center gap-1.5">
+          <i class="fa-solid fa-file-pdf text-red-400"></i> Descargar Dossier PDF
+        </button>
+        <a href="posiciones.html" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+          <i class="fa-solid fa-trophy"></i> Posiciones
+        </a>
+      </div>
     </div>
   </header>
 
   <main class="max-w-4xl mx-auto px-6 space-y-8">
+
+    <!-- ENCABEZADO INSTITUCIONAL DEDICADO SOLO A LA IMPRESIÓN/PDF -->
+    <div class="print-header">
+      <h1 class="text-xl font-bold text-slate-900">E.E.S.T. N°1 "Pedro Núñez" — Bragado</h1>
+      <p class="text-xs text-slate-600 font-medium">Dossier Ejecutivo de Innovación y Emprendedurismo | Ciclo Lectivo 2026</p>
+    </div>
 
     <div id="vista-vacia" class="hidden bg-white p-12 rounded-xl shadow-sm border border-slate-200 text-center">
       <i class="fa-solid fa-magnifying-glass text-4xl text-slate-300 mb-3"></i>
@@ -38,16 +110,21 @@
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">PROYECTO 7° AÑO • E.E.S.T. N°1</span>
-           <h2 id="p-nombre" class="text-xl sm:text-2xl font-black text-slate-900 mt-2 leading-tight break-words"></h2>
+            <h2 id="p-nombre" class="text-xl sm:text-2xl font-black text-slate-900 mt-2 leading-tight break-words"></h2>
             <p id="p-slogan" class="text-sm italic text-slate-500 mt-0.5">-</p>
           </div>
-          <div class="flex items-center gap-2">
-            <span class="text-xs font-bold text-slate-500">Integrantes:</span>
-            <span id="p-integrantes" class="text-xs bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg font-medium text-slate-700">-</span>
+          <div class="flex flex-col items-end gap-2">
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-slate-500">Integrantes:</span>
+              <span id="p-integrantes" class="text-xs bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg font-medium text-slate-700">-</span>
+            </div>
+            <button onclick="window.print()" class="no-print text-[11px] bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-bold px-3 py-1 rounded-lg transition flex items-center gap-1 mt-1">
+              <i class="fa-solid fa-file-pdf"></i> Exportar a PDF
+            </button>
           </div>
         </div>
 
-        <div id="p-links" class="flex flex-wrap gap-3 pt-3 border-t"></div>
+        <div id="p-links" class="flex flex-wrap gap-3 pt-3 border-t no-print"></div>
       </section>
 
       <!-- RESUMEN DE PROYECTO -->
@@ -57,7 +134,7 @@
             <i class="fa-solid fa-bullseye text-blue-600"></i> Propuesta y Público Objetivo
           </h3>
           <p id="p-publico" class="text-xs text-slate-600 leading-relaxed italic">Sin descripción detallada disponible.</p>
-          <button id="btn-toggle-publico" onclick="toggleTexto('p-publico', 'btn-toggle-publico')" class="hidden text-[11px] font-bold text-blue-600 hover:text-blue-800 focus:outline-none transition mt-1">
+          <button id="btn-toggle-publico" onclick="toggleTexto('p-publico', 'btn-toggle-publico')" class="no-print hidden text-[11px] font-bold text-blue-600 hover:text-blue-800 focus:outline-none transition mt-1">
             Ver más
           </button>
         </div>
@@ -67,7 +144,7 @@
             <i class="fa-solid fa-store text-emerald-600"></i> Canales y Estrategia Comercial
           </h3>
           <p id="p-canales" class="text-xs text-slate-600 leading-relaxed italic">Sin descripción detallada disponible.</p>
-          <button id="btn-toggle-canales" onclick="toggleTexto('p-canales', 'btn-toggle-canales')" class="hidden text-[11px] font-bold text-blue-600 hover:text-blue-800 focus:outline-none transition mt-1">
+          <button id="btn-toggle-canales" onclick="toggleTexto('p-canales', 'btn-toggle-canales')" class="no-print hidden text-[11px] font-bold text-blue-600 hover:text-blue-800 focus:outline-none transition mt-1">
             Ver más
           </button>
         </div>
@@ -95,7 +172,7 @@
       </section>
 
       <!-- FORMULARIO DE VOTACIÓN -->
-      <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
+      <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6 no-print">
         <div class="border-b pb-3">
           <h3 class="text-base font-bold text-slate-800 flex items-center gap-2">
             <i class="fa-solid fa-star text-amber-500"></i> Calificá este Emprendimiento (1 al 10)
@@ -168,7 +245,7 @@
       </section>
 
       <!-- INVERSIÓN SEMILLA -->
-      <section class="bg-emerald-900 text-white p-6 rounded-xl shadow-md border border-emerald-800 space-y-4">
+      <section class="bg-emerald-900 text-white p-6 rounded-xl shadow-md border border-emerald-800 space-y-4 no-print">
         <div class="flex justify-between items-center border-b border-emerald-800 pb-3">
           <h3 class="text-base font-bold flex items-center gap-2 text-emerald-300">
             <i class="fa-solid fa-hand-holding-dollar"></i> Simulación de Inversor Ángel (Capital Semilla Virtual)
@@ -201,7 +278,7 @@
 
   </main>
 
-<script>
+  <script>
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -285,18 +362,16 @@
       let tituloLimpio = textoNombre;
       let textoPresentacion = "";
 
-      // Si el alumno cargó un texto largo dentro del casillero del nombre (más de 60 caracteres)
       if (textoNombre.length > 60) {
         let palabras = textoNombre.split(" ");
-        tituloLimpio = palabras.slice(0, 6).join(" ") + "..."; // Primeras 6 palabras como título
-        textoPresentacion = textoNombre; // Párrafo completo conservado
+        tituloLimpio = palabras.slice(0, 6).join(" ") + "...";
+        textoPresentacion = textoNombre;
       }
 
       document.getElementById('p-nombre').innerText = tituloLimpio;
       document.getElementById('p-slogan').innerText = data.slogan ? `"${data.slogan}"` : '';
       document.getElementById('p-integrantes').innerText = data.integrantes || 'Alumnos de 7° Año';
 
-      // Si el nombre contenía la descripción completa, la inyectamos como Presentación Ejecutiva
       if (textoPresentacion !== "") {
         const contenedorPublico = document.getElementById('p-publico');
         if (contenedorPublico && contenedorPublico.parentElement) {
@@ -311,7 +386,6 @@
         }
       }
 
-      // Aplicar formateo y recorte en descripciones
       configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo || data.descripcion, 140);
       configurarTextoExpandible('p-canales', 'btn-toggle-canales', data.canalesVenta, 140);
 
