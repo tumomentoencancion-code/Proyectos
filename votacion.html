@@ -8,66 +8,86 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   
-  <style>
-    /* ESTILOS EXCLUSIVOS PARA LA GENERACIÓN DE PDF / IMPRESIÓN */
-    @media print {
-      /* Ocultar elementos de navegación e interacción web */
-      header, 
-      #p-links, 
-      #form-voto, 
-      #form-inversion, 
-      section:has(#form-voto), 
-      section:has(#form-inversion),
-      .no-print,
-      button {
-        display: none !important;
-      }
-
-      /* Formato general de la página para PDF A4 */
-      body {
-        background-color: #ffffff !important;
-        color: #0f172a !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        font-size: 11pt;
-      }
-
-      main {
-        max-width: 100% !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        space-y: 4 !important;
-      }
-
-      /* Mostrar encabezado institucional exclusivo de impresión */
-      .print-header {
-        display: block !important;
-        border-bottom: 2px solid #0f172a;
-        padding-bottom: 12px;
-        margin-bottom: 20px;
-        text-align: center;
-      }
-
-      /* Ajuste de tarjetas y contenedores */
-      section, div.bg-white {
-        border: 1px solid #e2e8f0 !important;
-        box-shadow: none !important;
-        page-break-inside: avoid;
-        margin-bottom: 16px !important;
-      }
-
-      /* Asegurar que el texto extendido se vea completo en el PDF */
-      p {
-        max-height: none !important;
-        overflow: visible !important;
-      }
+<style>
+  /* ESTILOS DE IMPRESIÓN Y EXPORTACIÓN A PDF PROFESIONAL */
+  @media print {
+    /* Ocultar elementos de interfaz no relevantes para el documento */
+    header, 
+    #p-links, 
+    #form-voto, 
+    #form-inversion, 
+    .no-print,
+    button {
+      display: none !important;
     }
 
-    /* Ocultar membrete institucional en la pantalla web normal */
+    /* Reset global de página para A4 */
+    @page {
+      size: A4 portrait;
+      margin: 1.5cm 1.5cm 2cm 1.5cm;
+    }
+
+    body {
+      background: #ffffff !important;
+      color: #0f172a !important;
+      font-size: 10pt !important;
+      line-height: 1.5 !important;
+    }
+
+    main {
+      max-width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    /* Cabecera Institucional */
     .print-header {
-      display: none;
+      display: block !important;
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+      text-align: center;
     }
-  </style>
+
+    /* Evitar cortes feos a mitad de párrafos o cuadros */
+    section, div {
+      page-break-inside: avoid;
+    }
+
+    /* Si el texto es largo, forzar un salto de página limpio */
+    .break-page-before {
+      page-break-before: always;
+    }
+
+    /* Desplegar textos completos en PDF (sin el recorte "Ver más...") */
+    p {
+      max-height: none !important;
+      overflow: visible !important;
+      text-overflow: clip !important;
+      white-space: normal !important;
+    }
+
+    /* Ocultar bloques duplicados de la inyección en JS al imprimir */
+    #p-bloque-presentacion-extra {
+      display: none !important;
+    }
+
+    /* Rediseñar la cuadrícula a 1 sola columna ordenada para lectura A4 */
+    .grid {
+      display: block !important;
+    }
+    
+    .grid > div {
+      margin-bottom: 15px !important;
+      width: 100% !important;
+    }
+  }
+
+  /* Ocultar el encabezado institucional en la web */
+  .print-header {
+    display: none;
+  }
+</style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
