@@ -9,40 +9,65 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @media print {
-      @page { size: A4 portrait; margin: 1.2cm 1.5cm 1.5cm 1.5cm; }
-      body { background: #ffffff !important; color: #0f172a !important; font-size: 9.5pt !important; }
+      @page { size: A4 portrait; margin: 1.2cm 1.5cm 1.2cm 1.5cm; }
+      body { 
+        background: #ffffff !important; 
+        color: #0f172a !important; 
+        font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+        font-size: 9.5pt !important; 
+        line-height: 1.4 !important; 
+      }
       .no-print { display: none !important; }
-      .pdf-box { page-break-inside: avoid; border: 1px solid #cbd5e1 !important; margin-bottom: 12px !important; }
+      .pdf-box { 
+        page-break-inside: avoid; 
+        border: 1px solid #cbd5e1 !important; 
+        border-radius: 6px !important; 
+        padding: 10px 14px !important; 
+        margin-bottom: 10px !important; 
+      }
+      .pdf-title { 
+        font-size: 10pt !important; 
+        font-weight: 700 !important; 
+        text-transform: uppercase !important; 
+        color: #1e3a8a !important; 
+        border-bottom: 1px solid #e2e8f0 !important; 
+        padding-bottom: 3px !important; 
+        margin-bottom: 6px !important; 
+      }
       .page-break { page-break-before: always !important; }
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-800 font-sans p-4 sm:p-8">
+<body class="bg-slate-100 text-slate-800 font-sans p-4 sm:p-8">
 
-  <!-- BOTÓN FLOTANTE PARA IMPRIMIR MANUALMENTE SI NO ABRE AUTOMÁTICO -->
+  <!-- BOTÓN FLOTANTE SÓLO VISIBLE EN WEB -->
   <div class="max-w-4xl mx-auto mb-6 flex justify-between items-center no-print bg-slate-900 text-white p-4 rounded-xl shadow">
-    <span class="text-xs font-bold">Vista previa del Dossier Ejecutivo para impresión A4</span>
-    <button onclick="window.print()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition flex items-center gap-2">
-      <i class="fa-solid fa-print"></i> Imprimir / Guardar como PDF
+    <div>
+      <h1 class="text-sm font-bold">Vista Previa - Dossier Técnico Ejecutivo</h1>
+      <p class="text-xs text-slate-400">E.E.S.T. N°1 "Pedro Núñez" — Bragado</p>
+    </div>
+    <button onclick="window.print()" class="bg-red-600 hover:bg-red-500 text-white text-xs font-bold px-4 py-2 rounded-lg transition flex items-center gap-2 shadow">
+      <i class="fa-solid fa-print"></i> Imprimir / Guardar en PDF
     </button>
   </div>
 
   <main id="dossier-contenido" class="max-w-4xl mx-auto space-y-4 bg-white p-6 rounded-xl border border-slate-200">
+    
     <!-- ENCABEZADO INSTITUCIONAL -->
-    <div class="border-b-2 border-slate-900 pb-3 mb-4 text-center">
-      <h1 class="text-xl font-bold text-slate-900">E.E.S.T. N°1 "Pedro Núñez" — Bragado</h1>
-      <p class="text-xs text-slate-600 font-medium">Dossier Técnico Ejecutivo de Plan de Negocios | Ciclo Lectivo 2026</p>
+    <div class="border-b-2 border-slate-900 pb-2 mb-3 text-center">
+      <h1 class="text-lg font-bold text-slate-900">E.E.S.T. N°1 "Pedro Núñez" — Bragado</h1>
+      <p class="text-xs text-slate-600 font-normal">Dossier Ejecutivo de Innovación Tecnológica y Emprendedurismo | Ciclo Lectivo 2026</p>
     </div>
 
-    <!-- CARGANDO... -->
+    <!-- CARGANDO -->
     <div id="cargando" class="text-center py-12">
       <i class="fa-solid fa-spinner fa-spin text-3xl text-blue-900 mb-2"></i>
-      <p class="text-xs text-slate-500 font-bold">Generando Dossier desde Supabase...</p>
+      <p class="text-xs text-slate-500 font-normal">Estructurando el Dossier con formato uniforme...</p>
     </div>
 
-    <!-- CONTENEDOR DE LOS 10 PUNTOS -->
-    <div id="dossier-items" class="hidden space-y-4">
-      <!-- Se inyectan dinámicamente con JS -->
+    <!-- CONTENEDOR DE ITEMS -->
+    <div id="dossier-items" class="hidden space-y-3">
+      <!-- Se inyecta limpio vía JS -->
     </div>
   </main>
 
@@ -51,18 +76,50 @@
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    async function generarDossier() {
+    function extraerSeccion(textoCompleto, claveInicio, claveFin) {
+      if (!textoCompleto) return '';
+      let posInicio = textoCompleto.toLowerCase().indexOf(claveInicio.toLowerCase());
+      if (posInicio === -1) return '';
+      
+      let sub = textoCompleto.substring(posInicio + claveInicio.length);
+      if (claveFin) {
+        let posFin = sub.toLowerCase().indexOf(claveFin.toLowerCase());
+        if (posFin !== -1) sub = sub.substring(0, posFin);
+      }
+      return sub.trim();
+    }
+
+    async function generarDossierLimpio() {
       const urlParams = new URLSearchParams(window.location.search);
       const id = urlParams.get('id');
 
       if (!id) return;
 
-      // Consulta directa de todas las columnas a Supabase
       const { data: p, error } = await _supabase.from('proyectos').select('*').eq('id', id).single();
       const { data: votos } = await _supabase.from('votos_publico').select('puntuacion_promedio').eq('proyecto_id', id);
       const { data: inversiones } = await _supabase.from('inversiones_simuladas').select('monto_invertido').eq('proyecto_id', id);
 
       if (error || !p) return;
+
+      let todoTexto = (p.nombreProyecto || '') + " " + (p.descripcion || '') + " " + (p.publicoObjetivo || '') + " " + (p.canalesVenta || '') + " " + (p.estructuraFinanciera || '');
+
+      let nombreLimpio = p.nombre || p.nombreProyecto || 'Proyecto de Emprendimiento';
+      if (nombreLimpio.length > 50) {
+        nombreLimpio = nombreLimpio.split('.')[0];
+      }
+
+      let resumenEjecutivo = extraerSeccion(todoTexto, 'Misión', 'Visión') || p.descripcion || 'Servicio técnico calificado enfocado en soluciones eficientes e instalaciones seguras.';
+      let misionVision = "Misión: " + (extraerSeccion(todoTexto, 'Misión', 'Visión') || 'Brindar soluciones técnicas de calidad.') + " | Visión: " + (extraerSeccion(todoTexto, 'Visión', 'Valores') || 'Consolidarse en el mercado local.');
+      let publicoSegmento = extraerSeccion(todoTexto, 'El cliente ideal', 'Descripción del servicio') || p.publicoObjetivo || 'Propietarios, comercios e instalaciones que requieran mejoras técnicas y de seguridad.';
+      let descripcionTecnica = extraerSeccion(todoTexto, 'Descripción del servicio', 'Ventajas competitivas') || 'Servicios de instalación, mantenimiento preventivo/correctivo y actualización de sistemas.';
+      let estrategiaComercial = extraerSeccion(todoTexto, 'Plan de Marketing', 'ITEM') || p.canalesVenta || 'Comercialización mediante atención directa, WhatsApp, Instagram y recomendaciones boca a boca.';
+      let estructuraLegal = extraerSeccion(todoTexto, 'Estructura legal y organizativa', 'ITEM') || p.estructuraLegal || 'Emprendimiento unipersonal con proyección de ampliación técnica según demanda.';
+      let sostenibilidad = extraerSeccion(todoTexto, 'Responsabilidad ambiental', 'Estructura legal') || 'Uso eficiente de materiales, seguridad eléctrica e integración progresiva de energías renovables.';
+
+      let matrizFinanciera = extraerSeccion(todoTexto, 'LISTA DE PRECIOS', 'CANALES') || p.estructuraFinanciera || p.costos || p.precios;
+      if (!matrizFinanciera || matrizFinanciera.length < 10) {
+        matrizFinanciera = "Estructura de precios configurada por categorías de trabajo con cálculo de insumos, mano de obra y margen operativo.";
+      }
 
       let totalVotos = votos ? votos.length : 0;
       let sumaPromedios = votos ? votos.reduce((acc, curr) => acc + (parseFloat(curr.puntuacion_promedio) || 0), 0) : 0;
@@ -71,69 +128,70 @@
 
       const html = `
         <!-- ITEM 1 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 1 — Identificación del Emprendimiento</h2>
-          <h1 class="text-xl font-black text-slate-900">${p.nombreProyecto || p.nombre}</h1>
-          <p class="text-xs italic text-slate-500 mb-2">${p.slogan || '-'}</p>
-          <p class="text-xs"><strong>Integrantes:</strong> ${p.integrantes || 'Alumnos de 7° Año'}</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-id-card mr-1"></i> ITEM 1 — Identificación del Emprendimiento</div>
+          <h1 class="text-base font-bold text-slate-900 mb-1">${nombreLimpio}</h1>
+          <p class="text-xs italic text-slate-500 mb-1">${p.slogan ? `"${p.slogan}"` : ''}</p>
+          <p class="text-xs font-normal text-slate-700">Integrantes: ${p.integrantes || 'Alumnos de 7° Año'}</p>
         </section>
 
         <!-- ITEM 2 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 2 — Resumen Ejecutivo y Propuesta de Valor</h2>
-          <p class="text-xs text-slate-700 leading-relaxed">${p.publicoObjetivo || p.descripcion || 'Sin especificar.'}</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-bullseye mr-1"></i> ITEM 2 — Resumen Ejecutivo, Misión y Visión</div>
+          <p class="text-xs text-slate-700 font-normal mb-2 leading-relaxed">${resumenEjecutivo.substring(0, 300)}...</p>
+          <div class="bg-slate-50 p-2.5 rounded border border-slate-200 text-xs font-normal text-slate-700 leading-normal">${misionVision}</div>
         </section>
 
         <!-- ITEM 3 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 3 — Estudio de Mercado y Público Objetivo</h2>
-          <p class="text-xs text-slate-700 leading-relaxed">${p.estudioMercado || p.publicoObjetivo || 'Análisis de demanda local en Bragado.'}</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-users mr-1"></i> ITEM 3 — Estudio de Mercado y Público Objetivo</div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed">${publicoSegmento}</p>
         </section>
 
         <!-- ITEM 4 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 4 — Especificaciones Técnicas del Servicio / Producto</h2>
-          <p class="text-xs text-slate-700 leading-relaxed">${p.descripcionTecnica || p.descripcion || 'Estándares técnicos y proceso de ejecución.'}</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-gears mr-1"></i> ITEM 4 — Especificaciones Técnicas y Alcance del Servicio</div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed">${descripcionTecnica}</p>
         </section>
 
         <!-- ITEM 5 -->
-        <section class="pdf-box page-break p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 5 — Estrategia Comercial y Marketing</h2>
-          <p class="text-xs text-slate-700 leading-relaxed">${p.canalesVenta || 'Canales de distribución y estrategia de comercialización.'}</p>
+        <section class="pdf-box page-break">
+          <div class="pdf-title"><i class="fa-solid fa-store mr-1"></i> ITEM 5 — Estrategia Comercial y Canales de Venta</div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed">${estrategiaComercial}</p>
         </section>
 
         <!-- ITEM 6 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 6 — Estructura Financiera y Presupuesto</h2>
-          <div class="bg-slate-50 p-3 rounded border text-xs font-mono whitespace-pre-line">${p.estructuraFinanciera || p.costos || p.precios || 'Presupuesto y costos integrados en la matriz técnica.'}</div>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-calculator mr-1"></i> ITEM 6 — Estructura Financiera y Matriz de Precios</div>
+          <div class="bg-slate-50 p-3 rounded border border-slate-200 text-xs font-normal whitespace-pre-line text-slate-700 leading-relaxed max-h-60 overflow-hidden">${matrizFinanciera.substring(0, 1000)}...</div>
         </section>
 
         <!-- ITEM 7 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 7 — Estructura Legal y Organizativa</h2>
-          <p class="text-xs text-slate-700 leading-relaxed">${p.estructuraLegal || 'Encuadre tributario y organización del equipo de trabajo.'}</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-scale-balanced mr-1"></i> ITEM 7 — Estructura Legal y Organizativa</div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed">${estructuraLegal}</p>
         </section>
 
         <!-- ITEM 8 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 8 — Sostenibilidad e Impacto Local</h2>
-          <p class="text-xs text-slate-700 leading-relaxed">${p.impactoAmbiental || 'Compromiso ambiental, eficiencia y desarrollo para la comunidad de Bragado.'}</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-leaf mr-1"></i> ITEM 8 — Sostenibilidad e Impacto Local</div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed">${sostenibilidad}</p>
         </section>
 
         <!-- ITEM 9 -->
-        <section class="pdf-box page-break p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 9 — Métricas de Mercado e Inversión Semilla</h2>
-          <div class="grid grid-cols-3 gap-4 text-center pt-2">
-            <div class="bg-amber-50 p-3 rounded border border-amber-200"><span class="block text-[10px] font-bold text-amber-800">PROMEDIO</span><span class="text-xl font-black text-amber-600">${promedio} / 10</span></div>
-            <div class="bg-blue-50 p-3 rounded border border-blue-200"><span class="block text-[10px] font-bold text-blue-800">VOTOS</span><span class="text-xl font-black text-blue-900">${totalVotos}</span></div>
-            <div class="bg-emerald-50 p-3 rounded border border-emerald-200"><span class="block text-[10px] font-bold text-emerald-800">CAPITAL SEMILLA</span><span class="text-xl font-black text-emerald-700">$${totalInversion.toLocaleString('es-AR')}</span></div>
+        <section class="pdf-box page-break">
+          <div class="pdf-title"><i class="fa-solid fa-chart-line mr-1"></i> ITEM 9 — Métricas de Mercado e Inversión Semilla</div>
+          <div class="grid grid-cols-3 gap-3 text-center pt-1">
+            <div class="bg-amber-50 p-2.5 rounded border border-amber-200"><span class="block text-[9px] font-bold text-amber-800 uppercase">PROMEDIO PÚBLICO</span><span class="text-base font-bold text-amber-600">${promedio} / 10</span></div>
+            <div class="bg-blue-50 p-2.5 rounded border border-blue-200"><span class="block text-[9px] font-bold text-blue-800 uppercase">VOTOS EMITIDOS</span><span class="text-base font-bold text-blue-900">${totalVotos}</span></div>
+            <div class="bg-emerald-50 p-2.5 rounded border border-emerald-200"><span class="block text-[9px] font-bold text-emerald-800 uppercase">CAPITAL ATRAÍDO</span><span class="text-base font-bold text-emerald-700">$${totalInversion.toLocaleString('es-AR')}</span></div>
           </div>
         </section>
 
         <!-- ITEM 10 -->
-        <section class="pdf-box p-4 rounded-lg border border-slate-200">
-          <h2 class="text-xs font-bold uppercase text-blue-900 border-b pb-1 mb-2">ITEM 10 — Evaluación Pedagógica Docente</h2>
-          <p class="text-xs text-slate-700">Proyecto evaluado y validado en el marco del Taller de Emprendedurismo de 7° Año.</p>
+        <section class="pdf-box">
+          <div class="pdf-title"><i class="fa-solid fa-graduation-cap mr-1"></i> ITEM 10 — Evaluación Pedagógica Docente</div>
+          <p class="text-xs text-slate-700 font-normal leading-relaxed bg-slate-50 p-2.5 rounded border border-slate-200">Proyecto presentado y evaluado formalmente dentro del marco del Taller de Emprendedurismo de 7° Año de la E.E.S.T. N°1 de Bragado.</p>
         </section>
       `;
 
@@ -142,11 +200,10 @@
       cont.innerHTML = html;
       cont.classList.remove('hidden');
 
-      // Disparar la ventana de impresión/PDF automáticamente a los 500ms
-      setTimeout(() => { window.print(); }, 500);
+      setTimeout(() => { window.print(); }, 400);
     }
 
-    window.onload = generarDossier;
+    window.onload = generarDossierLimpio;
   </script>
 </body>
 </html>
