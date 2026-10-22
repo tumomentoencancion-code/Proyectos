@@ -406,8 +406,22 @@
         }
       }
 
-      configurarTextoExpandible('p-publico', 'btn-toggle-publico', data.publicoObjetivo || data.descripcion, 140);
-      configurarTextoExpandible('p-canales', 'btn-toggle-canales', data.canalesVenta, 140);
+      const textoPublico = data.publicoObjetivo || data.descripcion || '';
+const textoCanales = data.canalesVenta || '';
+
+configurarTextoExpandible('p-publico', 'btn-toggle-publico', textoPublico, 140);
+configurarTextoExpandible('p-canales', 'btn-toggle-canales', textoCanales, 140);
+
+// Escuchar el evento de impresión para desplegar todo el texto antes de generar el PDF
+window.onbeforeprint = () => {
+  if (textosCompletos['p-publico']) document.getElementById('p-publico').innerText = textosCompletos['p-publico'];
+  if (textosCompletos['p-canales']) document.getElementById('p-canales').innerText = textosCompletos['p-canales'];
+};
+
+window.onafterprint = () => {
+  configurarTextoExpandible('p-publico', 'btn-toggle-publico', textoPublico, 140);
+  configurarTextoExpandible('p-canales', 'btn-toggle-canales', textoCanales, 140);
+};
 
       const containerLinks = document.getElementById('p-links');
       containerLinks.innerHTML = '';
