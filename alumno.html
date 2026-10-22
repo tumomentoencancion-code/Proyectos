@@ -13,10 +13,13 @@
     @media print {
       @page { size: A4 portrait; margin: 1.2cm 1.5cm; }
       body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; font-size: 9.5pt !important; color: #0f172a !important; }
-      header, .no-print, button, input[type="submit"], .checklist-orientativo { display: none !important; }
+      
+      /* Elementos excluidos del PDF */
+      header, .no-print, button, input[type="submit"], .checklist-orientativo, #bloque-evaluacion-docente { display: none !important; }
+      
       .container, main, section, div { box-shadow: none !important; border-color: #cbd5e1 !important; }
       
-      /* Expansión total de textareas e inputs para evitar recortes por scroll */
+      /* Expansión total de textareas e inputs para evitar recortes o barras de scroll */
       textarea, input, select { 
         border: 1px solid #cbd5e1 !important; 
         background-color: #ffffff !important; 
@@ -78,8 +81,8 @@
         <span id="badge-modo" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Nuevo Proyecto</span>
       </div>
 
-      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE -->
-      <div id="bloque-evaluacion-docente" class="hidden bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
+      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE (OCULTO EN LA IMPRESIÓN PDF) -->
+      <div id="bloque-evaluacion-docente" class="hidden no-print bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
             <i class="fa-solid fa-graduation-cap text-emerald-700"></i> Calificación / Devolución Docente
@@ -355,17 +358,13 @@
     });
 
     function activarModoSoloLectura() {
-      // Muestra barra de impresión
       document.getElementById('barra-pdf-flotante').classList.remove('hidden');
       
-      // Oculta el botón de guardar proyecto
       const btnGuardar = document.getElementById('bloque-btn-guardar');
       if (btnGuardar) btnGuardar.classList.add('hidden');
 
-      // Aplica estilo visual de lectura
       document.getElementById('contenedor-formulario').classList.add('modo-lectura');
 
-      // Deshabilita la edición de todos los campos del formulario
       const inputs = document.querySelectorAll('#form-alumno input, #form-alumno textarea, #form-alumno select');
       inputs.forEach(el => {
         el.setAttribute('readonly', 'true');
@@ -374,11 +373,11 @@
     }
 
     function autoAjustarTextareas() {
-      // Ajusta la altura de los textareas para mostrar todo el texto sin scrollbar
+      // Ajusta dinámicamente la altura de los textareas para que muestren todo el contenido sin barras de scroll
       const textareas = document.querySelectorAll('textarea');
       textareas.forEach(ta => {
         ta.style.height = 'auto';
-        ta.style.height = (ta.scrollHeight + 10) + 'px';
+        ta.style.height = (ta.scrollHeight + 14) + 'px';
       });
     }
 
@@ -431,7 +430,6 @@
       if (idParam) {
         const { data } = await _supabase.from('proyectos').select('*').eq('id', idParam).single();
         if (data) {
-          // Si entra a editar se pide clave, pero en modo dossier/vista se visualiza sin permitir edición
           if (!esVistaDossier && data.clave_proyecto && data.clave_proyecto.trim() !== '') {
             const pass = prompt(`🔒 PROYECTO PROTEGIDO (#${data.id})\n\nIngresá la contraseña de edición asignada a tu grupo:`);
             if (!pass || pass.trim() !== data.clave_proyecto.trim()) {
@@ -443,10 +441,8 @@
           poblarFormulario(data);
           cargarEvaluacionDocente(data.id);
 
-          // Si es vista dossier ajustamos la altura de los textos para que se imprima todo el contenido
-          if (esVistaDossier) {
-            setTimeout(autoAjustarTextareas, 300);
-          }
+          // Ajuste de altura de los textareas para que la exportación salga completa
+          setTimeout(autoAjustarTextareas, 400);
         }
       }
     }
