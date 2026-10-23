@@ -35,29 +35,28 @@
 
       <!-- CABECERA LIMPIA Y ESTRUCTURADA -->
       <section class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-4">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div class="space-y-1">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-100 pb-4">
+          <div>
             <span class="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md border border-blue-100">PROYECTO 7° AÑO • E.E.S.T. N°1</span>
-            <h2 id="p-nombre" class="text-2xl font-black text-slate-900 leading-tight">Cargando proyecto...</h2>
-            <p id="p-slogan" class="text-xs italic text-slate-500">-</p>
+            <h2 id="p-nombre" class="text-2xl font-black text-slate-900 leading-tight mt-1">Cargando proyecto...</h2>
+            <p id="p-slogan" class="text-xs italic text-slate-500 mt-0.5">-</p>
           </div>
           
-          <div class="flex flex-col items-start md:items-end gap-2 shrink-0">
-            <div class="flex items-center gap-2">
-              <span class="text-xs font-bold text-slate-500">Integrantes:</span>
-              <span id="p-integrantes" class="text-xs bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg font-medium text-slate-700">-</span>
-            </div>
-            
-            <button onclick="abrirFichaAlumnoPDF()" class="bg-red-700 hover:bg-red-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition flex items-center gap-2 shadow-sm">
-              <i class="fa-solid fa-file-pdf"></i> Ver / Exportar Ficha Técnica (PDF)
-            </button>
-          </div>
+          <button onclick="abrirFichaAlumnoPDF()" class="bg-red-700 hover:bg-red-600 text-white text-xs font-bold px-4 py-2.5 rounded-lg transition flex items-center gap-2 shadow-sm shrink-0">
+            <i class="fa-solid fa-file-pdf text-sm"></i> Ver / Exportar Ficha Técnica (PDF)
+          </button>
         </div>
 
-        <div id="p-links" class="flex flex-wrap gap-2 pt-3 border-t border-slate-100"></div>
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 text-xs">
+          <div class="flex items-center gap-2">
+            <span class="font-bold text-slate-500"><i class="fa-solid fa-users text-blue-600 mr-1"></i>Integrantes:</span>
+            <span id="p-integrantes" class="bg-slate-100 border border-slate-200 px-3 py-1 rounded-lg font-medium text-slate-700">-</span>
+          </div>
+          <div id="p-links" class="flex flex-wrap gap-2"></div>
+        </div>
       </section>
 
-      <!-- FICHA TÉCNICA EMBEBIDA SOLO LECTURA (10 ETAPAS COMPLETAS) -->
+      <!-- FICHA TÉCNICA EMBEBIDA (LIMPIA SIN BARRAS NI DUPLICADOS) -->
       <section class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="bg-slate-900 text-white p-4 flex justify-between items-center">
           <h3 class="text-xs font-bold uppercase tracking-wider flex items-center gap-2">
@@ -222,10 +221,9 @@
 
     function limpiarTituloProyecto(texto) {
       if (!texto) return "Emprendimiento Técnico";
-      // Si el campo trae más de 60 caracteres, toma solo las primeras palabras antes del punto o salto
       let corte = texto.split(".")[0];
-      if (corte.length > 50) {
-        corte = corte.substring(0, 50) + "...";
+      if (corte.length > 55) {
+        corte = corte.substring(0, 55) + "...";
       }
       return corte;
     }
@@ -248,15 +246,15 @@
         return;
       }
 
-      // Limpieza de título y eslogan
+      // Título limpio y eslogan
       document.getElementById('p-nombre').innerText = limpiarTituloProyecto(data.nombreProyecto || data.nombre);
       document.getElementById('p-slogan').innerText = data.slogan ? `"${data.slogan}"` : 'Proyecto de Emprendimiento E.E.S.T. N°1';
-      document.getElementById('p-integrantes').innerText = data.integrantes ? data.integrantes.substring(0, 40) + '...' : 'Alumnos de 7° Año';
+      document.getElementById('p-integrantes').innerText = data.integrantes ? data.integrantes.substring(0, 45) + '...' : 'Alumnos de 7° Año';
 
-      // Carga de la Ficha Técnica oficial dentro del Iframe (limpio, sin redundancias)
-      document.getElementById('iframe-dossier').src = `alumno.html?id=${proyectoId}&vista=dossier`;
+      // Pasa los parámetros vista=dossier y modo=iframe para limpiar el encabezado y ocultar notas docentes
+      document.getElementById('iframe-dossier').src = `alumno.html?id=${proyectoId}&vista=dossier&modo=iframe`;
 
-      // Links rápidos (Redes, Video, Encuesta)
+      // Links sociales limpios
       const containerLinks = document.getElementById('p-links');
       containerLinks.innerHTML = '';
 
@@ -271,7 +269,7 @@
       if (data.video_promo) {
         containerLinks.innerHTML += `
           <a href="${data.video_promo}" target="_blank" class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
-            <i class="fa-solid fa-video text-red-600"></i> Video Promocional
+            <i class="fa-solid fa-video text-red-600"></i> Video
           </a>
         `;
       }
@@ -279,7 +277,7 @@
       if (data.encuestaUrl) {
         containerLinks.innerHTML += `
           <a href="${data.encuestaUrl}" target="_blank" class="bg-blue-50 hover:bg-blue-100 text-blue-700 border border-blue-200 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1.5">
-            <i class="fa-solid fa-poll"></i> Responder Encuesta
+            <i class="fa-solid fa-poll"></i> Encuesta
           </a>
         `;
       }
