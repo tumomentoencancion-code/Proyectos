@@ -14,37 +14,47 @@
       @page { size: A4 portrait; margin: 1.2cm 1.5cm; }
       body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; font-size: 9.5pt !important; color: #0f172a !important; }
       
-      /* Elementos excluidos del PDF */
+      /* Elementos excluidos del PDF impreso */
       header, .no-print, button, input[type="submit"], .checklist-orientativo, #bloque-evaluacion-docente { display: none !important; }
       
       .container, main, section, div { box-shadow: none !important; border-color: #cbd5e1 !important; }
       
-      /* Expansión total de textareas e inputs para evitar recortes o barras de scroll */
-      textarea, input, select { 
+      /* Formato impreso limpio para inputs */
+      input, select { 
         border: 1px solid #cbd5e1 !important; 
         background-color: #ffffff !important; 
         color: #0f172a !important; 
         font-size: 9pt !important;
-        height: auto !important;
-        max-height: none !important;
-        overflow: visible !important;
-        white-space: pre-wrap !important;
-        resize: none !important;
       }
       .page-break { page-break-before: always !important; }
     }
 
     /* Estilo visual en modo Vista Previa / Solo Lectura */
-    .modo-lectura textarea, .modo-lectura input, .modo-lectura select {
+    .modo-lectura input, .modo-lectura select {
       background-color: #f8fafc !important;
       color: #1e293b !important;
       cursor: default !important;
+    }
+
+    /* Estilo del texto convertido en modo Dossier/PDF */
+    .dossier-texto-plano {
+      width: 100%;
+      min-height: 42px;
+      padding: 0.625rem;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.5rem;
+      background-color: #f8fafc;
+      color: #0f172a;
+      font-size: 0.75rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
     }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <!-- BARRA FLOTANTE DE IMPRESIÓN (SOLO VISIBLE EN MODO DOSSIER / VISTA PREVIA) -->
+  <!-- BARRA FLOTANTE DE IMPRESIÓN -->
   <div id="barra-pdf-flotante" class="hidden max-w-4xl mx-auto mt-4 px-6 no-print">
     <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-lg">
       <div>
@@ -57,7 +67,7 @@
     </div>
   </div>
 
-  <!-- HEADER COMPACTO EN ALUMNO.HTML -->
+  <!-- HEADER COMPACTO -->
   <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
@@ -81,7 +91,7 @@
         <span id="badge-modo" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Nuevo Proyecto</span>
       </div>
 
-      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE (OCULTO EN LA IMPRESIÓN PDF) -->
+      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE (OCULTO EN IMPRESIÓN) -->
       <div id="bloque-evaluacion-docente" class="hidden no-print bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
@@ -98,7 +108,7 @@
 
       <form id="form-alumno" onsubmit="guardarProyectoAlumno(event)" class="space-y-6 text-xs">
         
-        <!-- ETAPA 1: DIAGNÓSTICO E IDEA -->
+        <!-- ETAPA 1 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 1: RESUMEN EJECUTIVO E IDEA DE NEGOCIO
@@ -122,7 +132,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 2: EQUIPO -->
+        <!-- ETAPA 2 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 2: DESCRIPCIÓN DE LA EMPRESA Y EQUIPO HUMANO
@@ -136,7 +146,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 3: ESTUDIO DE MERCADO Y ENCUESTAS -->
+        <!-- ETAPA 3 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 3: ANÁLISIS DEL MERCADO Y ENCUESTAS
@@ -154,7 +164,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 4: PÚBLICO TARGET -->
+        <!-- ETAPA 4 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 4: PRODUCTO / SERVICIO E INFORME TÉCNICO
@@ -168,7 +178,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 5: MARKETING Y REDES -->
+        <!-- ETAPA 5 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 5: PLAN DE MARKETING Y ESTRATEGIA COMERCIAL (4 Ps)
@@ -192,7 +202,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 6: OPERATIVA Y COMPETENCIA -->
+        <!-- ETAPA 6 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 6: PLAN OPERATIVO Y LOGÍSTICA
@@ -206,7 +216,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 7: ESTRUCTURA FINANCIERA -->
+        <!-- ETAPA 7 -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 space-y-6">
           <div class="border-b pb-3">
             <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider">
@@ -234,7 +244,7 @@
             </div>
           </div>
 
-          <!-- B. SIMULACIÓN PRÉSTAMO -->
+          <!-- B. PRÉSTAMO -->
           <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-building-columns mr-1 text-blue-600"></i> 2. Simulación Préstamo Inversión Inicial</h4>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
@@ -259,7 +269,7 @@
             </div>
           </div>
 
-          <!-- D. COSTO POR PRODUCTO Y PUNTO DE EQUILIBRIO -->
+          <!-- D. COSTO UNITARIO -->
           <div class="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
             <h4 class="text-xs font-bold text-slate-700 uppercase"><i class="fa-solid fa-chart-line mr-1 text-emerald-600"></i> 4. Costo Unitario, Precio y Punto de Equilibrio</h4>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
@@ -281,7 +291,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 8: IMPLEMENTACIÓN -->
+        <!-- ETAPA 8 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 8: PLAN DE IMPLEMENTACIÓN Y CRONOGRAMA (GANTT)
@@ -295,7 +305,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 9: ESCALABILIDAD -->
+        <!-- ETAPA 9 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 9: ESTRATEGIAS DE CRECIMIENTO Y ESCALABILIDAD
@@ -309,7 +319,7 @@
           </div>
         </div>
 
-        <!-- ETAPA 10: CONCLUSIONES -->
+        <!-- ETAPA 10 -->
         <div class="space-y-3 p-4 bg-slate-50 rounded-xl border border-slate-200">
           <h3 class="font-bold text-slate-900 text-xs border-b pb-1 text-blue-900 uppercase tracking-wider">
             ETAPA 10: CONCLUSIONES Y VIABILIDAD
@@ -365,19 +375,24 @@
 
       document.getElementById('contenedor-formulario').classList.add('modo-lectura');
 
-      const inputs = document.querySelectorAll('#form-alumno input, #form-alumno textarea, #form-alumno select');
+      // Bloquea inputs de texto simple y selects
+      const inputs = document.querySelectorAll('#form-alumno input, #form-alumno select');
       inputs.forEach(el => {
         el.setAttribute('readonly', 'true');
         el.setAttribute('disabled', 'true');
       });
     }
 
-    function autoAjustarTextareas() {
-      // Ajusta dinámicamente la altura de los textareas para que muestren todo el contenido sin barras de scroll
+    function transformarTextareasATextoPlano() {
+      // Reemplaza cada textarea por un div nativo de texto para eliminar scrollbars en PDF
       const textareas = document.querySelectorAll('textarea');
       textareas.forEach(ta => {
-        ta.style.height = 'auto';
-        ta.style.height = (ta.scrollHeight + 14) + 'px';
+        const div = document.createElement('div');
+        div.className = 'dossier-texto-plano';
+        div.innerText = ta.value || 'Sin información registrada.';
+        if (ta.parentNode) {
+          ta.parentNode.replaceChild(div, ta);
+        }
       });
     }
 
@@ -441,8 +456,10 @@
           poblarFormulario(data);
           cargarEvaluacionDocente(data.id);
 
-          // Ajuste de altura de los textareas para que la exportación salga completa
-          setTimeout(autoAjustarTextareas, 400);
+          // Si es vista dossier, transformamos los textareas en divs planos
+          if (esVistaDossier) {
+            transformarTextareasATextoPlano();
+          }
         }
       }
     }
