@@ -896,68 +896,81 @@
 
     // FUNCIÓN DE EXPORTACIÓN A EXCEL / CSV CONSOLIDADO
     async function exportarReporteDocenteExcel() {
-      try {
-        const { data: proyectos, error: errP } = await _supabase.from('proyectos').select('*');
-        const { data: evaluaciones, error: errE } = await _supabase.from('evaluaciones').select('*');
-        const { data: votos, error: errV } = await _supabase.from('votos_publico').select('*');
-        const { data: inversiones, error: errI } = await _supabase.from('inversiones_simuladas').select('*');
+  try {
+    const { data: proyectos, error: errP } = await _supabase.from('proyectos').select('*');
+    const { data: evaluaciones, error: errE } = await _supabase.from('evaluaciones').select('*');
+    const { data: votos, error: errV } = await _supabase.from('votos_publico').select('*');
+    const { data: inversiones, error: errI } = await _supabase.from('inversiones_simuladas').select('*');
 
-        if (errP) throw errP;
+    if (errP) throw errP;
 
-        if (!proyectos || proyectos.length === 0) {
-          alert("No hay proyectos registrados para exportar.");
-          return;
-        }
-
-        // Encabezados con BOM UTF-8
-        let csv = "\uFEFF";
-        csv += "ID;Proyecto;Curso / Especialidad;Integrantes;Nota Docente;Prom. Publico;Cant. Votos;Nota Idea;Nota Pres.;Nota Viab.;Capital Inversores ($);Capital Total ($);Observaciones Docente\n";
-
-        proyectos.forEach(p => {
-          const ev = evaluaciones ? evaluaciones.find(e => e.proyecto_id === p.id) : null;
-          const notaDoc = ev ? parseFloat(ev.nota_final || ev.nota_global || 0) : 0;
-          const obsDoc = ev ? (ev.devolucion_docente || '-').replace(/;/g, ',').replace(/\n/g, ' ') : '-';
-
-          const votosP = votos ? votos.filter(v => v.proyecto_id === p.id) : [];
-          const cantVotos = votosP.length;
-
-          let promIdea = 0, promPres = 0, promViab = 0, promGlobalPublico = 0;
-          if (cantVotos > 0) {
-            promIdea = (votosP.reduce((a, c) => a + (parseFloat(c.puntuacion_idea) || 0), 0) / cantVotos).toFixed(1);
-            promPres = (votosP.reduce((a, c) => a + (parseFloat(c.puntuacion_presentacion) || 0), 0) / cantVotos).toFixed(1);
-            promViab = (votosP.reduce((a, c) => a + (parseFloat(c.puntuacion_viabilidad) || 0), 0) / cantVotos).toFixed(1);
-            promGlobalPublico = (votosP.reduce((a, c) => a + (parseFloat(c.puntuacion_promedio) || 0), 0) / cantVotos).toFixed(1);
-          }
-
-          const invP = inversiones ? inversiones.filter(i => i.proyecto_id === p.id) : [];
-          const capInversores = invP.reduce((a, c) => a + (parseFloat(c.monto_invertido) || 0), 0);
-
-          const invTecnica = notaDoc * 100000;
-          const capVotos = promGlobalPublico * 10000;
-          const capitalTotal = invTecnica + capInversores + capVotos;
-
-          const nombreLimpio = (p.nombreProyecto || p.nombre || `Proyecto #${p.id}`).replace(/;/g, ',');
-          const cursoLimpio = (p.curso || '7° Año').replace(/;/g, ',');
-          const integrantesLimpios = (p.integrantes || '-').replace(/;/g, ',').replace(/\n/g, ' ');
-
-          csv += `${p.id};"${nombreLimpio}";"${cursoLimpio}";"${integrantesLimpios}";${notaDoc.toFixed(1)};${promGlobalPublico};${cantVotos};${promIdea};${promPres};${promViab};${capInversores};${capitalTotal};"${obsDoc}"\n`;
-        });
-
-        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        
-        const fecha = new Date().toISOString().split('T')[0];
-        link.setAttribute("href", url);
-        link.setAttribute("download", `Reporte_Docente_Muestra_EEST1_${fecha}.csv`);
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-
-      } catch (err) {
-        alert("Error al generar el reporte: " + err.message);
-      }
+    if (!proyectos || proyectos.length === 0) {
+      alert("No hay proyectos registrados para exportar.");
+      return;
     }
+
+    // Cabecera simplificada y limpia (delimitada por punto y coma para Excel)
+    let csvContent = "ID;Proyecto;Curso;Nota Proceso;Nota Global;Capital Tecnico ($);Cant. Votos;Prom. Estrellas;Capital Inversores ($);Capital Total ($)\n";
+
+    proyectos.forEach(p => {
+      // 1. Notas Docentes
+      const ev = evaluaciones ? evaluaciones.find(e => e.proyecto_id === p.id) : null;
+      const notaProceso = ev ? parseFloat(ev.nota_proceso || 0) : 0;
+      const notaGlobal = ev ? parseFloat(ev.nota_final || ev.nota_global || 0) : 0;
+      const invTecnica = notaGlobal * 100000;
+
+      // 2. Métricas del Público
+      const votosP = votos ? votos.filter(v => v.proyecto_id === p.id) : [];
+      const cantVotos = votosP.length;
+
+      let promEstrellas = 0;
+      if (cantVotos > 0) {
+        const suma = votosP.reduce((a, c) => a + (parseFloat(c.puntuacion_promedio) || 0), 0);
+        promEstrellas = suma / cantVotos;
+      }
+      const capVotos = promEstrellas * 10000;
+
+      // 3. Inversión Mercado
+      const invP = inversiones ? inversiones.filter(i => i.proyecto_id === p.id) : [];
+      const capInversores = invP.reduce((a, c) => a + (parseFloat(c.monto_invertido) || 0), 0);
+
+      // 4. Capital Total
+      const capitalTotal = invTecnica + capInversores + capVotos;
+
+      // Solo tomamos el nombre del proyecto sin saltos de línea ni textos de descripción
+      let nombreLimpio = (p.nombreProyecto || p.nombre || `Proyecto #${p.id}`)
+        .split('\n')[0]
+        .replace(/;/g, '')
+        .replace(/"/g, '')
+        .trim();
+
+      // Recortar si el título es excesivamente largo
+      if (nombreLimpio.length > 30) {
+        nombreLimpio = nombreLimpio.substring(0, 30) + '...';
+      }
+
+      let cursoLimpio = (p.curso || '7mo').replace(/;/g, '').replace(/"/g, '').trim();
+
+      // Fila con valores formateados en español
+      csvContent += `${p.id};"${nombreLimpio}";"${cursoLimpio}";${notaProceso.toFixed(1).replace('.', ',')};${notaGlobal.toFixed(1).replace('.', ',')};${invTecnica};${cantVotos};${promEstrellas.toFixed(1).replace('.', ',')};${capInversores};${capitalTotal}\n`;
+    });
+
+    // Forzar codificación UTF-8 con BOM exacto (\uFEFF)
+    const blob = new Blob(["\uFEFF" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+
+    const fecha = new Date().toISOString().split('T')[0];
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Resumen_Evaluacion_EEST1_${fecha}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+
+  } catch (err) {
+    alert("Error al generar el reporte: " + err.message);
+  }
+}
 
     // MODAL CLAVE PROYECTO
     function abrirModalClaveProyecto(id) {
