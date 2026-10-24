@@ -56,6 +56,9 @@
         <button id="btn-admin-gestion" onclick="abrirModalGestionDocentes()" class="text-xs bg-rose-900 hover:bg-rose-800 text-white font-bold px-3 py-1.5 rounded-lg transition hidden items-center gap-1 shadow">
           <i class="fa-solid fa-users-gear"></i> Gestionar Docentes
         </button>
+        <button onclick="exportarReporteDocenteExcel()" class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm" title="Descargar informe consolidado en Excel / CSV">
+          <i class="fa-solid fa-file-excel"></i> Exportar Reporte (Excel/CSV)
+        </button>
         <a href="posiciones.html" target="_blank" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-900 font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
           <i class="fa-solid fa-trophy"></i> Ver Posiciones
         </a>
@@ -400,7 +403,7 @@
     let proyectoSeleccionado = null;
     let proyectoParaClave = null;
     let valoraciones = Array(10).fill(0);
-    let sesgosDocente = Array(10).fill(0); // Arreglo para calibrar el desvío/criterio pedagógico del docente
+    let sesgosDocente = Array(10).fill(0);
 
     document.addEventListener("DOMContentLoaded", () => {
       verificarAutenticacionDocente();
@@ -551,7 +554,6 @@
       }
     }
 
-    // INTERPRETACIONAL HEURÍSTICA Y CALIBRACIÓN DE LA IA
     function seleccionarProyecto(id) {
       proyectoSeleccionado = listaProyectos.find(p => p.id === id);
       if (!proyectoSeleccionado) return;
@@ -561,18 +563,8 @@
 
       document.getElementById('det-nombre').innerText = proyectoSeleccionado.nombreProyecto || proyectoSeleccionado.nombre || 'Sin Nombre';
       document.getElementById('det-integrantes').innerText = `Integrantes: ${proyectoSeleccionado.integrantes || 'No especificados'}`;
-      document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;
-
-      renderizarResumenEntrega(proyectoSeleccionado);
-
-      const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);
-
-      if (evalP && evalP.valoraciones && Array.isArray(evalP.valoraciones) && evalP.valoraciones.length === 10) {
-        valoraciones = [...evalP.valoraciones];
-      } else if (evalP && evalP.valoraciones_json && typeof evalP.valoraciones_json === 'object') {
-        valoraciones = itemsDefinicion.map((_, idx) => evalP.valoraciones_json[`etapa_${idx+1}`] || 0);
+      document.getElementById('resumen-id-badge').innerText = `ID: ${proyectoSeleccionado.id}`;  renderizarResumenEntrega(proyectoSeleccionado);  const evalP = listaEvaluaciones.find(e => e.proyecto_id === id);  if (evalP && evalP.valoraciones && Array.isArray(evalP.valoraciones) && evalP.valoraciones.length === 10) { valoraciones = [...evalP.valoraciones]; } else if (evalP && evalP.valoraciones_json && typeof evalP.valoraciones_json === 'object') { valoraciones = itemsDefinicion.map((_, idx) => evalP.valoraciones_json[`etapa_${idx+1}`] || 0);
       } else {
-        // EVALUACIÓN HEURÍSTICA AUTOMÁTICA BASADA EN CONTENIDO REAL
         itemsDefinicion.forEach((def, idx) => {
           let txt = '';
           for (let campo of def.campos) {
@@ -616,401 +608,25 @@
           <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 space-y-2 text-[11px]">
             <strong class="text-amber-900 block border-b pb-1 font-bold">💰 Inversión Inicial Total: ${f.inversion?.total || '$0.00'}</strong>
             <div class="text-slate-600 pl-2 space-y-0.5">
-              • Maquinaria: $${f.inversion?.maquinaria || 0} | Inmueble: $${f.inversion?.inmueble || 0}<br>
-              • Mano de Obra: $${f.inversion?.mano_de_obra || 0} | Materiales: $${f.inversion?.materia_prima || 0}
+              • Maquinaria: $${f.inversion?.maquinaria \vert{}\vert{} 0} \vert{} Inmueble: $${f.inversion?.inmueble || 0}<br>
+              • Mano de Obra: $${f.inversion?.mano_de_obra \vert{}\vert{} 0} \vert{} Materiales: $${f.inversion?.materia_prima || 0}
             </div>
 
-            <strong class="text-blue-900 block border-b pb-1 pt-1 font-bold">📊 Préstamo: ${f.prestamo?.cuotas || 0} cuotas de $${f.prestamo?.monto_cuota || 0} (Total: ${f.prestamo?.total_devolver || '$0.00'})</strong>
+            <strong class="text-blue-900 block border-b pb-1 pt-1 font-bold">📊 Préstamo: ${f.prestamo?.cuotas \vert{}\vert{} 0} cuotas de $${f.prestamo?.monto_cuota \vert{}\vert{} 0} (Total: ${f.prestamo?.total_devolver || '$0.00'})</strong>
 
             <strong class="text-rose-900 block border-b pb-1 pt-1 font-bold">📉 Gastos Mensuales Fijos: ${f.gastos_mensuales?.total || '$0.00'}</strong>
 
-            <strong class="text-emerald-900 block border-b pb-1 pt-1 font-bold">⚖️ Punto de Equilibrio: ${f.costo_producto?.punto_equilibrio || '0 Unidades/mes'} (Precio Venta: ${f.costo_producto?.precio_venta || '$0.00'})</strong>
+            <strong class="text-emerald-900 block border-b pb-1 pt-1 font-bold">⚖️ Punto de Equilibrio: ${f.costo_producto?.punto_equilibrio \vert{}\vert{} '0 Unidades/mes'} (Precio Venta:${f.costo_producto?.precio_venta || '$0.00'})</strong>
           </div>
         `;
       } else if (p.inversionInicial || p.gastos_mensuales) {
-        finanzasHTML = `<p class="text-slate-600">Inversión Inicial: $${p.inversionInicial || 0} | Gastos Mensuales: $${p.gastos_mensuales || 0}</p>`;
+        finanzasHTML = `<p class="text-slate-600">Inversión Inicial: $${p.inversionInicial \vert{}\vert{} 0} \vert{} Gastos Mensuales:$${p.gastos_mensuales || 0}</p>`;
       }
 
       let html = `
         <div class="space-y-3">
-          <div class="p-2.5 bg-amber-50 border border-amber-200 rounded-lg flex justify-between items-center">
-            <div>
-              <span class="font-bold text-[11px] text-amber-900 block"><i class="fa-solid fa-key mr-1"></i> Clave de Edición:</span>
-              <span class="font-mono font-bold text-amber-800 text-xs">${p.clave_proyecto || 'Sin clave asignada'}</span>
-            </div>
-            <button onclick="abrirModalClaveProyecto(${p.id})" class="text-xs bg-amber-600 hover:bg-amber-700 text-white font-bold px-2 py-1 rounded">
-              Editar
-            </button>
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📝 Slogan / Pitch:</strong>
-            <p class="text-slate-600">${p.slogan || p.descripcion || 'Sin especificar'}</p>
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">👥 Integrantes:</strong>
-            <p class="text-slate-600">${p.integrantes || 'Sin especificar'}</p>
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">🎯 Público Target / Cliente Ideal:</strong>
-            <p class="text-slate-600">${p.publicoObjetivo || p.target || 'Sin especificar'}</p>
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📊 Estudio de Mercado / Encuesta:</strong>
-            <p class="text-slate-600">${p.analisis_mercado || 'Sin especificar'}</p>
-            ${p.encuestaUrl ? `<a href="${p.encuestaUrl}" target="_blank" class="text-blue-600 underline text-[11px] block mt-1"><i class="fa-solid fa-link mr-1"></i>Ver Encuesta Formulario</a>` : ''}
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📣 Marketing y Canales de Venta:</strong>
-            <p class="text-slate-600">${p.canalesVenta || 'Sin especificar'}</p>
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">⚙️ Competencia y Producción:</strong>
-            <p class="text-slate-600">${p.competidores || 'Sin especificar'}</p>
-          </div>
-
-          <div class="border-b pb-2">
-            <strong class="text-slate-900 block font-bold text-xs">📊 Estructura Financiera y Costos:</strong>
-            ${finanzasHTML}
-          </div>
-
-          <div>
-            <strong class="text-slate-900 block font-bold text-xs">📌 Conclusiones y Viabilidad:</strong>
-            <p class="text-slate-600">${p.conclusiones || 'Sin especificar'}</p>
-          </div>
-        </div>
-      `;
-
-      resCont.innerHTML = html;
-    }
-
-    function renderizarRubrica() {
-      const cont = document.getElementById('contenedor-rubrica');
-      cont.innerHTML = '';
-      let sumaTotal = 0;
-      let sumaProceso = 0;
-
-      itemsDefinicion.forEach((def, index) => {
-        const val = valoraciones[index];
-        sumaTotal += val;
-        if (index < 6) sumaProceso += val;
-
-        let txt = '';
-        for (let campo of def.campos) {
-          if (proyectoSeleccionado && proyectoSeleccionado[campo]) {
-            txt = proyectoSeleccionado[campo].toString();
-            break;
-          }
-        }
-        const heuristica = def.generarHeuristica(txt, val);
-
-        const row = document.createElement('div');
-        row.className = "p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2";
-        row.innerHTML = `
-          <div class="flex justify-between items-center gap-2">
-            <span class="font-bold text-slate-800 text-xs">${def.titulo}</span>
-            <select onchange="cambiarValor(${index}, this.value)" class="border border-slate-300 rounded p-1 text-xs font-bold bg-white">
-              <option value="0" ${val === 0 ? 'selected' : ''}>0% - Ausente</option>
-              <option value="35" ${val === 35 ? 'selected' : ''}>35% - Inicial</option>
-              <option value="55" ${val === 55 ? 'selected' : ''}>55% - En Desarrollo</option>
-              <option value="75" ${val === 75 ? 'selected' : ''}>75% - Satisfactorio</option>
-              <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
-            </select>
-          </div>
-          <p class="text-[11px] text-slate-600 italic pl-1 leading-snug">
-            <i class="fa-regular fa-lightbulb text-amber-500 mr-1"></i>${heuristica}
-          </p>
-        `;
-        cont.appendChild(row);
-      });
-
-      document.getElementById('nota-global-val').innerText = ((sumaTotal / 1000) * 10).toFixed(1);
-      document.getElementById('nota-proceso-val').innerText = ((sumaProceso / 600) * 10).toFixed(1);
-    }
-
-    function cambiarValor(index, nuevoVal) {
-      valoraciones[index] = parseInt(nuevoVal);
-      renderizarRubrica();
-      reconstruirSugerenciaDevolucion();
-    }
-
-    function reconstruirSugerenciaDevolucion() {
-      const campoDevolucion = document.getElementById('eval-devolucion-docente');
-      if (!campoDevolucion) return;
-
-      let texto = "ANÁLISIS CUALITATIVO Y RECOMENDACIONES POR ETAPA:\n";
-      itemsDefinicion.forEach((def, idx) => {
-        const val = valoraciones[idx];
-        let txt = '';
-        for (let campo of def.campos) {
-          if (proyectoSeleccionado && proyectoSeleccionado[campo]) {
-            txt = proyectoSeleccionado[campo].toString();
-            break;
-          }
-        }
-        const heuristica = def.generarHeuristica(txt, val);
-        texto += `• ${def.titulo} (${val}%): ${heuristica}\n`;
-      });
-
-      texto += "\nOBSERVACIONES ESPECÍFICAS Y PROPUESTAS DE MEJORA DOCENTE:\n- ";
-
-      campoDevolucion.value = texto;
-      verificarLimitePalabras();
-    }
-
-    function verificarLimitePalabras() {
-      const texto = document.getElementById('eval-devolucion-docente').value.trim();
-      const palabras = texto === "" ? 0 : texto.split(/\s+/).length;
-      document.getElementById('contador-palabras').innerText = `${palabras} / ${MAX_PALABRAS} palabras`;
-    }
-
-    async function guardarEvaluacionDocente(notificar = true) {
-      if (!proyectoSeleccionado || !docenteLogueado) {
-        alert("No hay proyecto seleccionado o no has iniciado sesión.");
-        return;
-      }
-
-      const btn = document.getElementById('btn-guardar');
-      if (btn) {
-        btn.disabled = true;
-        btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-2"></i> Guardando...`;
-      }
-
-      try {
-        const sumaTotal = valoraciones.reduce((a, b) => a + b, 0);
-        const sumaProceso = valoraciones.slice(0, 6).reduce((a, b) => a + b, 0);
-        const notaCalculada = parseFloat(((sumaTotal / 1000) * 10).toFixed(1));
-
-        const valoracionesObj = {};
-        valoraciones.forEach((v, idx) => {
-          valoracionesObj[`etapa_${idx+1}`] = v;
-        });
-
-        const payload = {
-          proyecto_id: parseInt(proyectoSeleccionado.id),
-          nota_final: notaCalculada,
-          nota_global: notaCalculada,
-          nota_proceso: parseFloat(((sumaProceso / 600) * 10).toFixed(1)),
-          devolucion_docente: document.getElementById('eval-devolucion-docente').value.trim(),
-          valoraciones: valoraciones,
-          valoraciones_json: valoracionesObj
-        };
-
-        const { data: existente, error: errSelect } = await _supabase
-          .from('evaluaciones')
-          .select('id')
-          .eq('proyecto_id', payload.proyecto_id);
-
-        if (errSelect) throw errSelect;
-
-        let error = null;
-        if (existente && existente.length > 0) {
-          const res = await _supabase
-            .from('evaluaciones')
-            .update(payload)
-            .eq('proyecto_id', payload.proyecto_id);
-          error = res.error;
-        } else {
-          const res = await _supabase
-            .from('evaluaciones')
-            .insert([payload]);
-          error = res.error;
-        }
-
-        if (error) {
-          console.error("Error al guardar en Supabase:", error);
-          if (notificar) alert("Error al guardar la evaluación: " + error.message);
-        } else {
-          if (notificar) alert("¡Evaluación docente guardada correctamente!");
-          const { data: eData } = await _supabase.from('evaluaciones').select('*');
-          listaEvaluaciones = eData || [];
-        }
-      } catch (err) {
-        console.error("Excepción al guardar:", err);
-        alert("Ocurrió un error inesperado al guardar: " + (err.message || err));
-      } finally {
-        if (btn) {
-          btn.disabled = false;
-          btn.innerHTML = `<i class="fa-solid fa-floppy-disk mr-2"></i> Guardar Evaluación Docente`;
-        }
-      }
-    }
-
-    function reiniciarEvaluacionDocenteActual() {
-      if (!proyectoSeleccionado) return;
-
-      if (!confirm("¿Deseas ejecutar nuevamente el diagnóstico heurístico sobre el contenido del alumno?")) {
-        return;
-      }
-
-      itemsDefinicion.forEach((def, idx) => {
-        let txt = '';
-        for (let campo of def.campos) {
-          if (proyectoSeleccionado[campo]) {
-            txt = proyectoSeleccionado[campo].toString().trim();
-            break;
-          }
-        }
-        if (!txt || txt === "") {
-          valoraciones[idx] = 0;
-        } else if (txt.length < 25) {
-          valoraciones[idx] = 35;
-        } else if (txt.length < 90) {
-          valoraciones[idx] = 55;
-        } else if (txt.length < 250) {
-          valoraciones[idx] = 75;
-        } else {
-          valoraciones[idx] = 100;
-        }
-      });
-
-      reconstruirSugerenciaDevolucion();
-      renderizarRubrica();
-    }
-
-    async function blanquearVotosPublicoGeneral() {
-      const confirmacion = confirm("⚠️ ATENCIÓN: ¿Estás seguro de blanquear TODOS los votos del público?");
-
-      if (!confirmacion) return;
-
-      try {
-        const { error } = await _supabase
-          .from('votos_publico')
-          .delete()
-          .neq('id', 0);
-
-        if (error) throw error;
-
-        alert("¡Votos del público blanqueados con éxito!");
-      } catch (err) {
-        console.error("Error al blanquear votos:", err);
-        alert("Ocurrió un error al blanquear los votos: " + (err.message || err));
-      }
-    }
-
-    // MODAL CLAVE PROYECTO
-    function abrirModalClaveProyecto(id) {
-      proyectoParaClave = listaProyectos.find(p => p.id === id);
-      if (!proyectoParaClave) return;
-
-      document.getElementById('modal-clave-proyecto-nombre').innerText = proyectoParaClave.nombreProyecto || proyectoParaClave.nombre || 'ID: ' + proyectoParaClave.id;
-      document.getElementById('modal-clave-input').value = proyectoParaClave.clave_proyecto || '';
-      document.getElementById('modal-clave-proyecto').classList.remove('hidden');
-    }
-
-    function cerrarModalClaveProyecto() {
-      document.getElementById('modal-clave-proyecto').classList.add('hidden');
-      proyectoParaClave = null;
-    }
-
-    async function guardarClaveDesdeModal() {
-      if (!proyectoParaClave) return;
-      const nuevaClave = document.getElementById('modal-clave-input').value.trim();
-
-      const { error } = await _supabase
-        .from('proyectos')
-        .update({ clave_proyecto: nuevaClave })
-        .eq('id', proyectoParaClave.id);
-
-      if (error) {
-        alert("Error al actualizar contraseña: " + error.message);
-      } else {
-        alert("¡Contraseña de edición guardada correctamente!");
-        proyectoParaClave.clave_proyecto = nuevaClave;
-        cerrarModalClaveProyecto();
-        renderizarLista();
-        if (proyectoSeleccionado && proyectoSeleccionado.id === proyectoParaClave.id) {
-          renderizarResumenEntrega(proyectoParaClave);
-        }
-      }
-    }
-
-    // GESTIÓN DOCENTES
-    function abrirModalAltaDocente() {
-      document.getElementById('modal-alta-docente').classList.remove('hidden');
-    }
-
-    function cerrarModalAltaDocente() {
-      document.getElementById('modal-alta-docente').classList.add('hidden');
-    }
-
-    async function guardarNuevoDocente(e) {
-      e.preventDefault();
-      const payload = {
-        nombre_docente: document.getElementById('nuevo-docente-nombre').value.trim(),
-        institucion: document.getElementById('nuevo-docente-institucion').value.trim(),
-        curso: document.getElementById('nuevo-docente-curso').value.trim(),
-        clave_acceso: document.getElementById('nuevo-docente-clave').value.trim()
-      };
-
-      const { error } = await _supabase.from('docentes').insert([payload]);
-      if (error) {
-        alert("Error al registrar docente: " + error.message);
-      } else {
-        alert("¡Docente habilitado con éxito!");
-        cerrarModalAltaDocente();
-      }
-    }
-
-    async function abrirModalGestionDocentes() {
-      document.getElementById('modal-gestion-docentes').classList.remove('hidden');
-      const cont = document.getElementById('lista-docentes-gestion');
-      cont.innerHTML = '<p class="text-xs text-slate-400 italic">Cargando lista de docentes...</p>';
-
-      const { data, error } = await _supabase.from('docentes').select('*').order('id', { ascending: true });
-      if (error || !data || data.length === 0) {
-        cont.innerHTML = '<p class="text-xs text-slate-500 italic">No hay docentes registrados o error al cargar.</p>';
-        return;
-      }
-
-      cont.innerHTML = '';
-      data.forEach(d => {
-        const item = document.createElement('div');
-        item.className = "flex justify-between items-center bg-slate-50 border border-slate-200 p-3 rounded-lg";
-        item.innerHTML = `
-          <div>
-            <strong class="text-slate-900 block">${d.nombre_docente || 'Sin Nombre'}</strong>
-            <span class="text-slate-500">🏫 ${d.institucion} — 📖 ${d.curso}</span><br>
-            <span class="text-[10px] bg-slate-200 text-slate-700 px-1.5 py-0.5 rounded font-mono">Clave: ${d.clave_acceso}</span>
-          </div>
-          <button onclick="eliminarDocente(${d.id})" class="bg-rose-600 hover:bg-rose-500 text-white font-bold px-3 py-1.5 rounded transition">
-            Eliminar
-          </button>
-        `;
-        cont.appendChild(item);
-      });
-    }
-
-    function cerrarModalGestionDocentes() {
-      document.getElementById('modal-gestion-docentes').classList.add('hidden');
-      cargarDatos();
-    }
-
-    async function eliminarDocente(id) {
-      if (!confirm(`¿Eliminar permanentemente al docente ID ${id}?`)) return;
-      const { error } = await _supabase.from('docentes').delete().eq('id', id);
-      if (error) {
-        alert("Error al eliminar docente: " + error.message);
-      } else {
-        alert("Docente eliminado.");
-        abrirModalGestionDocentes();
-      }
-    }
-
-    async function abrirModalDuplicados() {
-      document.getElementById('modal-duplicados').classList.remove('hidden');
-      const cont = document.getElementById('lista-duplicados-container');
-      cont.innerHTML = '<p class="text-xs text-slate-400">Buscando...</p>';
-      const { data } = await _supabase.from('proyectos').select('*');
-      cont.innerHTML = '<p class="text-xs text-slate-500">Sin duplicados críticos.</p>';
-    }
-
-    function cerrarModalDuplicados() {
+          <div class="p-2.5 bg-amber-50 border border-amber-2
+          function cerrarModalDuplicados() {
       document.getElementById('modal-duplicados').classList.add('hidden');
       cargarDatos();
     }
