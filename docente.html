@@ -7,6 +7,14 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    /* Forzar scroll y contención en textos largos de ambas columnas */
+    #resumen-contenido, #contenedor-rubrica {
+      max-height: 480px !important;
+      overflow-y: auto !important;
+      word-break: break-word;
+    }
+  </style>
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen">
 
@@ -69,10 +77,10 @@
     </div>
   </header>
 
-  <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8">
+  <main class="max-w-7xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
     <!-- COLUMNA IZQUIERDA: LISTA Y ENTREGAS -->
-    <section class="lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 h-fit print:hidden space-y-4">
+    <section class="lg:col-span-4 bg-white p-6 rounded-xl shadow-sm border border-slate-200 print:hidden space-y-4 sticky top-6">
       <div class="flex border-b border-slate-200 pb-2 gap-2">
         <button onclick="cambiarTabIzquierda('lista')" id="btn-tab-lista" class="flex-1 py-1.5 px-3 text-xs font-bold rounded-lg bg-blue-900 text-white transition shadow-sm">
           <i class="fa-solid fa-list mr-1"></i> Proyectos
@@ -99,14 +107,13 @@
         </div>
       </div>
 
-      <div id="tab-content-resumen" class="hidden space-y-4 max-h-[70vh] overflow-y-auto pr-1">
+      <div id="tab-content-resumen" class="hidden space-y-4">
         <div class="flex justify-between items-center border-b pb-2">
           <h2 class="text-xs font-bold uppercase tracking-wider text-blue-800"><i class="fa-solid fa-eye mr-1"></i> Contenido del Alumno</h2>
           <span id="resumen-id-badge" class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">ID: -</span>
         </div>
 
-        <!-- CONTENEDOR CON SCROLL INTERNO PARA TEXTOS LARGOS -->
-        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 max-h-[500px] overflow-y-auto pr-2">
+        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 pr-1">
           <p class="text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>
         </div>
       </div>
@@ -173,8 +180,8 @@
             </button>
           </div>
 
-          <!-- CONTENEDOR CON SCROLL INTERNO PARA LA RÚBRICA -->
-          <div id="contenedor-rubrica" class="space-y-4 text-xs max-h-[500px] overflow-y-auto pr-2"></div>
+          <!-- CONTENEDOR CON SCROLL INTERNO PARA QUE LA ETAPA 1 Y LAS DEMÁS NO ESTIREN LA PÁGINA -->
+          <div id="contenedor-rubrica" class="space-y-4 text-xs pr-1"></div>
 
           <div class="pt-4 border-t space-y-3">
             <div class="flex justify-between items-center">
@@ -286,7 +293,6 @@
 
     let docenteLogueado = null;
 
-    // MATRIZ HEURÍSTICA DEDICADA Y ESPECÍFICA POR CADA ETAPA DEL PLAN DE NEGOCIOS
     const itemsDefinicion = [
       { 
         titulo: "Etapa 1: Resumen Ejecutivo e Idea de Negocio", 
@@ -896,7 +902,6 @@
       }
     }
 
-    // FUNCIÓN DE EXPORTACIÓN A EXCEL / CSV CONSOLIDADO
     async function exportarReporteDocenteExcel() {
       try {
         const { data: proyectos, error: errP } = await _supabase.from('proyectos').select('*');
@@ -911,7 +916,6 @@
           return;
         }
 
-        // Encabezados con BOM UTF-8
         let csv = "\uFEFF";
         csv += "ID;Proyecto;Curso / Especialidad;Integrantes;Nota Docente;Prom. Publico;Cant. Votos;Nota Idea;Nota Pres.;Nota Viab.;Capital Inversores ($);Capital Total ($);Observaciones Docente\n";
 
@@ -961,7 +965,6 @@
       }
     }
 
-    // MODAL CLAVE PROYECTO
     function abrirModalClaveProyecto(id) {
       proyectoParaClave = listaProyectos.find(p => p.id === id);
       if (!proyectoParaClave) return;
@@ -998,7 +1001,6 @@
       }
     }
 
-    // GESTIÓN DOCENTES
     function abrirModalAltaDocente() {
       document.getElementById('modal-alta-docente').classList.remove('hidden');
     }
