@@ -111,10 +111,21 @@
       </div>
     </section>
 
-    <!-- COLUMNA DERECHA: FAVORITOS DEL PÚBLICO Y CLASIFICACIÓN RESTANTE -->
+    <!-- COLUMNA DERECHA: CLASIFICACIÓN GENERAL ARRIBA + FAVORITOS DEL PÚBLICO ABAJO -->
     <section class="lg:col-span-5 flex flex-col gap-4 justify-between">
       
-      <!-- MÉTRICAS Y TOP 3 FAVORITOS DEL PÚBLICO -->
+      <!-- 1. CLASIFICACIÓN GENERAL RESTANTE (4° EN ADELANTE) - AHORA ARRIBA -->
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 flex-1 flex flex-col">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-list-ol text-slate-500"></i> Tabla General (Siguientes Puestos)
+        </h3>
+
+        <div id="lista-ranking" class="space-y-2 overflow-y-auto flex-1 pr-1">
+          <!-- Se puebla dinámicamente -->
+        </div>
+      </div>
+
+      <!-- 2. MÉTRICAS Y TOP 3 FAVORITOS DEL PÚBLICO - AHORA ABAJO -->
       <div class="bg-amber-950/30 border border-amber-500/30 p-4 rounded-3xl space-y-3 backdrop-blur-sm">
         <div class="flex justify-between items-center border-b border-amber-500/20 pb-2">
           <h3 class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
@@ -128,17 +139,6 @@
         <!-- LISTADO TOP 3 PÚBLICO -->
         <div id="lista-favoritos-publico" class="space-y-2">
           <!-- Se puebla dinámicamente con las mejores promedios de estrellas -->
-        </div>
-      </div>
-
-      <!-- CLASIFICACIÓN GENERAL RESTANTE (4° EN ADELANTE) -->
-      <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 flex-1 flex flex-col">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2 mb-2 flex items-center gap-2">
-          <i class="fa-solid fa-list-ol text-slate-500"></i> Tabla General (Siguientes Puestos)
-        </h3>
-
-        <div id="lista-ranking" class="space-y-2 overflow-y-auto flex-1 pr-1">
-          <!-- Se puebla dinámicamente -->
         </div>
       </div>
 
@@ -240,7 +240,7 @@
           };
         });
 
-        // 1. Podio Principal (Orden por Capital Total desc)
+        // 1. Podio Principal y Siguientes Puestos (Orden por Capital Total desc)
         const rankingGeneral = [...ranking].sort((a, b) => b.capitalTotal - a.capitalTotal);
         poblarPodioYTabla(rankingGeneral);
 
