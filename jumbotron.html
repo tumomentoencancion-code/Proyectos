@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="es" class="notranslate" translate="no">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="google" content="notranslate">
+  <title>E.E.S.T. N°1 Bragado — Ranking en Vivo Muestra Anual</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #090d16;
+      color: #f8fafc;
+      overflow: hidden; /* Evita barras de desplazamiento en proyector */
+    }
+    .glow-gold { filter: drop-shadow(0 0 15px rgba(234, 179, 8, 0.4)); }
+    .glow-silver { filter: drop-shadow(0 0 15px rgba(203, 213, 225, 0.3)); }
+    .glow-bronze { filter: drop-shadow(0 0 15px rgba(217, 119, 6, 0.3)); }
+    .animate-pulse-slow { animation: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between p-6 select-none">
+
+  <!-- CABECERA PRINCIPAL JUMBOTRON -->
+  <header class="flex justify-between items-center border-b border-slate-800 pb-4">
+    <div class="flex items-center gap-4">
+      <div class="bg-amber-500 text-slate-950 font-black p-3 rounded-2xl text-2xl shadow-lg glow-gold">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl lg:text-3xl font-black tracking-wider text-white uppercase">E.E.S.T. N°1 Bragado</h1>
+        <p class="text-xs lg:text-sm text-slate-400 font-semibold tracking-wide">MUESTRA ANUAL DE EMPRENDIMIENTOS TÉCNICOS • TABLA EN VIVO</p>
+      </div>
+    </div>
+
+    <!-- BOTÓN / INDICADOR DE ESTADO EN VIVO Y CONTROL DE VISIBILIDAD -->
+    <div class="flex items-center gap-4">
+      <button id="btn-toggle-visibilidad" onclick="toggleVisibilidadJumbotron()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
+        <i id="icon-toggle" class="fa-solid fa-eye text-emerald-400"></i>
+        <span id="txt-toggle">Pública</span>
+      </button>
+
+      <div class="bg-slate-900 border border-slate-800 px-4 py-2 rounded-xl flex items-center gap-2 shadow-inner">
+        <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse"></span>
+        <span class="text-xs font-bold text-emerald-400 uppercase tracking-widest font-mono">EN VIVO</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- PANTALLA DESHABILITADA / MODO SUSPENSO -->
+  <main id="jumbotron-deshabilitado" class="hidden flex-1 flex flex-col items-center justify-center text-center my-auto space-y-6">
+    <div class="bg-slate-900/80 border border-slate-800 p-12 rounded-3xl max-w-2xl shadow-2xl backdrop-blur-md">
+      <i class="fa-solid fa-lock text-6xl text-amber-500 mb-4 animate-bounce"></i>
+      <h2 class="text-3xl font-black text-white uppercase tracking-wider">Resultados en Pausa</h2>
+      <p class="text-slate-400 text-sm mt-2">La proyección pública de posiciones ha sido pausada temporalmente por la organización para la revelación final.</p>
+    </div>
+  </main>
+
+  <!-- CONTENIDO PRINCIPAL JUMBOTRON EN VIVO -->
+  <main id="jumbotron-contenido" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 my-4 items-stretch overflow-hidden">
+
+    <!-- COLUMNA IZQUIERDA: EL PODIO (TOP 3) -->
+    <section class="lg:col-span-7 flex flex-col justify-end bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 relative overflow-hidden backdrop-blur-sm">
+      <div class="absolute top-4 left-6 text-xs font-black uppercase text-amber-400 tracking-widest flex items-center gap-2">
+        <i class="fa-solid fa-crown text-amber-400"></i> Podio de Liderazgo
+      </div>
+
+      <div id="podio-container" class="grid grid-cols-3 gap-4 items-end pt-12 h-full">
+        
+        <!-- PUESTO 2 (PLATA) -->
+        <div id="podio-2" class="flex flex-col items-center h-full justify-end">
+          <div class="text-center mb-2 w-full px-1">
+            <span class="text-[10px] font-bold text-slate-400 block uppercase">2° Puesto</span>
+            <h3 id="p2-nombre" class="text-xs font-black text-slate-200 truncate">Esperando...</h3>
+            <span id="p2-votos" class="text-xs font-mono font-bold text-slate-400">0.0 pts</span>
+          </div>
+          <div class="w-full bg-gradient-to-t from-slate-800 to-slate-700/80 rounded-t-2xl border-t-2 border-slate-400 flex flex-col items-center justify-center p-4 min-h-[160px] glow-silver">
+            <span class="text-4xl font-black text-slate-300">2</span>
+          </div>
+        </div>
+
+        <!-- PUESTO 1 (ORO) -->
+        <div id="podio-1" class="flex flex-col items-center h-full justify-end">
+          <div class="text-center mb-2 w-full px-1">
+            <span class="text-[10px] font-black text-amber-400 block uppercase tracking-widest">🏆 Líder Actual</span>
+            <h3 id="p1-nombre" class="text-sm font-black text-amber-300 truncate">Esperando...</h3>
+            <span id="p1-votos" class="text-sm font-mono font-black text-amber-400">0.0 pts</span>
+          </div>
+          <div class="w-full bg-gradient-to-t from-amber-600 to-amber-500 rounded-t-2xl border-t-4 border-amber-300 flex flex-col items-center justify-center p-4 min-h-[220px] glow-gold">
+            <i class="fa-solid fa-crown text-slate-950 text-2xl mb-1 animate-pulse-slow"></i>
+            <span class="text-5xl font-black text-slate-950">1</span>
+          </div>
+        </div>
+
+        <!-- PUESTO 3 (BRONCE) -->
+        <div id="podio-3" class="flex flex-col items-center h-full justify-end">
+          <div class="text-center mb-2 w-full px-1">
+            <span class="text-[10px] font-bold text-amber-600 block uppercase">3° Puesto</span>
+            <h3 id="p3-nombre" class="text-xs font-black text-slate-200 truncate">Esperando...</h3>
+            <span id="p3-votos" class="text-xs font-mono font-bold text-amber-500">0.0 pts</span>
+          </div>
+          <div class="w-full bg-gradient-to-t from-amber-900/80 to-amber-800/80 rounded-t-2xl border-t-2 border-amber-600 flex flex-col items-center justify-center p-4 min-h-[130px] glow-bronze">
+            <span class="text-4xl font-black text-amber-500">3</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- COLUMNA DERECHA: TABLA DEL 4° EN ADELANTE Y MÉTRICAS GLOBALES -->
+    <section class="lg:col-span-5 flex flex-col gap-4">
+      
+      <!-- MÉTRICAS EN TIEMPO REAL -->
+      <div class="grid grid-cols-2 gap-4">
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Votos Emitidos</span>
+          <span id="stat-total-votos" class="text-3xl font-black text-blue-400 font-mono block mt-1">0</span>
+        </div>
+        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Capital Invertido</span>
+          <span id="stat-total-capital" class="text-2xl font-black text-emerald-400 font-mono block mt-2">$0</span>
+        </div>
+      </div>
+
+      <!-- RANKING RESTANTE -->
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-5 flex-1 flex flex-col">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-list-ol text-slate-500"></i> Clasificación General
+        </h3>
+
+        <div id="lista-ranking" class="space-y-2 overflow-y-auto flex-1 pr-1">
+          <!-- Se puebla dinámicamente -->
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- PIE DE PÁGINA CON CÓDIGO QR / URL DE VOTACIÓN -->
+  <footer class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex justify-between items-center text-xs">
+    <div class="flex items-center gap-3">
+      <div class="bg-blue-600/20 border border-blue-500/30 text-blue-400 font-mono font-bold px-3 py-1.5 rounded-lg text-sm">
+        <i class="fa-solid fa-mobile-screen mr-1.5"></i> Votación Abierta
+      </div>
+      <p class="text-slate-400 font-medium hidden sm:block">Ingresá desde tu celular para calificar los proyectos e invertir Capital Semilla.</p>
+    </div>
+    
+    <div class="text-right">
+      <span class="text-slate-500 font-mono text-[10px] block">E.E.S.T. N°1 BRAGADO</span>
+      <span id="txt-actualizado-hace" class="text-slate-400 font-mono text-[10px]">Actualización en tiempo real</span>
+    </div>
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let jumbotronHabilitado = true;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarRankingJumbotron();
+      // Refresco automático cada 8 segundos
+      setInterval(cargarRankingJumbotron, 8000);
+    });
+
+    function toggleVisibilidadJumbotron() {
+      jumbotronHabilitado = !jumbotronHabilitado;
+      const btnTxt = document.getElementById('txt-toggle');
+      const btnIcon = document.getElementById('icon-toggle');
+      const cont = document.getElementById('jumbotron-contenido');
+      const des = document.getElementById('jumbotron-deshabilitado');
+
+      if (jumbotronHabilitado) {
+        btnTxt.innerText = "Pública";
+        btnIcon.className = "fa-solid fa-eye text-emerald-400";
+        cont.classList.remove('hidden');
+        des.classList.add('hidden');
+      } else {
+        btnTxt.innerText = "Pausada";
+        btnIcon.className = "fa-solid fa-eye-slash text-rose-400";
+        cont.classList.add('hidden');
+        des.classList.remove('hidden');
+      }
+    }
+
+    async function cargarRankingJumbotron() {
+      if (!jumbotronHabilitado) return;
+
+      try {
+        const { data: proyectos } = await _supabase.from('proyectos').select('id, nombreProyecto, nombre');
+        const { data: votos } = await _supabase.from('votos_publico').select('proyecto_id, puntuacion_promedio');
+        const { data: inversiones } = await _supabase.from('inversiones_simuladas').select('proyecto_id, monto_invertido');
+
+        document.getElementById('stat-total-votos').innerText = votos ? votos.length : 0;
+        
+        let capitalTotal = 0;
+        if (inversiones) {
+          capitalTotal = inversiones.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+        }
+        document.getElementById('stat-total-capital').innerText = '$' + capitalTotal.toLocaleString('es-AR');
+
+        if (!proyectos || proyectos.length === 0) return;
+
+        // Mapeo y cálculo de puntajes
+        const ranking = proyectos.map(p => {
+          const votosP = votos ? votos.filter(v => v.proyecto_id === p.id) : [];
+          let prom = 0;
+          if (votosP.length > 0) {
+            const suma = votosP.reduce((acc, curr) => acc + (parseFloat(curr.puntuacion_promedio) || 0), 0);
+            prom = suma / votosP.length;
+          }
+
+          const invP = inversiones ? inversiones.filter(i => i.proyecto_id === p.id) : [];
+          const cap = invP.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+
+          let nombreLimpio = p.nombreProyecto || p.nombre || "Proyecto #" + p.id;
+          if (nombreLimpio.length > 35) nombreLimpio = nombreLimpio.substring(0, 35) + "...";
+
+          return {
+            id: p.id,
+            nombre: nombreLimpio,
+            promedio: prom,
+            capital: cap,
+            totalVotos: votosP.length
+          };
+        });
+
+        // Ordenar por promedio desc y luego capital
+        ranking.sort((a, b) => b.promedio - a.promedio || b.capital - a.capital);
+
+        poblarPodioYTabla(ranking);
+
+        const ahora = new Date();
+        document.getElementById('txt-actualizado-hace').innerText = `Actualizado: ${ahora.toLocaleTimeString('es-AR')}`;
+
+      } catch (err) {
+        console.error("Error al actualizar JumboTron:", err);
+      }
+    }
+
+    function poblarPodioYTabla(ranking) {
+      // 1. Podio Oro (1°)
+      if (ranking[0]) {
+        document.getElementById('p1-nombre').innerText = ranking[0].nombre;
+        document.getElementById('p1-votos').innerText = `${ranking[0].promedio.toFixed(1)} pts (${ranking[0].totalVotos} v.)`;
+      }
+
+      // 2. Podio Plata (2°)
+      if (ranking[1]) {
+        document.getElementById('p2-nombre').innerText = ranking[1].nombre;
+        document.getElementById('p2-votos').innerText = `${ranking[1].promedio.toFixed(1)} pts`;
+      } else {
+        document.getElementById('p2-nombre').innerText = "-";
+        document.getElementById('p2-votos').innerText = "0.0 pts";
+      }
+
+      // 3. Podio Bronce (3°)
+      if (ranking[2]) {
+        document.getElementById('p3-nombre').innerText = ranking[2].nombre;
+        document.getElementById('p3-votos').innerText = `${ranking[2].promedio.toFixed(1)} pts`;
+      } else {
+        document.getElementById('p3-nombre').innerText = "-";
+        document.getElementById('p3-votos').innerText = "0.0 pts";
+      }
+
+      // 4. Lista del 4° en adelante
+      const contLista = document.getElementById('lista-ranking');
+      contLista.innerHTML = '';
+
+      const resto = ranking.slice(3, 8); // Muestra hasta el puesto 8 para no saturar la pantalla
+
+      if (resto.length === 0) {
+        contLista.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">Esperando más proyectos...</p>';
+        return;
+      }
+
+      resto.forEach((item, idx) => {
+        const puesto = idx + 4;
+        contLista.innerHTML += `
+          <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 p-2.5 rounded-xl text-xs">
+            <div class="flex items-center gap-3 truncate">
+              <span class="font-mono font-bold text-slate-500 w-5 text-right">${puesto}°</span>
+              <span class="font-bold text-slate-200 truncate">${item.nombre}</span>
+            </div>
+            <div class="flex items-center gap-3 shrink-0 font-mono">
+              <span class="text-amber-400 font-bold">${item.promedio.toFixed(1)} pts</span>
+              <span class="text-emerald-400 text-[10px]">$${item.capital.toLocaleString('es-AR')}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+  </script>
+</body>
+</html>
