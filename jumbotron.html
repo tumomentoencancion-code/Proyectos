@@ -34,7 +34,7 @@
       </div>
     </div>
 
-    <!-- BOTÓN / INDICADOR DE ESTADO EN VIVO Y CONTROL DE VISIBILIDAD -->
+    <!-- CONTROL DE VISIBILIDAD Y EN VIVO -->
     <div class="flex items-center gap-4">
       <button id="btn-toggle-visibilidad" onclick="toggleVisibilidadJumbotron()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-4 py-2 rounded-xl transition flex items-center gap-2">
         <i id="icon-toggle" class="fa-solid fa-eye text-emerald-400"></i>
@@ -60,10 +60,10 @@
   <!-- CONTENIDO PRINCIPAL JUMBOTRON EN VIVO -->
   <main id="jumbotron-contenido" class="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 my-4 items-stretch overflow-hidden">
 
-    <!-- COLUMNA IZQUIERDA: EL PODIO (TOP 3) -->
+    <!-- COLUMNA IZQUIERDA: EL PODIO PRINCIPAL (TOP 3 CAPITAL TOTAL) -->
     <section class="lg:col-span-7 flex flex-col justify-end bg-slate-900/40 border border-slate-800/80 rounded-3xl p-6 relative overflow-hidden backdrop-blur-sm">
       <div class="absolute top-4 left-6 text-xs font-black uppercase text-amber-400 tracking-widest flex items-center gap-2">
-        <i class="fa-solid fa-crown text-amber-400"></i> Podio de Liderazgo
+        <i class="fa-solid fa-crown text-amber-400"></i> Podio General (Capital Total)
       </div>
 
       <div id="podio-container" class="grid grid-cols-3 gap-4 items-end pt-12 h-full">
@@ -73,7 +73,8 @@
           <div class="text-center mb-2 w-full px-1">
             <span class="text-[10px] font-bold text-slate-400 block uppercase">2° Puesto</span>
             <h3 id="p2-nombre" class="text-xs font-black text-slate-200 truncate">Esperando...</h3>
-            <span id="p2-votos" class="text-xs font-mono font-bold text-slate-400">0.0 pts</span>
+            <span id="p2-capital" class="text-xs font-mono font-bold text-emerald-400 block">$0</span>
+            <span id="p2-votos" class="text-[10px] font-mono text-slate-400">0.0 pts</span>
           </div>
           <div class="w-full bg-gradient-to-t from-slate-800 to-slate-700/80 rounded-t-2xl border-t-2 border-slate-400 flex flex-col items-center justify-center p-4 min-h-[160px] glow-silver">
             <span class="text-4xl font-black text-slate-300">2</span>
@@ -83,9 +84,10 @@
         <!-- PUESTO 1 (ORO) -->
         <div id="podio-1" class="flex flex-col items-center h-full justify-end">
           <div class="text-center mb-2 w-full px-1">
-            <span class="text-[10px] font-black text-amber-400 block uppercase tracking-widest">🏆 Líder Actual</span>
+            <span class="text-[10px] font-black text-amber-400 block uppercase tracking-widest">🏆 Líder General</span>
             <h3 id="p1-nombre" class="text-sm font-black text-amber-300 truncate">Esperando...</h3>
-            <span id="p1-votos" class="text-sm font-mono font-black text-amber-400">0.0 pts</span>
+            <span id="p1-capital" class="text-sm font-mono font-black text-emerald-400 block">$0</span>
+            <span id="p1-votos" class="text-xs font-mono font-bold text-amber-400">0.0 pts</span>
           </div>
           <div class="w-full bg-gradient-to-t from-amber-600 to-amber-500 rounded-t-2xl border-t-4 border-amber-300 flex flex-col items-center justify-center p-4 min-h-[220px] glow-gold">
             <i class="fa-solid fa-crown text-slate-950 text-2xl mb-1 animate-pulse-slow"></i>
@@ -98,7 +100,8 @@
           <div class="text-center mb-2 w-full px-1">
             <span class="text-[10px] font-bold text-amber-600 block uppercase">3° Puesto</span>
             <h3 id="p3-nombre" class="text-xs font-black text-slate-200 truncate">Esperando...</h3>
-            <span id="p3-votos" class="text-xs font-mono font-bold text-amber-500">0.0 pts</span>
+            <span id="p3-capital" class="text-xs font-mono font-bold text-emerald-400 block">$0</span>
+            <span id="p3-votos" class="text-[10px] font-mono text-amber-500">0.0 pts</span>
           </div>
           <div class="w-full bg-gradient-to-t from-amber-900/80 to-amber-800/80 rounded-t-2xl border-t-2 border-amber-600 flex flex-col items-center justify-center p-4 min-h-[130px] glow-bronze">
             <span class="text-4xl font-black text-amber-500">3</span>
@@ -108,25 +111,30 @@
       </div>
     </section>
 
-    <!-- COLUMNA DERECHA: TABLA DEL 4° EN ADELANTE Y MÉTRICAS GLOBALES -->
-    <section class="lg:col-span-5 flex flex-col gap-4">
+    <!-- COLUMNA DERECHA: FAVORITOS DEL PÚBLICO Y CLASIFICACIÓN RESTANTE -->
+    <section class="lg:col-span-5 flex flex-col gap-4 justify-between">
       
-      <!-- MÉTRICAS EN TIEMPO REAL -->
-      <div class="grid grid-cols-2 gap-4">
-        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Votos Emitidos</span>
-          <span id="stat-total-votos" class="text-3xl font-black text-blue-400 font-mono block mt-1">0</span>
+      <!-- MÉTRICAS Y TOP 3 FAVORITOS DEL PÚBLICO -->
+      <div class="bg-amber-950/30 border border-amber-500/30 p-4 rounded-3xl space-y-3 backdrop-blur-sm">
+        <div class="flex justify-between items-center border-b border-amber-500/20 pb-2">
+          <h3 class="text-xs font-black text-amber-400 uppercase tracking-wider flex items-center gap-1.5">
+            <i class="fa-solid fa-star text-amber-400"></i> Favoritos del Público (Estrellas)
+          </h3>
+          <span class="text-[10px] font-mono font-bold text-slate-400 bg-slate-900 px-2 py-0.5 rounded border border-slate-800">
+            <i class="fa-solid fa-check text-blue-400 mr-1"></i><span id="stat-total-votos">0</span> votos
+          </span>
         </div>
-        <div class="bg-slate-900/60 border border-slate-800 p-4 rounded-2xl text-center">
-          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Capital Invertido</span>
-          <span id="stat-total-capital" class="text-2xl font-black text-emerald-400 font-mono block mt-2">$0</span>
+
+        <!-- LISTADO TOP 3 PÚBLICO -->
+        <div id="lista-favoritos-publico" class="space-y-2">
+          <!-- Se puebla dinámicamente con las mejores promedios de estrellas -->
         </div>
       </div>
 
-      <!-- RANKING RESTANTE -->
-      <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-5 flex-1 flex flex-col">
-        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2 mb-3 flex items-center gap-2">
-          <i class="fa-solid fa-list-ol text-slate-500"></i> Clasificación General
+      <!-- CLASIFICACIÓN GENERAL RESTANTE (4° EN ADELANTE) -->
+      <div class="bg-slate-900/40 border border-slate-800/80 rounded-3xl p-4 flex-1 flex flex-col">
+        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider border-b border-slate-800 pb-2 mb-2 flex items-center gap-2">
+          <i class="fa-solid fa-list-ol text-slate-500"></i> Tabla General (Siguientes Puestos)
         </h3>
 
         <div id="lista-ranking" class="space-y-2 overflow-y-auto flex-1 pr-1">
@@ -138,7 +146,7 @@
 
   </main>
 
-  <!-- PIE DE PÁGINA CON CÓDIGO QR / URL DE VOTACIÓN -->
+  <!-- PIE DE PÁGINA -->
   <footer class="bg-slate-900/90 border border-slate-800 rounded-2xl p-4 flex justify-between items-center text-xs">
     <div class="flex items-center gap-3">
       <div class="bg-blue-600/20 border border-blue-500/30 text-blue-400 font-mono font-bold px-3 py-1.5 rounded-lg text-sm">
@@ -162,7 +170,6 @@
 
     document.addEventListener("DOMContentLoaded", () => {
       cargarRankingJumbotron();
-      // Refresco automático cada 8 segundos
       setInterval(cargarRankingJumbotron, 8000);
     });
 
@@ -191,47 +198,55 @@
 
       try {
         const { data: proyectos } = await _supabase.from('proyectos').select('id, nombreProyecto, nombre');
+        const { data: evaluaciones } = await _supabase.from('evaluaciones').select('proyecto_id, nota_final, nota_global');
         const { data: votos } = await _supabase.from('votos_publico').select('proyecto_id, puntuacion_promedio');
         const { data: inversiones } = await _supabase.from('inversiones_simuladas').select('proyecto_id, monto_invertido');
 
         document.getElementById('stat-total-votos').innerText = votos ? votos.length : 0;
-        
-        let capitalTotal = 0;
-        if (inversiones) {
-          capitalTotal = inversiones.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
-        }
-        document.getElementById('stat-total-capital').innerText = '$' + capitalTotal.toLocaleString('es-AR');
 
         if (!proyectos || proyectos.length === 0) return;
 
-        // Mapeo y cálculo de puntajes
+        // Mapeo unificado
         const ranking = proyectos.map(p => {
+          // Inversión Técnica Docente
+          const ev = evaluaciones ? evaluaciones.find(e => e.proyecto_id === p.id) : null;
+          const notaDoc = ev ? parseFloat(ev.nota_final || ev.nota_global || 0) : 0;
+          const invTecnica = notaDoc * 100000;
+
+          // Inversión Mercado
+          const invP = inversiones ? inversiones.filter(i => i.proyecto_id === p.id) : [];
+          const capInversores = invP.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+
           const votosP = votos ? votos.filter(v => v.proyecto_id === p.id) : [];
-          let prom = 0;
+          let promEstrellas = 0;
           if (votosP.length > 0) {
             const suma = votosP.reduce((acc, curr) => acc + (parseFloat(curr.puntuacion_promedio) || 0), 0);
-            prom = suma / votosP.length;
+            promEstrellas = suma / votosP.length;
           }
+          const capVotos = promEstrellas * 10000;
 
-          const invP = inversiones ? inversiones.filter(i => i.proyecto_id === p.id) : [];
-          const cap = invP.reduce((acc, curr) => acc + (parseFloat(curr.monto_invertido) || 0), 0);
+          const invMercado = capInversores + capVotos;
+          const capitalTotal = invTecnica + invMercado;
 
           let nombreLimpio = p.nombreProyecto || p.nombre || "Proyecto #" + p.id;
-          if (nombreLimpio.length > 35) nombreLimpio = nombreLimpio.substring(0, 35) + "...";
+          if (nombreLimpio.length > 30) nombreLimpio = nombreLimpio.substring(0, 30) + "...";
 
           return {
             id: p.id,
             nombre: nombreLimpio,
-            promedio: prom,
-            capital: cap,
+            promedio: promEstrellas,
+            capitalTotal: capitalTotal,
             totalVotos: votosP.length
           };
         });
 
-        // Ordenar por promedio desc y luego capital
-        ranking.sort((a, b) => b.promedio - a.promedio || b.capital - a.capital);
+        // 1. Podio Principal (Orden por Capital Total desc)
+        const rankingGeneral = [...ranking].sort((a, b) => b.capitalTotal - a.capitalTotal);
+        poblarPodioYTabla(rankingGeneral);
 
-        poblarPodioYTabla(ranking);
+        // 2. Mención "Favoritos del Público" (Orden por Promedio de Estrellas desc)
+        const rankingPublico = [...ranking].sort((a, b) => b.promedio - a.promedio || b.totalVotos - a.totalVotos);
+        poblarFavoritosPublico(rankingPublico);
 
         const ahora = new Date();
         document.getElementById('txt-actualizado-hace').innerText = `Actualizado: ${ahora.toLocaleTimeString('es-AR')}`;
@@ -242,27 +257,32 @@
     }
 
     function poblarPodioYTabla(ranking) {
-      // 1. Podio Oro (1°)
+      // 1. Oro (1°)
       if (ranking[0]) {
         document.getElementById('p1-nombre').innerText = ranking[0].nombre;
+        document.getElementById('p1-capital').innerText = '$' + ranking[0].capitalTotal.toLocaleString('es-AR');
         document.getElementById('p1-votos').innerText = `${ranking[0].promedio.toFixed(1)} pts (${ranking[0].totalVotos} v.)`;
       }
 
-      // 2. Podio Plata (2°)
+      // 2. Plata (2°)
       if (ranking[1]) {
         document.getElementById('p2-nombre').innerText = ranking[1].nombre;
+        document.getElementById('p2-capital').innerText = '$' + ranking[1].capitalTotal.toLocaleString('es-AR');
         document.getElementById('p2-votos').innerText = `${ranking[1].promedio.toFixed(1)} pts`;
       } else {
         document.getElementById('p2-nombre').innerText = "-";
+        document.getElementById('p2-capital').innerText = "$0";
         document.getElementById('p2-votos').innerText = "0.0 pts";
       }
 
-      // 3. Podio Bronce (3°)
+      // 3. Bronce (3°)
       if (ranking[2]) {
         document.getElementById('p3-nombre').innerText = ranking[2].nombre;
+        document.getElementById('p3-capital').innerText = '$' + ranking[2].capitalTotal.toLocaleString('es-AR');
         document.getElementById('p3-votos').innerText = `${ranking[2].promedio.toFixed(1)} pts`;
       } else {
         document.getElementById('p3-nombre').innerText = "-";
+        document.getElementById('p3-capital').innerText = "$0";
         document.getElementById('p3-votos').innerText = "0.0 pts";
       }
 
@@ -270,7 +290,7 @@
       const contLista = document.getElementById('lista-ranking');
       contLista.innerHTML = '';
 
-      const resto = ranking.slice(3, 8); // Muestra hasta el puesto 8 para no saturar la pantalla
+      const resto = ranking.slice(3, 7);
 
       if (resto.length === 0) {
         contLista.innerHTML = '<p class="text-xs text-slate-500 italic text-center py-4">Esperando más proyectos...</p>';
@@ -281,13 +301,35 @@
         const puesto = idx + 4;
         contLista.innerHTML += `
           <div class="flex justify-between items-center bg-slate-900/80 border border-slate-800 p-2.5 rounded-xl text-xs">
-            <div class="flex items-center gap-3 truncate">
+            <div class="flex items-center gap-2.5 truncate">
               <span class="font-mono font-bold text-slate-500 w-5 text-right">${puesto}°</span>
               <span class="font-bold text-slate-200 truncate">${item.nombre}</span>
             </div>
             <div class="flex items-center gap-3 shrink-0 font-mono">
-              <span class="text-amber-400 font-bold">${item.promedio.toFixed(1)} pts</span>
-              <span class="text-emerald-400 text-[10px]">$${item.capital.toLocaleString('es-AR')}</span>
+              <span class="text-emerald-400 font-black">$${item.capitalTotal.toLocaleString('es-AR')}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function poblarFavoritosPublico(rankingPublico) {
+      const cont = document.getElementById('lista-favoritos-publico');
+      cont.innerHTML = '';
+
+      const top3Publico = rankingPublico.slice(0, 3);
+      const medallas = ['🥇', '🥈', '🥉'];
+
+      top3Publico.forEach((item, idx) => {
+        cont.innerHTML += `
+          <div class="flex justify-between items-center bg-slate-900/90 border border-amber-500/20 p-2 rounded-xl text-xs">
+            <div class="flex items-center gap-2 truncate">
+              <span class="text-sm">${medallas[idx]}</span>
+              <span class="font-bold text-slate-100 truncate">${item.nombre}</span>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 font-mono">
+              <span class="text-amber-400 font-black text-sm"><i class="fa-solid fa-star text-[10px] mr-0.5"></i>${item.promedio.toFixed(1)}</span>
+              <span class="text-[10px] text-slate-400">(${item.totalVotos} v.)</span>
             </div>
           </div>
         `;
