@@ -15,7 +15,7 @@
       body { background: #ffffff !important; padding: 0 !important; margin: 0 !important; font-size: 9.5pt !important; color: #0f172a !important; }
       
       /* Elementos excluidos del PDF impreso */
-      header, .no-print, button, input[type="submit"], .checklist-orientativo, #bloque-evaluacion-docente, #barra-pdf-flotante { display: none !important; }
+      header, .no-print, button, input[type="submit"], .checklist-orientativo, #bloque-evaluacion-docente { display: none !important; }
       
       .container, main, section, div { box-shadow: none !important; border-color: #cbd5e1 !important; }
       
@@ -54,7 +54,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 font-sans min-h-screen pb-12">
 
-  <!-- BARRA FLOTANTE DE IMPRESIÓN (SOLO EN NAVEGACIÓN DIRECTA DOSSIER) -->
+  <!-- BARRA FLOTANTE DE IMPRESIÓN -->
   <div id="barra-pdf-flotante" class="hidden max-w-4xl mx-auto mt-4 px-6 no-print">
     <div class="bg-slate-900 text-white p-4 rounded-xl flex justify-between items-center shadow-lg">
       <div>
@@ -68,15 +68,21 @@
   </div>
 
   <!-- HEADER COMPACTO -->
-  <header id="header-principal" class="bg-slate-900 text-white shadow-lg mb-8">
+  <header class="bg-slate-900 text-white shadow-lg mb-8">
     <div class="max-w-4xl mx-auto px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4">
       <div>
         <h1 id="header-institucion" class="text-base font-bold tracking-tight">E.E.S.T. N°1 Bragado</h1>
         <p id="header-curso" class="text-slate-400 text-xs">Formulación de Proyecto de Emprendimiento</p>
       </div>
-      <a href="index.html" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
-        <i class="fa-solid fa-house"></i> Volver al Portal
-      </a>
+      <div class="flex items-center gap-2">
+        <button onclick="abrirCertificadoDigital()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-3.5 py-2 rounded-lg transition shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-certificate"></i>
+          <span>Mi Certificado</span>
+        </button>
+        <a href="index.html" target="_blank" rel="noopener noreferrer" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-bold px-3 py-2 rounded-lg flex items-center gap-2 transition">
+          <i class="fa-solid fa-house"></i> Volver al Portal
+        </a>
+      </div>
     </div>
   </header>
 
@@ -91,8 +97,8 @@
         <span id="badge-modo" class="text-xs font-bold bg-blue-100 text-blue-800 px-3 py-1 rounded-full">Nuevo Proyecto</span>
       </div>
 
-      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE (OCULTO EN EL PORTAL PÚBLICO E IMPRESIÓN) -->
-      <div id="bloque-evaluacion-docente" class="hidden bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
+      <!-- BLOQUE DE VISUALIZACIÓN DE NOTA DOCENTE (OCULTO EN IMPRESIÓN) -->
+      <div id="bloque-evaluacion-docente" class="hidden no-print bg-emerald-50 border border-emerald-300 p-4 rounded-xl space-y-2">
         <div class="flex justify-between items-center">
           <span class="text-xs font-bold text-emerald-900 uppercase flex items-center gap-1.5">
             <i class="fa-solid fa-graduation-cap text-emerald-700"></i> Calificación / Devolución Docente
@@ -359,26 +365,24 @@
 
       const urlParams = new URLSearchParams(window.location.search);
       const esVistaDossier = urlParams.get('vista') === 'dossier';
-      const esModoIframe = urlParams.get('modo') === 'iframe';
 
       if (esVistaDossier) {
-        activarModoSoloLectura(esModoIframe);
+        activarModoSoloLectura();
       }
 
       cargarProyectoPrevio();
     });
 
-    function activarModoSoloLectura(esIframe) {
-      if (esIframe) {
-        // En embebido: oculta tanto el header como la barra flotante para no duplicar ni solapar
-        const header = document.getElementById('header-principal');
-        if (header) header.classList.add('hidden');
-        document.body.classList.remove('pb-12');
-        document.body.classList.add('py-2');
+    function abrirCertificadoDigital() {
+      if (proyectoExistenteId) {
+        window.open('certificado.html?id=' + proyectoExistenteId, '_blank');
       } else {
-        // En pestaña independiente: muestra la barra negra con botón para imprimir
-        document.getElementById('barra-pdf-flotante').classList.remove('hidden');
+        alert("⚠️ Por favor, guardá o seleccioná primero tu proyecto para poder emitir el certificado oficial.");
       }
+    }
+
+    function activarModoSoloLectura() {
+      document.getElementById('barra-pdf-flotante').classList.remove('hidden');
       
       const btnGuardar = document.getElementById('bloque-btn-guardar');
       if (btnGuardar) btnGuardar.classList.add('hidden');
@@ -394,6 +398,7 @@
     }
 
     function transformarTextareasATextoPlano() {
+      // Reemplaza cada textarea por un div nativo de texto para eliminar scrollbars en PDF
       const textareas = document.querySelectorAll('textarea');
       textareas.forEach(ta => {
         const div = document.createElement('div');
@@ -463,11 +468,10 @@
             }
           }
           poblarFormulario(data);
+          cargarEvaluacionDocente(data.id);
 
-          // Si es edición interna muestra evaluación docente. En portal público/dossier se mantiene oculto.
-          if (!esVistaDossier) {
-            cargarEvaluacionDocente(data.id);
-          } else {
+          // Si es vista dossier, transformamos los textareas en divs planos
+          if (esVistaDossier) {
             transformarTextareasATextoPlano();
           }
         }
@@ -602,7 +606,7 @@
       try {
         let res = proyectoExistenteId 
           ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
-          : await _supabase.from('proyectos').insert([payload]);
+          : await _supabase.from('proyectos').insert([payload]).select();
 
         if (res.error && (res.error.message.includes('schema cache') || res.error.message.includes('column'))) {
           delete payload.finanzas_json;
@@ -612,13 +616,17 @@
 
           res = proyectoExistenteId 
             ? await _supabase.from('proyectos').update(payload).eq('id', proyectoExistenteId)
-            : await _supabase.from('proyectos').insert([payload]);
+            : await _supabase.from('proyectos').insert([payload]).select();
         }
 
         if (res.error) throw res.error;
 
+        // Si es un nuevo proyecto insertado, capturamos su ID generado para que el botón de certificado funcione de inmediato
+        if (!proyectoExistenteId && res.data && res.data.length > 0) {
+          proyectoExistenteId = res.data[0].id;
+        }
+
         alert("¡Proyecto guardado con éxito!");
-        window.location.href = "index.html";
       } catch (err) {
         alert("Error al guardar el proyecto: " + err.message);
       } finally {
