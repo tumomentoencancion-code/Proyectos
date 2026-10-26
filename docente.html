@@ -8,9 +8,14 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Forzar scroll y altura máxima estricta exclusivamente en la rúbrica */
+    /* Forzar scroll y altura máxima estricta tanto en la rúbrica como en la ficha de entrega */
     #contenedor-rubrica {
       max-height: 500px !important;
+      overflow-y: auto !important;
+      word-break: break-word;
+    }
+    #resumen-contenido {
+      max-height: 65vh !important;
       overflow-y: auto !important;
       word-break: break-word;
     }
@@ -113,7 +118,8 @@
           <span id="resumen-id-badge" class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">ID: -</span>
         </div>
 
-        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 pr-2 max-h-[60vh] overflow-y-auto">
+        <!-- CONTENEDOR CON ALTURA MÁXIMA Y SCROLL INTERNO FORZADO -->
+        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 pr-2">
           <p class="text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>
         </div>
       </div>
