@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Forzar scroll y altura máxima estricta en la rúbrica */
+    /* Estrictos contenedores con scroll para que ningún texto largo desborde */
     #contenedor-rubrica {
       max-height: 480px !important;
       overflow-y: auto !important;
@@ -118,6 +118,7 @@
           <span id="resumen-id-badge" class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">ID: -</span>
         </div>
 
+        <!-- FICHA DE ENTREGA CON ALTURA MÁXIMA Y SCROLL BLINDADO -->
         <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 pr-2">
           <p class="text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>
         </div>
@@ -185,7 +186,7 @@
             </button>
           </div>
 
-          <!-- CONTENEDOR DE LA RÚBRICA CON SCROLL SEGURO -->
+          <!-- CONTENEDOR DE LA RÚBRICA -->
           <div id="contenedor-rubrica" class="space-y-3 text-xs pr-2"></div>
 
           <div class="pt-4 border-t space-y-3">
@@ -659,33 +660,33 @@
 
           <div class="border-b pb-2">
             <strong class="text-slate-900 block font-bold text-xs">📝 Slogan / Pitch:</strong>
-            <p class="text-slate-600">${p.slogan || p.descripcion || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.slogan || p.descripcion || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
             <strong class="text-slate-900 block font-bold text-xs">👥 Integrantes:</strong>
-            <p class="text-slate-600">${p.integrantes || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.integrantes || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
             <strong class="text-slate-900 block font-bold text-xs">🎯 Público Target / Cliente Ideal:</strong>
-            <p class="text-slate-600">${p.publicoObjetivo || p.target || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.publicoObjetivo || p.target || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
             <strong class="text-slate-900 block font-bold text-xs">📊 Estudio de Mercado / Encuesta:</strong>
-            <p class="text-slate-600">${p.analisis_mercado || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.analisis_mercado || 'Sin especificar'}</p>
             ${p.encuestaUrl ? `<a href="${p.encuestaUrl}" target="_blank" class="text-blue-600 underline text-[11px] block mt-1"><i class="fa-solid fa-link mr-1"></i>Ver Encuesta Formulario</a>` : ''}
           </div>
 
           <div class="border-b pb-2">
             <strong class="text-slate-900 block font-bold text-xs">📣 Marketing y Canales de Venta:</strong>
-            <p class="text-slate-600">${p.canalesVenta || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.canalesVenta || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
             <strong class="text-slate-900 block font-bold text-xs">⚙️ Competencia y Producción:</strong>
-            <p class="text-slate-600">${p.competidores || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.competidores || 'Sin especificar'}</p>
           </div>
 
           <div class="border-b pb-2">
@@ -695,7 +696,7 @@
 
           <div>
             <strong class="text-slate-900 block font-bold text-xs">📌 Conclusiones y Viabilidad:</strong>
-            <p class="text-slate-600">${p.conclusiones || 'Sin especificar'}</p>
+            <p class="text-slate-600 break-words">${p.conclusiones || 'Sin especificar'}</p>
           </div>
         </div>
       `;
@@ -736,7 +737,7 @@
               <option value="100" ${val === 100 ? 'selected' : ''}>100% - Excelente</option>
             </select>
           </div>
-          <p class="text-[11px] text-slate-600 italic pl-1 leading-snug">
+          <p class="text-[11px] text-slate-600 italic pl-1 leading-snug break-words">
             <i class="fa-regular fa-lightbulb text-amber-500 mr-1"></i>${heuristica}
           </p>
         `;
