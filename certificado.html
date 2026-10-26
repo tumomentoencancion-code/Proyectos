@@ -1,183 +1,316 @@
 <!DOCTYPE html>
-<html lang="es" class="notranslate" translate="no">
+<html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="google" content="notranslate">
   <title>Certificado Digital — E.E.S.T. N°1 Bragado</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Montserrat:wght@400;500;600;700&display=swap');
-
-    body {
-      font-family: 'Montserrat', sans-serif;
-      background-color: #0f172a;
-    }
-    .font-cinzel {
-      font-family: 'Cinzel', serif;
-    }
     @media print {
-      body {
-        background-color: white !important;
-      }
-      .no-print {
-        display: none !important;
-      }
-      .certificado-card {
-        box-shadow: none !important;
-        border: 8px double #b45309 !important;
-        width: 100% !important;
-        height: 100vh !important;
-        margin: 0 !important;
-      }
-    }
-    .borde-decorativo {
-      border: 6px double #d97706;
+      .no-print { display: none !important; }
+      body { background: #0f172a !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .cert-card { border: 4px solid #f59e0b !important; box-shadow: none !important; margin: 0 auto !important; width: 100% !important; max-width: 1000px !important; }
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-900">
 
-  <!-- BARRA DE ACCIÓN (NO SALE EN IMPRESIÓN) -->
-  <div class="no-print bg-slate-900 border border-slate-800 p-4 rounded-2xl shadow-xl max-w-4xl w-full mb-6 flex items-center justify-between gap-4">
-    <div class="flex items-center gap-3">
-      <div class="bg-amber-500 text-slate-950 p-2.5 rounded-xl text-lg font-black">
-        <i class="fa-solid fa-certificate"></i>
-      </div>
-      <div>
-        <h2 class="text-white font-bold text-sm">Certificado Oficial Muestra Anual</h2>
-        <p id="subtitulo-estado" class="text-slate-400 text-xs">Cargando datos del proyecto...</p>
-      </div>
-    </div>
-
-    <div class="flex items-center gap-3">
-      <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-black text-xs px-5 py-2.5 rounded-xl transition shadow flex items-center gap-2">
-        <i class="fa-solid fa-print"></i> Guardar en PDF / Imprimir
-      </button>
-    </div>
-  </div>
-
-  <!-- TARJETA DEL CERTIFICADO (A4 APAISADO) -->
-  <main class="certificado-card bg-slate-950 text-slate-100 w-[1050px] max-w-full aspect-[1.414/1] p-10 rounded-3xl shadow-2xl relative flex flex-col justify-between borde-decorativo overflow-hidden">
-    
-    <!-- MARCA DE AGUA DEL ESCUDO ESCUELA (Ruta con espacio) -->
-    <div class="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none select-none">
-      <img src="logo escuela.png" alt="" class="w-[420px] h-[420px] object-contain grayscale">
-    </div>
-
-    <!-- ENCABEZADO -->
-    <header class="flex justify-between items-center z-10 border-b border-slate-800/80 pb-4">
-      <div class="flex items-center gap-4">
-        <div class="w-16 h-16 bg-white/10 p-1.5 rounded-2xl flex items-center justify-center shadow-lg border border-amber-500/30 shrink-0">
-          <img src="logo escuela.png" alt="E.E.S.T. N°1 Bragado" class="w-full h-full object-contain">
+  <!-- HEADER DE GESTIÓN (NO SE IMPRIME) -->
+  <header class="bg-slate-950/80 border-b border-slate-800 text-white shadow-lg no-print backdrop-blur">
+    <div class="max-w-5xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="bg-amber-500 text-slate-950 font-black p-2 rounded-lg text-sm">
+          <i class="fa-solid fa-award"></i>
         </div>
         <div>
-          <h1 class="text-base font-bold tracking-widest text-amber-500 uppercase">E.E.S.T. N°1 Bragado</h1>
-          <p class="text-[10px] text-slate-400 tracking-wider">EDUCACIÓN TÉCNICO PROFESIONAL • BRAGADO</p>
+          <h1 class="text-sm font-bold tracking-tight">E.E.S.T. N°1 Bragado — Emprendedurismo</h1>
+          <p class="text-slate-400 text-[11px]">Sistema de Emisión de Certificaciones y Reconocimientos</p>
         </div>
       </div>
-      <div class="text-right">
-        <span class="text-xs font-mono font-bold text-slate-400 block">MUESTRA ANUAL 2026</span>
-        <span id="badge-distincion" class="text-[10px] bg-amber-500/10 text-amber-400 border border-amber-500/30 font-bold uppercase tracking-widest px-2.5 py-1 rounded-full inline-block mt-1">
-          Reconocimiento Institucional
-        </span>
-      </div>
-    </header>
+      <a href="posiciones.html" class="text-xs bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+        <i class="fa-solid fa-trophy"></i> Ver Tabla de Posiciones
+      </a>
+    </div>
+  </header>
 
-    <!-- CUERPO PRINCIPAL -->
-    <section class="text-center my-auto z-10 space-y-4 px-8">
-      <div>
-        <p class="text-[11px] font-semibold uppercase tracking-[0.3em] text-slate-400">El establecimiento otorga el presente</p>
-        <h2 class="text-3xl lg:text-4xl font-black font-cinzel text-amber-400 tracking-wider mt-1 uppercase drop-shadow-md">Certificado de Participación</h2>
-        <p class="text-xs text-slate-300 mt-1">Por el desempeño, desarrollo técnico y presentación comunitaria en la Muestra de Emprendedorismo</p>
-      </div>
+  <!-- CONTENEDOR PRINCIPAL -->
+  <main class="max-w-5xl mx-auto px-4 py-8 w-full flex-grow flex items-center justify-center">
 
-      <div class="py-2 space-y-1">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Proyecto / Emprendimiento Técnico:</span>
-        <h3 id="cert-nombre-proyecto" class="text-xl lg:text-2xl font-black text-white tracking-wide border-b border-slate-800 pb-2 inline-block max-w-2xl px-4 truncate">
-          Cargando Proyecto...
-        </h3>
+    <!-- PASO 1: PANTALLA DE ACCESO / CREDENCIAL DEL ALUMNO (NO SE IMPRIME) -->
+    <div id="seccion-login" class="bg-slate-950 p-8 rounded-3xl shadow-2xl border border-slate-800 w-full max-w-md no-print">
+      <div class="text-center mb-6">
+        <div class="inline-block bg-amber-500/10 text-amber-400 p-3.5 rounded-2xl text-2xl mb-3 border border-amber-500/20">
+          <i class="fa-solid fa-file-shield"></i>
+        </div>
+        <h2 class="text-xl font-black text-white">Validación de Certificado</h2>
+        <p class="text-xs text-slate-400 mt-1">Ingresá tus datos para limpiar el formato y desbloquear tus reconocimientos oficiales.</p>
       </div>
 
-      <div class="max-w-xl mx-auto">
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block mb-1">Integrantes del Equipo:</span>
-        <p id="cert-integrantes" class="text-xs font-semibold text-slate-200 bg-slate-900/60 border border-slate-800 p-3 rounded-xl leading-relaxed">
-          -
+      <form onsubmit="validarYMostrarBandeja(event)" class="flex flex-col gap-4">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">ID de tu Proyecto o Plan:</label>
+          <input type="number" id="input-id" required placeholder="Ej: 46" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-amber-400 font-bold focus:outline-none focus:border-amber-500">
+          <span class="text-[10px] text-slate-500 mt-1 block">Número asignado en el portal (ej: el que figura arriba en la URL).</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Nombre y Apellido del Alumno:</label>
+          <input type="text" id="input-alumno" required placeholder="Ej: Damian" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-amber-500">
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-300 mb-1">Nombre Corto del Emprendimiento:</label>
+          <input type="text" id="input-proyecto" required placeholder="Ej: Industrial Plants Electric" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm text-white focus:outline-none focus:border-amber-500">
+          <span class="text-[10px] text-slate-500 mt-1 block">Evita textos largos o historias comerciales.</span>
+        </div>
+
+        <button type="submit" id="btn-generar" class="mt-2 bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-xl text-sm shadow-lg transition flex items-center justify-center gap-2">
+          <i class="fa-solid fa-certificate"></i> Consultar Certificados
+        </button>
+      </form>
+    </div>
+
+    <!-- PASO 2: BANDEJA DE CERTIFICADOS DISPONIBLES (NO SE IMPRIME) -->
+    <div id="seccion-bandeja" class="hidden bg-slate-950 p-8 rounded-3xl shadow-2xl border border-slate-800 w-full max-w-2xl no-print">
+      <div class="flex justify-between items-center border-b border-slate-800 pb-4 mb-6">
+        <div>
+          <span class="text-[10px] font-black uppercase tracking-wider text-emerald-400 bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-800">Acceso Verificado</span>
+          <h2 id="lbl-saludo" class="text-xl font-black text-white mt-1.5">¡Hola, Damian!</h2>
+          <p id="lbl-proyecto-nombre" class="text-xs text-slate-400">Proyecto: Industrial Plants Electric</p>
+        </div>
+        <button onclick="reiniciarConsulta()" class="text-xs bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold px-3.5 py-2 rounded-xl transition border border-slate-700">
+          <i class="fa-solid fa-rotate-left"></i> Cambiar Datos
+        </button>
+      </div>
+
+      <p class="text-xs text-slate-400 mb-4">El sistema ha validado tu equipo. Seleccioná el reconocimiento que deseas visualizar en formato oficial:</p>
+
+      <div id="lista-reconocimientos" class="flex flex-col gap-3">
+        <!-- Inyección dinámica de botones -->
+      </div>
+    </div>
+
+    <!-- PASO 3: EL CERTIFICADO VISUAL (RESPETA TU DISEÑO ORIGINAL EXACTO CON MARCOS DORADOS Y LOGO) -->
+    <div id="seccion-certificado-visual" class="hidden w-full max-w-4xl bg-slate-950 p-8 md:p-12 rounded-3xl shadow-2xl border-4 border-amber-500 cert-card relative flex flex-col justify-between min-h-[580px]">
+      
+      <!-- Botones flotantes superiores (No se imprimen) -->
+      <div class="absolute top-6 right-6 flex gap-2 no-print">
+        <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs px-4 py-2.5 rounded-xl shadow-lg transition flex items-center gap-1.5">
+          <i class="fa-solid fa-print"></i> Imprimir / Guardar PDF
+        </button>
+        <button onclick="volverABandeja()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs px-4 py-2.5 rounded-xl transition border border-slate-700">
+          <i class="fa-solid fa-arrow-left"></i> Volver a la Bandeja
+        </button>
+      </div>
+
+      <!-- Cabecera del Certificado Original -->
+      <div class="flex justify-between items-start border-b border-slate-800 pb-6 mb-4">
+        <div class="flex items-center gap-4">
+          <!-- Logo de la Escuela (Asegurate de tener la ruta correcta o la imagen cargada) -->
+          <div class="w-14 h-14 bg-white rounded-xl p-1 flex items-center justify-center shadow">
+            <img src="https://i.ibb.co/3s68R8d/logo-estecnica.png" alt="E.E.S.T. N°1" onerror="this.src='https://via.placeholder.com/50?text=EEST1'" class="max-h-full object-contain">
+          </div>
+          <div>
+            <h3 class="text-base font-black text-white tracking-wider">E.E.S.T. N°1 BRAGADO</h3>
+            <p class="text-[11px] font-semibold text-slate-400">EDUCACIÓN TÉCNICO PROFESIONAL &bull; BRAGADO</p>
+          </div>
+        </div>
+        <div class="text-right hidden sm:block pt-2">
+          <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Muestra Anual 2026</span>
+          <span class="text-[10px] font-black text-amber-400 bg-amber-500/10 border border-amber-500/30 px-3 py-1 rounded-lg uppercase tracking-wider mt-1 inline-block">Reconocimiento Institucional</span>
+        </div>
+      </div>
+
+      <!-- Cuerpo Central del Certificado -->
+      <div class="text-center my-auto py-8">
+        <span class="text-xs font-bold uppercase tracking-widest text-slate-400 block">El establecimiento otorga el presente</span>
+        
+        <h2 id="cert-titulo-principal" class="text-3xl md:text-4xl font-black text-amber-400 tracking-tight my-2">CERTIFICADO DE PARTICIPACIÓN</h2>
+        
+        <p id="cert-subtexto-motivo" class="text-xs md:text-sm text-slate-300 max-w-xl mx-auto mt-2 leading-relaxed">
+          Por el desempeño, desarrollo técnico y presentación comunitaria en la Muestra de Emprendedorismo.
         </p>
-      </div>
-    </section>
-
-    <!-- FIRMAS Y PIE DE PÁGINA -->
-    <footer class="flex justify-between items-end z-10 pt-4 border-t border-slate-800/80">
-      <div class="text-center w-56">
-        <div class="border-b border-slate-600 pb-1 mb-1">
-          <span class="font-cinzel text-xs font-bold text-slate-300">Equipo Directivo</span>
+        
+        <div class="my-6">
+          <span class="text-[10px] uppercase tracking-widest font-black text-slate-500 block">Proyecto / Emprendimiento Técnico:</span>
+          <h3 id="cert-proyecto" class="text-xl md:text-2xl font-black text-white mt-1 italic">Industrial plants electric</h3>
         </div>
-        <span class="text-[9px] text-slate-500 uppercase tracking-wider block">E.E.S.T. N°1 Bragado</span>
-      </div>
 
-      <div class="text-center">
-        <div class="w-10 h-10 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded-full flex items-center justify-center mx-auto text-base mb-1">
-          <i class="fa-solid fa-stamp"></i>
+        <div class="mt-4">
+          <span class="text-[10px] uppercase tracking-widest font-black text-slate-500 block">Integrantes del Equipo:</span>
+          <div class="inline-block mt-2 bg-slate-900 border border-slate-800 rounded-2xl px-8 py-2.5 shadow-inner">
+            <span id="cert-alumno" class="text-base font-black text-slate-100 tracking-wide">Damian</span>
+          </div>
         </div>
-        <span class="text-[8px] font-mono text-slate-500 block">VALIDADO POR SISTEMA INSTITUCIONAL</span>
       </div>
 
-      <div class="text-center w-56">
-        <div class="border-b border-slate-600 pb-1 mb-1">
-          <span class="font-cinzel text-xs font-bold text-slate-300">Departamento Técnico</span>
+      <!-- Pie del Certificado -->
+      <div class="flex justify-between items-end border-t border-slate-800 pt-6 mt-6 text-center text-xs text-slate-400">
+        <div>
+          <div class="font-bold text-white mb-0.5">Dirección / Equipo Docente</div>
+          <span class="text-[10px] text-slate-500">E.E.S.T. N°1 Pedro Núñez</span>
         </div>
-        <span class="text-[9px] text-slate-500 uppercase tracking-wider block">Coordinación de Muestra</span>
+        <div class="text-[10px] font-mono text-amber-500/60 uppercase tracking-widest">
+          Sello Oficial Verificado
+        </div>
+        <div>
+          <div class="font-bold text-white mb-0.5" id="cert-fecha">26 de Octubre, 2026</div>
+          <span class="text-[10px] text-slate-500">Fecha de Emisión</span>
+        </div>
       </div>
-    </footer>
+
+    </div>
 
   </main>
+
+  <!-- FOOTER (NO SE IMPRIME) -->
+  <footer class="text-center py-6 text-slate-500 text-xs no-print border-t border-slate-900">
+    E.E.S.T. N°1 Bragado &bull; Módulo de Certificados Digitales
+  </footer>
 
   <script>
     const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
     const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    document.addEventListener("DOMContentLoaded", () => {
-      cargarCertificadoPorURL();
-    });
+    let datosGlobales = {};
 
-    async function cargarCertificadoPorURL() {
-      // Obtener el parametro ?id=XX de la URL
-      const urlParams = new URLSearchParams(window.location.search);
-      const proyId = urlParams.get('id');
+    async function validarYMostrarBandeja(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btn-generar');
+      btn.disabled = true;
+      btn.innerText = "Verificando en Supabase...";
 
-      if (!proyId) {
-        document.getElementById('cert-nombre-proyecto').innerText = "Identificador de Proyecto no especificado";
-        document.getElementById('subtitulo-estado').innerText = "Accedé desde la ficha de tu proyecto para ver tu diploma.";
+      const id = document.getElementById('input-id').value;
+      const alumno = document.getElementById('input-alumno').value;
+      const proyecto = document.getElementById('input-proyecto').value;
+
+      datosGlobales = { id, alumno, proyecto };
+
+      // Validar si el proyecto existe en Supabase
+      const { data, error } = await _supabase.from('proyectos').select('*').eq('id', id).single();
+
+      if (error || !data) {
+        alert("No se encontró ningún proyecto con el ID ingresado. Verificá el número.");
+        btn.disabled = false;
+        btn.innerText = "Consultar Certificados";
         return;
       }
 
-      try {
-        // Consulta directa del proyecto por ID
-        const { data: p, error } = await _supabase
-          .from('proyectos')
-          .select('*')
-          .eq('id', proyId)
-          .single();
+      // Detectar premios de forma inteligente según votos, innovación, creatividad y notas
+      const reconocimientos = await evaluarPremiosProyecto(id);
 
-        if (error || !p) throw error;
+      // Actualizar texto de la bandeja
+      document.getElementById('lbl-saludo').innerText = `¡Hola, ${alumno}!`;
+      document.getElementById('lbl-proyecto-nombre').innerText = `Proyecto: ${proyecto}`;
 
-        // Limpieza de nombre
-        let nombreLimpio = p.nombreProyecto || p.nombre || `Proyecto #${p.id}`;
-        nombreLimpio = nombreLimpio.split('\n')[0].split('.')[0].trim();
-        if (nombreLimpio.length > 45) nombreLimpio = nombreLimpio.substring(0, 45) + '...';
+      const lista = document.getElementById('lista-reconocimientos');
+      lista.innerHTML = '';
 
-        document.getElementById('cert-nombre-proyecto').innerText = nombreLimpio;
-        document.getElementById('cert-integrantes').innerText = p.integrantes || "Integrantes del grupo";
-        document.getElementById('subtitulo-estado').innerText = `Certificado listo para ${nombreLimpio}`;
+      reconocimientos.forEach(rec => {
+        lista.innerHTML += `
+          <div class="flex items-center justify-between p-4 bg-slate-900 border border-slate-800 rounded-2xl hover:border-amber-500/50 transition">
+            <div class="flex items-center gap-3.5">
+              <div class="text-2xl ${rec.color}"><i class="${rec.icono}"></i></div>
+              <div>
+                <h4 class="text-sm font-bold text-white">${rec.titulo}</h4>
+                <p class="text-xs text-slate-400">${rec.desc}</p>
+              </div>
+            </div>
+            <button onclick="abrirCertificadoVisual('${rec.tipo}')" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs px-4 py-2.5 rounded-xl transition shrink-0 flex items-center gap-1.5 shadow">
+              <i class="fa-solid fa-eye"></i> Ver Certificado
+            </button>
+          </div>
+        `;
+      });
 
-      } catch (err) {
-        console.error("Error al cargar certificado:", err);
-        document.getElementById('cert-nombre-proyecto').innerText = "Proyecto No Encontrado";
+      document.getElementById('seccion-login').classList.add('hidden');
+      document.getElementById('seccion-bandeja').classList.remove('hidden');
+
+      btn.disabled = false;
+      btn.innerText = "Consultar Certificados";
+    }
+
+    async function evaluarPremiosProyecto(id) {
+      // 1. Certificado general siempre disponible para los que cargaron
+      let listado = [{
+        tipo: 'general',
+        titulo: 'Certificado General de Participación',
+        desc: 'Otorgado por completar y presentar el proyecto en la Muestra.',
+        icono: 'fa-certificate',
+        color: 'text-amber-400'
+      }];
+
+      // Consultar votos de la comunidad (Innovación y Presentación)
+      const { data: votos } = await _supabase.from('votos_publico').select('innovacion, presentacion').eq('proyecto_id', id);
+
+      if (votos && votos.length > 0) {
+        let promInnovacion = votos.reduce((acc, v) => acc + (v.innovacion || 0), 0) / votos.length;
+        let promPresentacion = votos.reduce((acc, v) => acc + (v.presentacion || 0), 0) / votos.length;
+
+        // Si destaca en Idea e Innovación
+        if (promInnovacion >= 8.5) {
+          listado.push({
+            tipo: 'innovacion',
+            titulo: 'Premio a la Innovación Tecnológica',
+            desc: 'Destacado por la alta valoración del público en "Idea e Innovación".',
+            icono: 'fa-lightbulb',
+            color: 'text-purple-400'
+          });
+        }
+
+        // Si destaca en Presentación y Redes / Video
+        if (promPresentacion >= 8.5) {
+          listado.push({
+            tipo: 'creatividad',
+            titulo: 'Premio a la Creatividad y Presentación',
+            desc: 'Reconocimiento por la puntuación sobresaliente en el bloque audiovisual.',
+            icono: 'fa-palette',
+            color: 'text-pink-400'
+          });
+        }
       }
+
+      return listado;
+    }
+
+    function abrirCertificadoVisual(tipo) {
+      document.getElementById('seccion-bandeja').classList.add('hidden');
+      document.getElementById('seccion-certificado-visual').classList.remove('hidden');
+
+      // Setear datos limpios del alumno
+      document.getElementById('cert-alumno').innerText = datosGlobales.alumno;
+      document.getElementById('cert-proyecto').innerText = `"${datosGlobales.proyecto}"`;
+      
+      const hoy = new Date().toLocaleDateString('es-AR', { day: 'numeric', month: 'long', year: 'numeric' });
+      document.getElementById('cert-fecha').innerText = hoy;
+
+      // Personalizar textos según el reconocimiento seleccionado manteniendo el diseño original
+      const tituloPrin = document.getElementById('cert-titulo-principal');
+      const subMotivo = document.getElementById('cert-subtexto-motivo');
+
+      if (tipo === 'general') {
+        tituloPrin.innerText = "CERTIFICADO DE PARTICIPACIÓN";
+        subMotivo.innerText = "Por el desempeño, desarrollo técnico y presentación comunitaria en la Muestra de Emprendedorismo.";
+      } else if (tipo === 'innovacion') {
+        tituloPrin.innerText = "PREMIO A LA INNOVACIÓN";
+        subMotivo.innerText = "Por plantear una solución tecnológica disruptiva y de alto impacto valorada por la comunidad.";
+      } else if (tipo === 'creatividad') {
+        tituloPrin.innerText = "PREMIO A LA CREATIVIDAD";
+        subMotivo.innerText = "Por la sobresaliente originalidad en el diseño visual, la presentación y la estrategia de comunicación.";
+      }
+    }
+
+    function volverABandeja() {
+      document.getElementById('seccion-certificado-visual').classList.add('hidden');
+      document.getElementById('seccion-bandeja').classList.remove('hidden');
+    }
+
+    function reiniciarConsulta() {
+      document.getElementById('seccion-bandeja').classList.add('hidden');
+      document.getElementById('seccion-login').classList.remove('hidden');
     }
   </script>
 </body>
