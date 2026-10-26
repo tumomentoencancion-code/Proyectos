@@ -8,15 +8,16 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Estrictos contenedores con scroll para que ningún texto largo desborde */
+    /* Blindaje total contra desbordamientos de texto */
     #contenedor-rubrica {
       max-height: 480px !important;
       overflow-y: auto !important;
       word-break: break-word;
     }
     #resumen-contenido {
-      max-height: 60vh !important;
+      max-height: 55vh !important;
       overflow-y: auto !important;
+      overflow-x: hidden !important;
       word-break: break-word;
     }
   </style>
@@ -118,8 +119,7 @@
           <span id="resumen-id-badge" class="text-[10px] bg-blue-100 text-blue-800 font-bold px-2 py-0.5 rounded">ID: -</span>
         </div>
 
-        <!-- FICHA DE ENTREGA CON ALTURA MÁXIMA Y SCROLL BLINDADO -->
-        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 pr-2">
+        <div id="resumen-contenido" class="space-y-3 text-xs text-slate-700 pr-2 overflow-y-auto">
           <p class="text-slate-400 italic">Selecciona un proyecto para inspeccionar sus datos cargados.</p>
         </div>
       </div>
@@ -532,6 +532,7 @@
         const item = document.createElement('div');
         item.className = "p-3 bg-slate-50 hover:bg-blue-50 border border-slate-200 rounded-lg cursor-pointer transition mb-2 flex justify-between items-center gap-2";
 
+        // BLINDAJE DE EVENTO: Evitamos que el clic en la llave active la selección del proyecto
         item.innerHTML = `
           <div onclick="seleccionarProyecto(${p.id})" class="flex-1 min-w-0">
             <h4 class="font-bold text-xs text-slate-800 truncate">${nombreLimpio}</h4>
