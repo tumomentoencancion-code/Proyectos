@@ -1,46 +1,54 @@
 <!doctype html>
-<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi Voz IA — Versión Offline (Pendrive)</title>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi Voz IA — Versión Offline Avanzada (Pendrive)</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172338;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}header{background:#142d4e;color:white;padding:22px max(18px,calc((100vw - 1000px)/2))}header h1{margin:0;font-size:1.65rem}header p{margin:5px 0 0;color:#d6e5f7}main{max-width:1000px;margin:22px auto;padding:0 16px}.panel{background:white;border:1px solid #dce4ef;border-radius:16px;padding:20px;box-shadow:0 4px 20px #1723380a;margin-bottom:15px}.hidden{display:none!important}h2{margin:0 0 16px;font-size:1.2rem}label{font-weight:650;display:block;margin:12px 0 6px}input,textarea,select{width:100%;border:1px solid #aab8ca;border-radius:9px;padding:11px;font:inherit;background:white;color:#172338}button{font:inherit;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:#e5ecf5;color:#152944;font-weight:650}button.primary{background:#1663bf;color:white}button:disabled{opacity:.5;cursor:not-allowed}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.small{font-size:.85rem;color:#52647d}.note{background:#eef7ed;border-left:4px solid #388e3c;padding:12px;border-radius:7px}.chat{height:390px;overflow:auto;background:#f7f9fd;border:1px solid #e2e9f1;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}.bubble{max-width:88%;padding:12px 14px;border-radius:13px;white-space:pre-wrap;line-height:1.5}.bubble.user{align-self:flex-end;background:#dcecff}.bubble.bot{align-self:flex-start;background:white;border:1px solid #dfe6ef}.bubble.bot .listen-answer{display:block;margin-top:10px;padding:7px 12px;font-size:.85rem;background:#e5ecf5;border:1px solid #c9d8ea}.bubble.system{align-self:center;color:#607087;font-size:.88rem}.status{font-size:.9rem;color:#53667e;min-height:22px;margin-top:9px}.foot{text-align:center;color:#607087;font-size:.82rem;padding:10px 0 25px}.badge{font-size:.75rem;background:#e8f5e9;color:#2e7d32;border-radius:99px;padding:5px 10px;font-weight:bold}.chat-controls{margin-top:12px}.chat-controls input{flex:5}.config{display:grid;grid-template-columns:1fr 1fr;gap:15px}@media(max-width:680px){.config{grid-template-columns:1fr}.chat{height:340px}.row.chat-controls input{flex:1 0 100%}}
-</style></head><body><header><h1>🎙️ Mi Voz IA (Modo Pendrive 100% Offline)</h1><p>Biomasa Bragado · Presentación Autónoma sin Internet</p></header><main>
+</style></head><body><header><h1>🎙️ Mi Voz IA (Modo Pendrive 100% Offline)</h1><p>Biomasa Bragado · Base de Conocimiento Completa</p></header><main>
 
-<section id="talk" class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Asistente de Biomasa Bragado</h2><span class="badge">🔌 MODO OFFLINE ACTIVO</span></div><p class="small">Sistema autónomo de respuestas locales para presentaciones sin conexión a Internet.</p>
-<div class="note" style="margin-bottom:12px">🟢 <strong>Modo Standalone:</strong> Todas las respuestas se generan localmente desde el navegador en tiempo récord.</div>
+<section id="talk" class="panel"><div class="row" style="justify-content:space-between"><h2 style="margin:0">Asistente de Biomasa Bragado</h2><span class="badge">🔌 OFFLINE INTELIGENTE ACTIVO</span></div><p class="small">Sistema autónomo con todo el plan de conocimiento cargado localmente.</p>
+<div class="note" style="margin-bottom:12px">🟢 <strong>Funcionamiento local:</strong> Cero internet requerido. Respuestas fluidas y lectura sin cortes.</div>
 
-<div id="chat" class="chat" aria-live="polite"><div class="bubble system">¡Hola! Hacé cualquier pregunta sobre el proyecto Biomasa Bragado.</div></div><div class="row chat-controls"><input id="question" placeholder="Ej.: ¿Qué es el proyecto? / Propuesta de valor / ¿Cuánto cuesta?" aria-label="Pregunta"><button id="send" class="primary" type="button">Enviar</button><button id="mic" type="button" title="Preguntar por voz">🎤 Hablar</button></div><div class="row" style="margin-top:10px"><label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:normal"><input id="voice-on" type="checkbox" checked style="width:auto"> Leer respuestas automáticamente</label><button id="stop-voice" type="button">🔇 Detener voz</button><button id="clear-chat" type="button">Limpiar conversación</button></div><div id="talk-status" class="status" role="status"></div></section>
+<div id="chat" class="chat" aria-live="polite"><div class="bubble system">¡Hola! Hacé cualquier pregunta sobre Biomasa Bragado (objetivos, costos, propuesta de valor, fabricación, etc.).</div></div><div class="row chat-controls"><input id="question" placeholder="Ej.: ¿Cuáles son los objetivos? / Propuesta de valor / ¿Cuánto cuesta?" aria-label="Pregunta"><button id="send" class="primary" type="button">Enviar</button><button id="mic" type="button" title="Preguntar por voz">🎤 Hablar</button></div><div class="row" style="margin-top:10px"><label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:normal"><input id="voice-on" type="checkbox" checked style="width:auto"> Leer respuestas automáticamente</label><button id="stop-voice" type="button">🔇 Detener voz</button><button id="clear-chat" type="button">Limpiar conversación</button></div><div id="talk-status" class="status" role="status"></div></section>
 
 <section class="panel"><h2>🎛️ Ajustes de Voz Local</h2><div class="config"><div><label for="voice-select">Voz instalada en el equipo</label><select id="voice-select"><option value="">Voz predeterminada</option></select></div><div><label for="voice-rate">Velocidad: <output id="voice-rate-value">0.95</output></label><input id="voice-rate" type="range" min="0.7" max="1.25" step="0.05" value="0.95"></div></div></section>
 
-<div class="foot">Mi Voz IA · Versión Standalone sin dependencia de servidores.</div></main>
+<div class="foot">Mi Voz IA · Edición Especial Presentación Escolar.</div></main>
 <script>
 'use strict';
 const $=id=>document.getElementById(id);let recognition=null;
 
-// BANCO DE CONOCIMIENTO Y RESPUESTAS LOCALES AUTÓNOMAS
+// BASE DE CONOCIMIENTOS OFFLINE AMPLIADA (TODO EL PROYECTO)
 const localDatabase = [
  {
-  keywords: ['que es', 'que hace', 'proyecto', 'emprendimiento', 'quienes son', 'de que trata'],
-  answer: "Biomasa Bragado es un emprendimiento socioproductivo desarrollado por alumnos de 7mo año de la Escuela Técnica N°1 de Bragado. Nos dedicamos a la fabricación de briquetas ecológicas de encendido rápido revalorizando los residuos de aserrín de las carpinterías locales."
+  keywords: ['que es', 'que hace', 'proyecto', 'emprendimiento', 'quienes son', 'de que trata', 'biomasa'],
+  answer: "Biomasa Bragado es un emprendimiento socioproductivo nacido en la E.E.S.T N°1 de Bragado por alumnos de 7mo año de Energías Renovables. Nos dedicamos a fabricar briquetas ecológicas de encendido rápido revalorizando los residuos de aserrín de las carpinterías locales."
  },
  {
   keywords: ['propuesta', 'valor', 'beneficio', 'diferencia', 'ventaja', 'por que'],
-  answer: "Nuestra propuesta de valor radica en ofrecer una alternativa sustentable, eficiente y de alta transferencia calórica para sustituir los métodos tradicionales de encendido, como combustibles fósiles o geles químicos nocivos. Garantizamos un encendido en menos de 5 minutos, con geometría de ventilación optimizada y aglutinante orgánico, reduciendo la huella de carbono."
+  answer: "Nuestra propuesta de valor es ofrecer una alternativa sustentable, eficiente y de alta transferencia calórica para sustituir combustibles fósiles y geles químicos nocivos. Garantizamos encendido en menos de 5 minutos, sin olores ni humos tóxicos, reduciendo la huella de carbono."
  },
  {
-  keywords: ['precio', 'costo', 'cuanto sale', 'cuanto cuesta', 'valor', 'venta', 'paquete'],
-  answer: "El paquete de 4 briquetas tiene un costo de producción de 650 pesos y fijamos un precio de venta al público sugerido de 1.800 pesos. Para los comercios y distribuidores de Bragado, ofrecemos un precio mayorista de 1.250 pesos."
+  keywords: ['objetivo', 'objetivos', 'meta', 'metas', 'produccion', 'primer año', 'cuanto producen'],
+  answer: "Nuestros objetivos principales para el primer año son procesar y revalorizar el 40% del aserrín de las carpinterías piloto locales, alcanzar una producción de 2.000 unidades mensuales en el primer semestre e introducir el producto en al menos el 15% de los comercios minoristas de Bragado."
  },
  {
-  keywords: ['fabricacion', 'como se hace', 'proceso', 'material', 'componentes', 'como lo hacen', 'aserrin'],
-  answer: "Fabricamos las briquetas mediante compresión mecánica de aserrín sin tratar mezclado con un 10% de almidón de maíz gelatinizado como aglutinante orgánico. Tienen un diseño cilíndrico con un conducto central de 20 milímetros que optimiza la entrada de oxígeno."
+  keywords: ['precio', 'costo', 'cuanto sale', 'cuanto cuesta', 'valor', 'venta', 'paquete', 'dinero'],
+  answer: "El costo de producción unitario del paquete de 4 briquetas es de 650 pesos. Fijamos un precio sugerido al público de 1.800 pesos, y un precio mayorista para comercios aliados de 1.250 pesos, dejándoles un margen del 44 por ciento."
  },
  {
-  keywords: ['objetivo', 'meta', 'meta anual', 'cuanto producen'],
-  answer: "Nuestro objetivo es revalorizar el 40% del aserrín de las carpinterías piloto de Bragado y alcanzar una producción estabilizada de 2.000 paquetes mensuales, introduciendo el producto en al menos el 15% de los comercios locales."
+  keywords: ['fabricacion', 'como se hace', 'proceso', 'material', 'componentes', 'como lo hacen', 'aserrin', 'almidon'],
+  answer: "El proceso consta de cinco etapas: selección y tamizado del aserrín, mezclado con aglutinante de almidón de maíz al 10 por ciento, prensado en matriz cilíndrica con un conducto central de oxígeno, secado natural y empacado en bolsas de papel Kraft."
  },
  {
-  keywords: ['competencia', 'leña', 'pastillas', 'carbon'],
-  answer: "Competimos contra la leña tradicional y las pastillas químicas. Nuestra ventaja es que no emitimos olores tóxicos, no alteramos el gusto de las comidas y logramos un encendido más rápido y limpio a un costo local sin fletes pesados."
+  keywords: ['competencia', 'leña', 'pastillas', 'carbon', 'alternativas'],
+  answer: "Competimos contra la leña tradicional y las pastillas químicas de supermercado. Nuestra ventaja es que evitamos los olores a hidrocarburo y la transferencia de sabores químicos a las comidas, ofreciendo un encendido rápido, limpio y sin fletes caros."
+ },
+ {
+  keywords: ['finanzas', 'equilibrio', 'inversion', 'ganancia', 'capital', 'dinero', 'equilibrio'],
+  answer: "La inversión inicial requerida es de 622.250 pesos para herrería, matricería y fondo de rotación. El punto de equilibrio comercial se alcanza vendiendo apenas 167 paquetes al mes, y con una venta estimada de 1.000 paquetes mensuales logramos una utilidad neta de 500.000 pesos."
+ },
+ {
+  keywords: ['equipo', 'integrantes', 'quien', 'alumnos', 'estudiantes', 'escuela'],
+  answer: "Somos estudiantes de 7mo año de la Escuela de Educación Secundaria Técnica N°1 de Bragado, organizados bajo la figura de una cooperativa escolar de trabajo para llevar adelante este proyecto de triple impacto."
  }
 ];
 
@@ -61,7 +69,7 @@ function findBestAnswer(query) {
   }
  }
 
- return bestMatch || "Somos el equipo de Biomasa Bragado de la E.E.S.T N°1. Fabricamos briquetas ecológicas de encendido rápido a partir de aserrín reciclado. ¿Querés saber sobre nuestra propuesta de valor, los costos o la fabricación?";
+ return bestMatch || "Somos el equipo de Biomasa Bragado de la E.E.S.T N°1. Fabricamos briquetas ecológicas de encendido rápido con aserrín reciclado. Podés preguntarme sobre nuestros objetivos, la propuesta de valor, los costos o el proceso de fabricación.";
 }
 
 function status(id,msg){$(id).textContent=msg;}
@@ -77,8 +85,28 @@ function bubble(who,text){
  $('chat').append(div);$('chat').scrollTop=$('chat').scrollHeight;
 } 
 
-let utteranceActual=null;
-function stopReading(){if('speechSynthesis' in window)window.speechSynthesis.cancel();}
+let lecturaId=0;
+function stopReading(){
+ lecturaId++;
+ if('speechSynthesis' in window)window.speechSynthesis.cancel();
+}
+
+// DIVISOR DE TEXTO EN BLOQUES PARA QUE LA VOZ NUNCA SE CORTE
+function splitSpeech(text){
+ const cleanText = String(text).replace(/\s+/g,' ').trim();
+ if(cleanText.length < 200) return [cleanText];
+ const sentences=cleanText.match(/[^.!?;]+[.!?;]*|[^.!?;]+$/g)||[cleanText];
+ const chunks=[];
+ for(const sentence of sentences){
+  const words=sentence.trim().split(/\s+/);let chunk='';
+  for(const word of words){
+   if(chunk&&(chunk+' '+word).length>150){chunks.push(chunk);chunk='';}
+   chunk=chunk?chunk+' '+word:word;
+  }
+  if(chunk)chunks.push(chunk);
+ }
+ return chunks;
+}
 
 function refreshVoices(){
  if(!('speechSynthesis' in window))return;
@@ -88,23 +116,39 @@ function refreshVoices(){
  voices.forEach(v=>{const o=document.createElement('option');o.value=v.voiceURI;o.textContent=v.name+' ('+v.lang+')';sel.appendChild(o);});
 }
 if('speechSynthesis' in window){refreshVoices();window.speechSynthesis.onvoiceschanged=refreshVoices;}
-$('voice-rate').addEventListener('input',()=>{$(id+'-value').textContent=$(id).value;});
+$('voice-rate').addEventListener('input',()=>{ $('voice-rate-value').textContent=$('voice-rate').value; });
 
 function speak(text,force=false){
  if(!force&&!$('voice-on').checked)return;
  if(!('speechSynthesis' in window))return;
+ const chunks=splitSpeech(text);
+ if(!chunks.length)return;
  stopReading();
- const u=new SpeechSynthesisUtterance(text);
- u.lang='es-AR';u.rate=Number($('voice-rate').value);
- const selected=$('voice-select').value;
- const chosen=window.speechSynthesis.getVoices().find(v=>v.voiceURI===selected);
- if(chosen){u.voice=chosen;u.lang=chosen.lang;}
- window.speechSynthesis.speak(u);
+ const id=lecturaId;
+ const engine=window.speechSynthesis;
+ let index=0;
+
+ function next(){
+  if(id!==lecturaId)return;
+  if(index>=chunks.length){status('talk-status','Lectura terminada.');return;}
+  const current=++index;
+  const u=new SpeechSynthesisUtterance(chunks[current-1]);
+  u.lang='es-AR';u.rate=Number($('voice-rate').value);
+  const selected=$('voice-select').value;
+  const chosen=engine.getVoices().find(v=>v.voiceURI===selected);
+  if(chosen){u.voice=chosen;u.lang=chosen.lang;}
+  
+  u.onend=()=>{if(id===lecturaId){setTimeout(next,250);}};
+  u.onerror=()=>{if(id===lecturaId)stopReading();};
+  
+  try{engine.speak(u);}catch(err){stopReading();}
+ }
+ next();
 }
 
 $('send').onclick=send;
 $('question').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();send()}});
-$('stop-voice').onclick=stopReading;
+$('stop-voice').onclick=()=>stopReading();
 $('clear-chat').onclick=()=>{
  $('chat').replaceChildren();
  bubble('system','Chat reiniciado.');
@@ -125,12 +169,12 @@ function send(){
  const question=$('question').value.trim();if(!question)return;
  $('question').value='';
  bubble('user',question);
- status('talk-status','Procesando en modo offline...');
+ status('talk-status','Procesando...');
  setTimeout(()=>{
   const answer = findBestAnswer(question);
   bubble('bot',answer);
   speak(answer);
   status('talk-status','✓ Respondido localmente.');
- }, 200);
+ }, 150);
 }
 </script></body></html>
