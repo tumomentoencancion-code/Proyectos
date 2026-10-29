@@ -50,15 +50,19 @@ function stopReading(message){
 }
 
 function splitSpeech(text){
- const sentences=String(text).replace(/\s+/g,' ').trim().match(/[^.!?;]+[.!?;]*|[^.!?;]+$/g)||[];
- const chunks=[];
+ const cleanText = String(text).replace(/\s+/g,' ').trim();
+ // Si el texto es corto o mediano, lo lee de un solo tirón para evitar pausas artificiales
+ if(cleanText.length < 250) return [cleanText];
+ 
+ const sentences = cleanText.match(/[^.!?;]+[.!?;]*|[^.!?;]+$/g) || [cleanText];
+ const chunks = [];
  for(const sentence of sentences){
-  const words=sentence.trim().split(/\s+/);let chunk='';
+  const words = sentence.trim().split(/\s+/); let chunk = '';
   for(const word of words){
-   if(chunk&&(chunk+' '+word).length>110){chunks.push(chunk);chunk='';}
-   chunk=chunk?chunk+' '+word:word;
+   if(chunk && (chunk + ' ' + word).length > 180){ chunks.push(chunk); chunk = ''; }
+   chunk = chunk ? chunk + ' ' + word : word;
   }
-  if(chunk)chunks.push(chunk);
+  if(chunk) chunks.push(chunk);
  }
  return chunks;
 }
