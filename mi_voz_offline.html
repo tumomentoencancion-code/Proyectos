@@ -2,78 +2,60 @@
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mi Voz IA — Asistente Offline Multiproyecto</title>
 <style>
 :root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#172338;background:#f3f6fb}*{box-sizing:border-box}body{margin:0}header{background:#142d4e;color:white;padding:22px max(18px,calc((100vw - 1000px)/2))}header h1{margin:0;font-size:1.65rem}header p{margin:5px 0 0;color:#d6e5f7}main{max-width:1000px;margin:22px auto;padding:0 16px}.tabs{display:flex;gap:10px;margin-bottom:16px}.tabs button{flex:1}.panel{background:white;border:1px solid #dce4ef;border-radius:16px;padding:20px;box-shadow:0 4px 20px #1723380a;margin-bottom:15px}.hidden{display:none!important}h2{margin:0 0 16px;font-size:1.2rem}label{font-weight:650;display:block;margin:12px 0 6px}input,textarea,select{width:100%;border:1px solid #aab8ca;border-radius:9px;padding:11px;font:inherit;background:white;color:#172338}textarea{min-height:160px;resize:vertical}button{font:inherit;border:0;border-radius:10px;padding:11px 16px;cursor:pointer;background:#e5ecf5;color:#152944;font-weight:650}button.primary{background:#1663bf;color:white}button.active{background:#1663bf;color:white}.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.small{font-size:.85rem;color:#52647d}.note{background:#eef7ed;border-left:4px solid #388e3c;padding:12px;border-radius:7px}.chat{height:390px;overflow:auto;background:#f7f9fd;border:1px solid #e2e9f1;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:10px}.bubble{max-width:88%;padding:12px 14px;border-radius:13px;white-space:pre-wrap;line-height:1.5}.bubble.user{align-self:flex-end;background:#dcecff}.bubble.bot{align-self:flex-start;background:white;border:1px solid #dfe6ef}.bubble.bot .listen-answer{display:block;margin-top:10px;padding:7px 12px;font-size:.85rem;background:#e5ecf5;border:1px solid #c9d8ea}.bubble.system{align-self:center;color:#607087;font-size:.88rem}.status{font-size:.9rem;color:#53667e;min-height:22px;margin-top:9px}.foot{text-align:center;color:#607087;font-size:.82rem;padding:10px 0 25px}.badge{font-size:.75rem;background:#e8f5e9;color:#2e7d32;border-radius:99px;padding:5px 10px;font-weight:bold}.chat-controls{margin-top:12px}.chat-controls input{flex:5}.config{display:grid;grid-template-columns:1fr 1fr;gap:15px}@media(max-width:680px){.config{grid-template-columns:1fr}.chat{height:340px}.row.chat-controls input{flex:1 0 100%}}
-</style></head><body><header><h1>🎙️ Mi Voz IA (Versión Cargador Offline)</h1><p>Sistema Dinámico para Cualquier Proyecto Escolar · 100% Sin Internet</p></header><main>
+</style></head><body><header><h1>🎙️ Mi Voz IA (Versión Cargador Offline Precisa)</h1><p>Sistema Dinámico para Cualquier Proyecto Escolar · 100% Sin Internet</p></header><main>
 <nav class="tabs"><button id="tab-prepare" class="active" type="button">⚙️ Cargar Proyecto</button><button id="tab-talk" type="button">💬 Conversar</button></nav>
 
-<section id="prepare" class="panel"><h2>Cargar un Proyecto Nuevo</h2><div class="note">Cargá o pegá la información de tu proyecto (preferentemente organizado en las 10 etapas). Se guarda automáticamente en este equipo sin necesidad de conexión.</div><label for="project">Nombre del Proyecto</label><input id="project" placeholder="Ej.: Biomasa Bragado" maxlength="120"><label for="knowledge">Información del Proyecto (Base de Conocimiento / 10 Etapas)</label><textarea id="knowledge" placeholder="Pegá aquí el resumen de las 10 etapas (Resumen ejecutivo, Misión/Visión, Mercado, Producto/Fabricación, Costos/Precios, Finanzas, etc.)..."></textarea><div class="row" style="margin-top:16px"><button id="save" class="primary" type="button">💾 Guardar Proyecto Local</button><button id="go-talk" type="button">Ir a Conversar →</button></div><div id="save-status" class="status" role="status"></div></section>
+<section id="prepare" class="panel"><h2>Cargar un Proyecto Nuevo</h2><div class="note">Cargá o pegá la información de tu proyecto. El sistema inteligente extraerá la respuesta exacta según lo que preguntes.</div><label for="project">Nombre del Proyecto</label><input id="project" placeholder="Ej.: Biomasa Bragado" maxlength="120"><label for="knowledge">Información del Proyecto (Base de Conocimiento)</label><textarea id="knowledge" placeholder="Pegá aquí la información de tu proyecto..."></textarea><div class="row" style="margin-top:16px"><button id="save" class="primary" type="button">💾 Guardar Proyecto Local</button><button id="go-talk" type="button">Ir a Conversar →</button></div><div id="save-status" class="status" role="status"></div></section>
 
-<section id="talk" class="panel hidden"><div class="row" style="justify-content:space-between"><h2 style="margin:0" id="talk-title">Asistente del Proyecto</h2><span class="badge">🔌 MOTOR OFFLINE DINÁMICO</span></div><p class="small" id="talk-desc">Hacé cualquier pregunta sobre el proyecto cargado.</p>
+<section id="talk" class="panel hidden"><div class="row" style="justify-content:space-between"><h2 style="margin:0" id="talk-title">Asistente del Proyecto</h2><span class="badge">🔌 MOTOR OFFLINE PRECISO</span></div><p class="small" id="talk-desc">Hacé cualquier pregunta específica sobre el proyecto cargado.</p>
 
-<div id="chat" class="chat" aria-live="polite"><div class="bubble system">¡Hola! Hacé preguntas sobre el proyecto cargado.</div></div><div class="row chat-controls"><input id="question" placeholder="Escribí tu pregunta sobre costos, objetivos, propuesta de valor..." aria-label="Pregunta"><button id="send" class="primary" type="button">Enviar</button><button id="mic" type="button" title="Preguntar por voz">🎤 Hablar</button></div><div class="row" style="margin-top:10px"><label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:normal"><input id="voice-on" type="checkbox" checked style="width:auto"> Leer respuestas automáticamente</label><button id="stop-voice" type="button">🔇 Detener voz</button><button id="clear-chat" type="button">Limpiar conversación</button></div><div id="talk-status" class="status" role="status"></div></section>
+<div id="chat" class="chat" aria-live="polite"><div class="bubble system">¡Hola! Hacé preguntas específicas sobre el proyecto cargado.</div></div><div class="row chat-controls"><input id="question" placeholder="Ej.: ¿Cuál es la misión? / ¿Cuánto cuesta?" aria-label="Pregunta"><button id="send" class="primary" type="button">Enviar</button><button id="mic" type="button" title="Preguntar por voz">🎤 Hablar</button></div><div class="row" style="margin-top:10px"><label style="display:flex;align-items:center;gap:8px;margin:0;font-weight:normal"><input id="voice-on" type="checkbox" checked style="width:auto"> Leer respuestas automáticamente</label><button id="stop-voice" type="button">🔇 Detener voz</button><button id="clear-chat" type="button">Limpiar conversación</button></div><div id="talk-status" class="status" role="status"></div></section>
 
 <section class="panel"><h2>🎛️ Ajustes de Voz Local</h2><div class="config"><div><label for="voice-select">Voz instalada en el equipo</label><select id="voice-select"><option value="">Voz predeterminada</option></select></div><div><label for="voice-rate">Velocidad: <output id="voice-rate-value">0.95</output></label><input id="voice-rate" type="range" min="0.7" max="1.25" step="0.05" value="0.95"></div></div></section>
 
 <div class="foot">Mi Voz IA · Sistema de Presentaciones Offline para Escuelas Técnicas.</div></main>
 <script>
 'use strict';
-const $=id=>document.getElementById(id);const storageKey='mi_voz_ia_offline_dynamic';let recognition=null;
+const $=id=>document.getElementById(id);const storageKey='mi_voz_ia_offline_dynamic_v2';let recognition=null;
 
-// MOTOR DE BÚSQUEDA Y EXTRACCIÓN LOCAL DESDE EL TEXTO CARGADO
+// MOTOR DE BÚSQUEDA PRECISA POR ORACIÓN / PÁRRAFO ESPECÍFICO
 function searchInLocalKnowledge(query, text, projectName) {
  if (!text.trim()) return "No hay datos cargados para este proyecto. Por favor, andá a la pestaña 'Cargar Proyecto' y pegá la información.";
  
  const cleanQuery = query.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
- const paragraphs = text.split(/\n\s*\n/).filter(p => p.trim().length > 0);
  
- // Categorías y palabras clave
- const categories = [
-  { keys: ['resumen', 'propuesta', 'valor', 'que es', 'de que trata', 'proyecto', 'emprendimiento'], label: 'Resumen y Propuesta de Valor' },
-  { keys: ['mision', 'vision', 'valores', 'empresa', 'quienes son', 'escuela', 'cooperativa', 'equipo'], label: 'Descripción de la Empresa y Misión' },
-  { keys: ['mercado', 'clientes', 'competencia', 'foda', 'fortalezas', 'oportunidades'], label: 'Análisis de Mercado' },
-  { keys: ['producto', 'briqueta', 'material', 'componentes', 'como se hace', 'fabricacion', 'aserrin', 'proceso'], label: 'Producto y Fabricación' },
-  { keys: ['precio', 'costo', 'cuanto sale', 'cuanto cuesta', 'venta', 'mayorista', 'marketing'], label: 'Costos y Precios' },
-  { keys: ['finanzas', 'inversion', 'equilibrio', 'ganancia', 'capital', 'dinero'], label: 'Plan Financiero' },
-  { keys: ['objetivo', 'objetivos', 'meta', 'metas', 'produccion'], label: 'Objetivos del Proyecto' }
- ];
-
- let matchedParagraphs = [];
-
- for (const cat of categories) {
-  let hasKey = cat.keys.some(k => cleanQuery.includes(k));
-  if (hasKey) {
-   for (const p of paragraphs) {
-    const cleanP = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-    if (cat.keys.some(k => cleanP.includes(k))) {
-     matchedParagraphs.push(p.trim());
-    }
-   }
-  }
- }
-
- if (matchedParagraphs.length > 0) {
-  return matchedParagraphs[0];
- }
-
- // Si no hay categoría exacta, busca párrafos con mayor coincidencia de palabras
- let bestParagraph = "";
- let maxMatches = 0;
+ // Dividir el texto en oraciones individuales para mayor precisión
+ const sentences = text.replace(/([.?!])\s*(?=[A-ZÀ-ÿ])/g, "$1|").split("|");
+ 
+ // Buscar oraciones que contengan palabras clave de la pregunta
  const queryWords = cleanQuery.split(/\s+/).filter(w => w.length > 3);
-
- for (const p of paragraphs) {
-  const cleanP = p.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-  let count = 0;
+ 
+ let bestMatches = [];
+ 
+ for (const sentence of sentences) {
+  const cleanSentence = sentence.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  let score = 0;
   for (const word of queryWords) {
-   if (cleanP.includes(word)) count++;
+   if (cleanSentence.includes(word)) score++;
   }
-  if (count > maxMatches) {
-   maxMatches = count;
-   bestParagraph = p;
+  if (score > 0) {
+   bestMatches.push({ text: sentence.trim(), score: score });
   }
  }
+ 
+ // Ordenar por relevancia de coincidencia
+ bestMatches.sort((a, b) => b.score - a.score);
+ 
+ if (bestMatches.length > 0) {
+  // Tomar hasta 2 oraciones relevantes consecutivas para dar una respuesta concisa y directa
+  let selectedText = bestMatches[0].text;
+  if (bestMatches.length > 1 && bestMatches[1].score >= bestMatches[0].score && Math.abs(sentences.indexOf(bestMatches[0].text) - sentences.indexOf(bestMatches[1].text)) === 1) {
+   selectedText += " " + bestMatches[1].text;
+  }
+  return selectedText;
+ }
 
- if (maxMatches > 0 && bestParagraph) return bestParagraph.trim();
-
- return "Somos el equipo del proyecto " + (projectName || "escolar") + ". Podés preguntarme sobre nuestros objetivos, la propuesta de valor, los costos, el proceso de fabricación o la misión de la empresa.";
+ return "Somos el equipo del proyecto " + (projectName || "escolar") + ". Podés preguntarme sobre objetivos, propuesta de valor, costos, fabricación o misión.";
 }
 
 function save(){
@@ -92,7 +74,6 @@ function loadSaved(){
    $('project').value = p.project || '';
    $('knowledge').value = p.knowledge || '';
   }else{
-   // Datos iniciales de prueba (Biomasa Bragado)
    $('project').value = 'Biomasa Bragado';
    $('knowledge').value = `Biomasa Bragado es un emprendimiento socioproductivo nacido en la escuela técnica número uno de Bragado, creado por alumnos de séptimo año de Energías Renovables. Nos dedicamos a fabricar briquetas ecológicas de encendido rápido, revalorizando los residuos de aserrín de las carpinterías locales.\n\nNuestra misión es transformar residuos biomásicos locales en soluciones energéticas renovables de alta calidad. Nuestra visión es ser el microemprendimiento líder de la región pampeana en biocombustibles sólidos fraccionados.\n\nEl costo de producción unitario del paquete de cuatro briquetas es de seiscientos cincuenta pesos. Fijamos un precio sugerido al público de mil ochocientos pesos, y un precio mayorista para comercios aliados de mil doscientos cincuenta pesos, dejándoles un margen del cuarenta y cuatro por ciento.\n\nEl proceso consta de cinco etapas: selección y tamizado del aserrín, mezclado con aglutinante de almidón de maíz al diez por ciento, prensado en matriz cilíndrica con un conducto central de oxígeno, secado natural y empacado en bolsas de papel reciclado.\n\nNuestros objetivos principales para el primer año son procesar y revalorizar el cuarenta por ciento del aserrín de las carpinterías piloto locales, alcanzar una producción de dos mil unidades mensuales e introducir el producto en al menos el quince por ciento de los comercios de Bragado.`;
   }
@@ -203,7 +184,7 @@ function send(){
  const question=$('question').value.trim();if(!question)return;
  $('question').value='';
  bubble('user',question);
- status('talk-status','Buscando respuesta en el proyecto...');
+ status('talk-status','Buscando respuesta exacta...');
  setTimeout(()=>{
   const answer = searchInLocalKnowledge(question, $('knowledge').value, $('project').value);
   bubble('bot',answer);
