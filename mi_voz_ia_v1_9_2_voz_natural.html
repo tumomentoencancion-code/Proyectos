@@ -133,7 +133,7 @@ async function callAI(question,p,historyItems=[],test=false){
  const key=$('api-key').value.trim();if(!key)throw Error('Falta la clave API.');
  const instruction=`Sos la voz oficial de los estudiantes que presentan el proyecto "${p.project}". Respondé en español argentino, de forma súper natural, directa y breve (máximo 40 a 50 palabras). Basate estrictamente en los conocimientos provistos. Descripción: ${p.description}\nConocimientos:\n${p.knowledge.slice(0,25000)}`;
  
- const url='https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(p.model)+':generateContent';
+ const url='https://generativelanguage.googleapis.com/v1v/models/'+encodeURIComponent(p.model)+':generateContent';
  const headers={'Content-Type':'application/json','x-goog-api-key':key};
  const contents=[...historyItems.slice(-6).map(m=>({role:m.role==='assistant'?'model':'user',parts:[{text:m.content}]})),{role:'user',parts:[{text:question}]}];
  const body={systemInstruction:{parts:[{text:instruction}]},contents,generationConfig:{temperature:0.3,maxOutputTokens:400}};
