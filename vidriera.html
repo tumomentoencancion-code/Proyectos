@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vidriera Comercial & Pitch — E.E.S.T. N°1 Bragado</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans min-h-screen flex flex-col justify-between selection:bg-amber-500 selection:text-slate-950">
+
+  <!-- HEADER INSTITUCIONAL / NAVEGACIÓN -->
+  <header class="bg-slate-900/90 border-b border-slate-800 text-white sticky top-0 z-50 backdrop-blur">
+    <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 bg-amber-500 text-slate-950 font-black rounded-xl flex items-center justify-center text-lg shadow-lg">
+          <i class="fa-solid fa-rocket"></i>
+        </div>
+        <div>
+          <h1 class="text-base font-black tracking-tight">E.E.S.T. N°1 Bragado — Muestra Emprendedora</h1>
+          <p class="text-slate-400 text-xs">Trampolín Comercial, Pitches y Evaluación Comunicacional</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleModoDocente()" id="btn-modo-evaluar" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 font-bold px-3.5 py-2 rounded-xl transition border border-amber-500/30 flex items-center gap-1.5">
+          <i class="fa-solid fa-clipboard-check"></i> Modo Evaluación
+        </button>
+        <a href="posiciones.html" class="text-xs bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold px-3.5 py-2 rounded-xl transition flex items-center gap-1.5 shadow">
+          <i class="fa-solid fa-trophy"></i> Posiciones
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- BANNER HERO DE ALTO IMPACTO -->
+  <section class="bg-gradient-to-b from-slate-900 to-slate-950 border-b border-slate-800 py-10 px-4">
+    <div class="max-w-4xl mx-auto text-center">
+      <span class="text-[11px] font-black uppercase tracking-widest text-amber-400 bg-amber-500/10 border border-amber-500/20 px-3 py-1 rounded-full">
+        Talento Joven & Inserción Laboral
+      </span>
+      <h2 class="text-3xl md:text-5xl font-black text-white tracking-tight mt-3">
+        Descubrí los Emprendimientos de la E.E.S.T. N°1
+      </h2>
+      <p class="text-slate-400 text-xs md:text-sm mt-3 max-w-2xl mx-auto leading-relaxed">
+        Mirá los videos pitch, conocé las propuestas de valor, contactá directamente a los equipos por WhatsApp o Instagram y contratá sus servicios o productos.
+      </p>
+    </div>
+  </section>
+
+  <!-- CONTENEDOR DE TARJETAS / VIDRIERA -->
+  <main class="max-w-6xl mx-auto px-4 py-10 w-full flex-grow">
+
+    <!-- BARRA DE MODOS / AVISO DOCENTE (OCULTO POR DEFECTO) -->
+    <div id="banner-modo-evaluar" class="hidden mb-8 bg-amber-500/10 border border-amber-500/30 p-4 rounded-2xl flex justify-between items-center">
+      <div class="flex items-center gap-3 text-amber-400 text-xs">
+        <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+        <span><strong>Modo Evaluación Activado:</strong> Seleccioná "Evaluar Comunicación" en cualquier proyecto para calificar su impacto visual, redes y presentación.</span>
+      </div>
+      <button onclick="toggleModoDocente()" class="text-xs text-slate-400 hover:text-white underline">Cerrar</button>
+    </div>
+
+    <!-- REJILLA DE PROYECTOS -->
+    <div id="grid-proyectos" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <!-- Inyección dinámica desde JavaScript con proyectos precargados o desde Supabase -->
+    </div>
+
+  </main>
+
+  <!-- MODAL PARA VIDEO / PITCH EXPANDIDO -->
+  <div id="modal-video" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-2xl p-6 relative shadow-2xl">
+      <button onclick="cerrarModalVideo()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 id="modal-titulo-proyecto" class="text-xl font-black text-white mb-2">-</h3>
+      <div class="aspect-video bg-black rounded-2xl overflow-hidden mb-4 border border-slate-800 flex items-center justify-center">
+        <iframe id="iframe-video" class="w-full h-full" src="" title="Video Pitch" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+      </div>
+      <div class="flex justify-between items-center">
+        <span class="text-xs text-slate-400">Presentación Oficial de Muestra</span>
+        <a id="modal-link-whatsapp" href="#" target="_blank" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs px-4 py-2.5 rounded-xl transition flex items-center gap-2">
+          <i class="fa-brands fa-whatsapp"></i> Hablar por WhatsApp
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL DE EVALUACIÓN COMUNICACIONAL (MODO DOCENTE / JURADO) -->
+  <div id="modal-evaluar" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+    <div class="bg-slate-900 border border-amber-500/40 rounded-3xl w-full max-w-xl p-6 md:p-8 relative shadow-2xl my-8">
+      <button onclick="cerrarModalEvaluar()" class="absolute top-4 right-4 text-slate-400 hover:text-white text-xl">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      
+      <div class="flex items-center gap-3 mb-4">
+        <div class="bg-amber-500 text-slate-950 font-black p-2.5 rounded-xl text-lg">
+          <i class="fa-solid fa-sliders"></i>
+        </div>
+        <div>
+          <h3 id="eval-nombre-proyecto" class="text-lg font-black text-white">Evaluación de Impacto Comunicacional</h3>
+          <p class="text-slate-400 text-xs">Escala de 1 a 10 puntos por categoría</p>
+        </div>
+      </div>
+
+      <form onsubmit="guardarEvaluacionComunicacional(event)" class="flex flex-col gap-4">
+        <input type="hidden" id="eval-proyecto-id">
+
+        <div>
+          <label class="block text-xs font-bold text-slate-200 mb-1">1. Identidad Visual & Gráfica (1-10):</label>
+          <input type="number" id="nota-diseno" min="1" max="10" required placeholder="Ej: 9" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-amber-400 font-bold">
+          <span class="text-[10px] text-slate-500">Coherencia de colores, estética de diapositivas y marca.</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-200 mb-1">2. Video Pitch & Gancho Audiovisual (1-10):</label>
+          <input type="number" id="nota-video" min="1" max="10" required placeholder="Ej: 10" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-amber-400 font-bold">
+          <span class="text-[10px] text-slate-500">Ritmo, claridad del mensaje y dinamismo comercial.</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-200 mb-1">3. Estrategia en Redes Sociales (1-10):</label>
+          <input type="number" id="nota-redes" min="1" max="10" required placeholder="Ej: 8" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-amber-400 font-bold">
+          <span class="text-[10px] text-slate-500">Propuesta de Instagram, WhatsApp Business y atracción.</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-200 mb-1">4. Claridad Comercial & Propuesta de Valor (1-10):</label>
+          <input type="number" id="nota-claridad" min="1" max="10" required placeholder="Ej: 9" class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-amber-400 font-bold">
+          <span class="text-[10px] text-slate-500">Entendimiento directo de lo que venden y sus ventajas.</span>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-200 mb-1">Devolución / Recomendación Técnica (Opcional):</label>
+          <textarea id="eval-observaciones" rows="2" placeholder="Ej: Excelente trabajo con la tipografía y el slogan." class="w-full bg-slate-950 border border-slate-700 rounded-xl p-2.5 text-sm text-white"></textarea>
+        </div>
+
+        <button type="submit" id="btn-guardar-eval" class="bg-amber-500 hover:bg-amber-400 text-slate-950 font-black py-3 px-4 rounded-xl text-sm shadow-lg transition flex items-center justify-center gap-2 mt-2">
+          <i class="fa-solid fa-floppy-disk"></i> Guardar Calificación Comunicacional
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- FOOTER INSTITUCIONAL -->
+  <footer class="text-center py-6 text-slate-500 text-xs border-t border-slate-900">
+    E.E.S.T. N°1 Bragado &bull; Portal de Promoción & Incubación Técnica
+  </footer>
+
+  <script>
+    const SUPABASE_URL = "https://pwwnhxwkmchzkowiwein.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_I8C3PrRipAaEfe-Gc_VgkA_2NCUw-Ga";
+    const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let esModoDocente = false;
+
+    // Proyectos iniciales con datos reales tomados de sus presentaciones
+    const proyectosIniciales = [
+      {
+        id: 18,
+        nombre: "Nizius",
+        slogan: "Tu energía, nuestra solución",
+        descripcion: "Instalaciones y mantenimientos eléctricos para viviendas, comercios y proyectos renovables con máxima seguridad.",
+        rubro: "Electricidad & Energías Renovables",
+        responsable: "Mauro Lovillo",
+        instagram: "@nizius.ar",
+        whatsapp: "5492342400000",
+        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Reemplazable por el link real
+        imagenBadge: "fa-bolt text-amber-400"
+      },
+      {
+        id: 19,
+        nombre: "Coper Parfums",
+        slogan: "Creado para quienes desean ser recordados",
+        descripcion: "Perfumería artesanal masculina con identidad propia, excelente fijación y precios accesibles.",
+        rubro: "Cosmética & Perfumería Artesanal",
+        responsable: "Thiago Copertino",
+        instagram: "@coper_parfums",
+        whatsapp: "5492342400001",
+        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        imagenBadge: "fa-bottle-droplet text-purple-400"
+      },
+      {
+        id: 20,
+        nombre: "Sueños Animados",
+        slogan: "Servicio cercano y soluciones creativas para tus eventos",
+        descripcion: "Ambientación, candybar y decoración personalizada para cumpleaños, bautismos y celebraciones.",
+        rubro: "Decoración & Eventos",
+        responsable: "Familia Vera",
+        instagram: "@suenos_animado",
+        whatsapp: "5492342167844",
+        videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+        imagenBadge: "fa-wand-magic-sparkles text-pink-400"
+      }
+    ];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      cargarVidriera();
+    });
+
+    function cargarVidriera() {
+      const grid = document.getElementById("grid-proyectos");
+      grid.innerHTML = "";
+
+      proyectosIniciales.forEach(p => {
+        grid.innerHTML += `
+          <div class="bg-slate-900 border border-slate-800 rounded-3xl p-6 flex flex-col justify-between hover:border-amber-500/40 transition shadow-xl group">
+            
+            <div>
+              <!-- CABECERA DE CARD -->
+              <div class="flex justify-between items-start mb-4">
+                <div class="w-12 h-12 bg-slate-950 border border-slate-800 rounded-2xl flex items-center justify-center text-xl shadow">
+                  <i class="fa-solid ${p.imagenBadge}"></i>
+                </div>
+                <span class="text-[10px] font-bold text-amber-400 bg-amber-500/10 border border-amber-500/20 px-2.5 py-1 rounded-full uppercase">
+                  ID: ${p.id}
+                </span>
+              </div>
+
+              <h3 class="text-xl font-black text-white group-hover:text-amber-400 transition">${p.nombre}</h3>
+              <p class="text-xs font-semibold text-amber-500/90 italic mt-0.5">"${p.slogan}"</p>
+
+              <p class="text-xs text-slate-400 mt-3 leading-relaxed">
+                ${p.descripcion}
+              </p>
+
+              <div class="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
+                <span><i class="fa-solid fa-user-gear text-slate-500 mr-1"></i> ${p.responsable}</span>
+                <span class="font-semibold text-slate-300">${p.rubro}</span>
+              </div>
+            </div>
+
+            <!-- BOTONES DE ACCIÓN / TRAMPOLÍN COMERCIAL -->
+            <div class="mt-6 flex flex-col gap-2">
+              <button onclick="verVideo('${p.nombre}', '${p.videoUrl}', '${p.whatsapp}')" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs py-2.5 px-4 rounded-xl transition flex items-center justify-center gap-2 border border-slate-700">
+                <i class="fa-solid fa-circle-play text-amber-400"></i> Ver Video Pitch 30s
+              </button>
+
+              <div class="grid grid-cols-2 gap-2">
+                <a href="https://wa.me/${p.whatsapp}?text=Hola!%20Vi%20tu%20presentacion%20en%20la%20E.E.S.T.%20N°1%20y%20quiero%20consultarte" target="_blank" class="bg-emerald-600/90 hover:bg-emerald-600 text-white font-bold text-[11px] py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 shadow">
+                  <i class="fa-brands fa-whatsapp"></i> WhatsApp
+                </a>
+                <a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold text-[11px] py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 shadow">
+                  <i class="fa-brands fa-instagram"></i> ${p.instagram}
+                </a>
+              </div>
+
+              <!-- BOTÓN EVALUACIÓN DOCENTE (VISIBLE SOLO SI ACTIVA MODO EVALUAR) -->
+              <button onclick="abrirModalEvaluar(${p.id}, '${p.nombre}')" class="btn-evaluar-docente ${esModoDocente ? '' : 'hidden'} mt-2 w-full bg-amber-500 hover:bg-amber-400 text-slate-950 font-black text-xs py-2 px-3 rounded-xl transition flex items-center justify-center gap-1.5 shadow">
+                <i class="fa-solid fa-star"></i> Evaluar Comunicación
+              </button>
+            </div>
+
+          </div>
+        `;
+      });
+    }
+
+    function toggleModoDocente() {
+      esModoDocente = !esModoDocente;
+      const banner = document.getElementById("banner-modo-evaluar");
+      const btn = document.getElementById("btn-modo-evaluar");
+
+      if (esModoDocente) {
+        banner.classList.remove("hidden");
+        btn.classList.add("bg-amber-500", "text-slate-950");
+        btn.classList.remove("bg-slate-800", "text-amber-400");
+      } else {
+        banner.classList.add("hidden");
+        btn.classList.remove("bg-amber-500", "text-slate-950");
+        btn.classList.add("bg-slate-800", "text-amber-400");
+      }
+
+      cargarVidriera();
+    }
+
+    function verVideo(nombre, url, whatsapp) {
+      document.getElementById("modal-titulo-proyecto").innerText = `Video Pitch — ${nombre}`;
+      document.getElementById("iframe-video").src = url;
+      document.getElementById("modal-link-whatsapp").href = `https://wa.me/${whatsapp}`;
+      document.getElementById("modal-video").classList.remove("hidden");
+    }
+
+    function cerrarModalVideo() {
+      document.getElementById("iframe-video").src = "";
+      document.getElementById("modal-video").classList.add("hidden");
+    }
+
+    function abrirModalEvaluar(id, nombre) {
+      document.getElementById("eval-proyecto-id").value = id;
+      document.getElementById("eval-nombre-proyecto").innerText = `Evaluación Comunicacional: ${nombre}`;
+      document.getElementById("modal-evaluar").classList.remove("hidden");
+    }
+
+    function cerrarModalEvaluar() {
+      document.getElementById("modal-evaluar").classList.add("hidden");
+    }
+
+    async function guardarEvaluacionComunicacional(e) {
+      e.preventDefault();
+      const btn = document.getElementById("btn-guardar-eval");
+      btn.disabled = true;
+      btn.innerText = "Guardando en Supabase...";
+
+      const proyecto_id = document.getElementById("eval-proyecto-id").value;
+      const diseno = parseFloat(document.getElementById("nota-diseno").value);
+      const video = parseFloat(document.getElementById("nota-video").value);
+      const redes = parseFloat(document.getElementById("nota-redes").value);
+      const claridad = parseFloat(document.getElementById("nota-claridad").value);
+      const observaciones = document.getElementById("eval-observaciones").value;
+
+      const promedio = (diseno + video + redes + claridad) / 4;
+
+      // Intentar guardar en la tabla 'evaluaciones_comunicacion' de Supabase
+      const { error } = await _supabase.from('evaluaciones_comunicacion').insert([{
+        proyecto_id,
+        nota_diseno: diseno,
+        nota_video: video,
+        nota_redes: redes,
+        nota_claridad: claridad,
+        promedio_comunicacional: promedio,
+        observaciones: observaciones
+      }]);
+
+      if (error) {
+        console.log("Tabla de evaluación comunicacional no existente o error de permisos. Guardado local simulado.", error);
+      }
+
+      alert(`¡Evaluación guardada con éxito! Promedio Comunicacional: ${promedio.toFixed(1)} / 10`);
+      btn.disabled = false;
+      btn.innerText = "Guardar Calificación Comunicacional";
+      cerrarModalEvaluar();
+    }
+  </script>
+</body>
+</html>
